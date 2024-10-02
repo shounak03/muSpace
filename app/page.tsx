@@ -1,101 +1,126 @@
-import Image from "next/image";
 
-export default function Home() {
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Music, Users, Play, Share2 } from "lucide-react"
+import Link from "next/link"
+import dynamic from 'next/dynamic'
+// import { Redirect } from "@/components/Redirect"
+const Appbar = dynamic(() => import('@/components/Appbar'), { ssr: false })
+
+import Footer from "@/components/Footer"
+
+export default function LandingPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+    <>
+
+    <Appbar />
+    <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100 items-center justify-between">
+
+      
+      
+      <main className="flex-1">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-b from-gray-900 to-gray-800">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tighter p-2 sm:text-4xl md:text-5xl lg:text-6xl/none text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+                  Listen Together, Anywhere
+                </h1>
+                <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl">
+                  Create your own music space, invite friends, and enjoy synchronized listening experiences. Your music, your rules.
+                </p>
+              </div>
+              <div className="space-x-4">
+                <Button className="bg-purple-600 text-white hover:bg-purple-700">Create a Space</Button>
+                <Button variant="outline" className="text-purple-400 border-purple-400 hover:bg-purple-400 hover:text-gray-900">Join a Space</Button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="w-full py-8 md:py-24 lg:py-24 bg-gray-800">
+          <div className="container px-4 md:px-6">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+              Features</h2>
+            <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
+              <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-700">
+                <Users className="h-10 w-10 mb-2 text-purple-400" />
+                <h3 className="text-xl font-bold text-purple-400">Create Spaces</h3>
+                <p className="text-gray-300 text-center">Host your own music room and invite friends to join.</p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-700">
+                <Play className="h-10 w-10 mb-2 text-pink-400" />
+                <h3 className="text-xl font-bold text-pink-400">Synchronized Playback</h3>
+                <p className="text-gray-300 text-center">Listen in perfect sync with everyone in your space.</p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-700">
+                <Share2 className="h-10 w-10 mb-2 text-blue-400" />
+                <h3 className="text-xl font-bold text-blue-400">Collaborative Playlists</h3>
+                <p className="text-gray-300 text-center">Build playlists together in real-time.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-900">
+          <div className="container px-4 md:px-6">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">How It Works</h2>
+            <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
+              <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-800">
+                <div className="bg-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold mb-2">1</div>
+                <h3 className="text-xl font-bold text-purple-400">Create a Space</h3>
+                <p className="text-gray-400 text-center">Set up your music room in seconds.</p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-800">
+                <div className="bg-pink-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold mb-2">2</div>
+                <h3 className="text-xl font-bold text-pink-400">Invite Friends</h3>
+                <p className="text-gray-400 text-center">Share your space link with friends.</p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 p-4 rounded-lg bg-gray-800">
+                <div className="bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold mb-2">3</div>
+                <h3 className="text-xl font-bold text-blue-400">Enjoy Together</h3>
+                <p className="text-gray-400 text-center">Start listening and enjoy music in sync!</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-gray-800 to-gray-900">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Ready to Start Your Music Journey?</h2>
+                <p className="mx-auto max-w-[600px] text-gray-400 md:text-xl">
+                  Join MusicSpace today and experience the joy of listening together.
+                </p>
+              </div>
+              <div className="w-full max-w-sm space-y-2">
+                <form className="flex space-x-2">
+                  <Input className="max-w-lg flex-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400" placeholder="Enter your email" type="email" />
+                  <Button type="submit" className="bg-purple-600 text-white hover:bg-purple-700">Get Started</Button>
+                </form>
+                <p className="text-xs text-gray-400">
+                  By signing up, you agree to our{" "}
+                  <Link className="underline underline-offset-2 hover:text-purple-400" href="#">
+                    Terms & Conditions
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      {/* <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-gray-800">
+        <p className="text-xs text-gray-400">© 2024 MusicSpace. All rights reserved.</p>
+        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
+          <Link className="text-xs hover:text-purple-400 transition-colors" href="#">
+            Terms of Service
+          </Link>
+          <Link className="text-xs hover:text-purple-400 transition-colors" href="#">
+            Privacy
+          </Link>
+        </nav> */}
+      {/* </footer> */}
+      <Footer/>
     </div>
-  );
+    </>
+  )
 }
