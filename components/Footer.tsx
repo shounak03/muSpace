@@ -4,7 +4,7 @@ import React from 'react'
 
 export default function Footer() {
   return (
-    <footer className="flex flex-col gap-2 sm:flex-row py-4 w-full shrink-0 items-center justify-between px-4 md:px-6 ">
+    <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center justify-between px-6 md:px-6 ">
 
     <div className="container mx-auto flex justify-between items-center border-t border-gray-800">
       <p className="text-xs text-gray-400">© 2024 MusicSpace. All rights reserved.</p>

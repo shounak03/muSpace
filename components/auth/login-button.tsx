@@ -1,6 +1,6 @@
 "use client"
 
-
+import { useRouter } from "next/navigation"
 
 interface loginProps{
     
@@ -14,8 +14,14 @@ export const LoginButton = ({
     children,mode="redirect",asChild
 }:loginProps
 ) => {
+
+    const router = useRouter()
+    const onClick =()=>{
+        router.push('/auth/login')
+    }
+
   return (
-    <span>
+    <span onClick={onClick}>
         {children}
     </span>
   )

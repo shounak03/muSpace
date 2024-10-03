@@ -66,17 +66,17 @@ import { Button } from '@/components/ui/button'
 //             </DropdownMenu>
 //           </div>
 //         ) : (
-        //   <div className="space-x-4">
-        //     <Link href="/about" className="text-purple-400 hover:text-purple-400 transition-colors">
-        //       About
-        //     </Link>
+//   <div className="space-x-4">
+//     <Link href="/about" className="text-purple-400 hover:text-purple-400 transition-colors">
+//       About
+//     </Link>
 
-        //       <Button variant="outline" className="text-purple-400 bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
-        //                 onClick={() => signIn()} >
-        //         Sign In
-        //       </Button>
+//       <Button variant="outline" className="text-purple-400 bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
+//                 onClick={() => signIn()} >
+//         Sign In
+//       </Button>
 
-        //   </div>
+//   </div>
 //         )}
 //       </div>
 //     </nav>
@@ -86,6 +86,7 @@ import { Button } from '@/components/ui/button'
 import { Music, Settings, LogOut } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
+import { LoginButton } from './auth/login-button'
 
 export default function Appbar() {
     return (
@@ -98,16 +99,19 @@ export default function Appbar() {
                     <span className="ml-2 text-2xl font-bold text-purple-500">MusicSpace</span>
                 </Link>
                 <div className="space-x-4">
-            <Link href="/about" className="text-white hover:text-purple-400 transition-colors">
-              About
-            </Link>
+                    <Link href="/about" className="text-white hover:text-purple-400 transition-colors">
+                        About
+                    </Link>
 
-              <Button variant="outline" className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
-                      size={'sm'} >
-                Sign In
-              </Button>
+                    <LoginButton>
 
-          </div>
+                        <Button variant="outline" className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
+                            size={'sm'} >
+                            Sign In
+                        </Button>
+                    </LoginButton>
+
+                </div>
             </div>
         </nav>
     )
