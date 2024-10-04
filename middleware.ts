@@ -21,6 +21,7 @@ export default auth((req) => {
     if(isApiAuthRoute){
 
         return NextResponse.next()
+
     }
 
     if(isAuthRoute){

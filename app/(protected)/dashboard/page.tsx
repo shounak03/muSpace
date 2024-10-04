@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Music, Users, Play, Share2 } from "lucide-react"
 import Link from "next/link"
-import Appbar from '@/components/Appbar'
+// import Appbar from '@/components/Appbar'
+import { Appbar } from '@/components/Appbar'
 
 export default function Dashboard() {
     const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false)

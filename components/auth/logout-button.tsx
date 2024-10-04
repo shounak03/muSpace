@@ -1,35 +1,32 @@
 "use client"
 
-import { signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
 interface LogoutButtonProps {
     children: React.ReactNode;
-    mode?: "modal" | "redirect";
-    asChild?: boolean;
 }
 
 export const LogoutButton = ({
-    children,
-    mode = "redirect",
-    asChild
+    children
 }: LogoutButtonProps) => {
     const router = useRouter();
 
     const onClick = async () => {
+        try {
+            const response = await fetch('/api/auth/logout', {
+                method: 'POST',
+            });
 
-        await signOut({ redirect: false });
-        router.push('/auth/login');
-        router.refresh(); 
+            if (response.ok) {
+                router.push('/'); // Redirect to home page after logout
+                router.refresh(); // Refresh the current route
+            } else {
+                console.error("Logout failed");
+            }
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
     }
-
-    // if (asChild) {
-    //     return (
-    //         <span onClick={onClick}>
-    //             {children}
-    //         </span>
-    //     )
-    // }
 
     return (
         <span onClick={onClick} style={{ cursor: 'pointer' }}>
