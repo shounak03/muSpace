@@ -1,7 +1,7 @@
 "use client"
 import { CardWrapper } from "./card-wrapper"
 import { useForm } from 'react-hook-form'
-
+import { useTransition } from "react";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import * as z from "zod"
@@ -11,8 +11,14 @@ import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
 import { login } from "@/actions/login";
+import { useState } from "react";
 
 export const RegisterForm = () => {
+
+    const [isPending, startTransition] = useTransition();
+    const [error, setError] = useState<string | undefined>("");
+    const [success, setSuccess] = useState<string | undefined>("");
+    
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
@@ -22,10 +28,36 @@ export const RegisterForm = () => {
         }
     });
 
-    const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
-        login(values)
-        //can user fetch action here too
+    const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
 
+       setError("")
+       setSuccess("")
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(values),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Registration failed');
+            }
+
+            setSuccess('Registration successful!');
+            setError(undefined);
+            // Optionally, redirect the user or clear the form
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('An unknown error occurred');
+            }
+            setSuccess(undefined);
+        }
     }
 
     return (
@@ -44,13 +76,14 @@ export const RegisterForm = () => {
                     <FormField control={form.control} name="fullname" render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                fullname
+                                Fullname
                             </FormLabel>
                             <FormControl>
 
 
                                 <Input
                                     {...field}
+                                    disabled={isPending}
                                     placeholder="enter your password"
                                     type="fullname"
                                 />
@@ -69,6 +102,7 @@ export const RegisterForm = () => {
 
                                     <Input
                                         {...field}
+                                        disabled={isPending}
                                         placeholder="enter your email"
                                         type="email"
                                     />
@@ -96,9 +130,9 @@ export const RegisterForm = () => {
 
 
                     </div>
-                    <FormError />
-                    <FormSuccess />
-                    <Button typeof="submit" className="w-full">
+                    <FormError message={error}/>
+                    <FormSuccess message={success}/>
+                    <Button typeof="submit" className="w-full" disabled={isPending}>
                         Register
                     </Button>
                 </form>
