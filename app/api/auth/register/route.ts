@@ -1,16 +1,16 @@
-// app/api/register/route.ts
+// app/api/auth/register/route.ts
 
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import * as z from 'zod'
+import bcrypt from 'bcryptjs'
+
 
 import { RegisterSchema } from "@/schema";
 
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request, values:z.infer<typeof RegisterSchema>) {
+export async function POST(request: Request) {
   try {
     
     const body = await request.json();

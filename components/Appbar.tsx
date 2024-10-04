@@ -1,10 +1,10 @@
-// 'use client'
+
 
 // import { useState } from 'react'
 // import { useSession, signOut, signIn } from 'next-auth/react'
 // import Link from 'next/link'
 // import Image from 'next/image'
-import { Button } from '@/components/ui/button'
+
 // import {
 //   DropdownMenu,
 //   DropdownMenuContent,
@@ -83,36 +83,54 @@ import { Button } from '@/components/ui/button'
 //   )
 // }
 
-import { Music, Settings, LogOut } from 'lucide-react'
+
+import { Music } from 'lucide-react'
 import Link from 'next/link'
-import React from 'react'
+import { Button } from '@/components/ui/button'
 import { LoginButton } from './auth/login-button'
+import { LogoutButton } from './auth/logout-button'
+import { auth } from '@/auth'
 
-export default function Appbar() {
-    return (
-        <nav className="px-4 lg:px-6 h-14 flex items-center justify-between bg-gray-900">
+export default async function Appbar() {
+  const session = await auth()
 
-            <div className="container mx-auto flex justify-between items-center border-b border-gray-800 mb-4">
-
-                <Link className="flex items-center justify-center" href="#">
-                    <Music className="h-6 w-6 text-purple-500" />
-                    <span className="ml-2 text-2xl font-bold text-purple-500">MusicSpace</span>
-                </Link>
-                <div className="space-x-4">
-                    <Link href="/about" className="text-white hover:text-purple-400 transition-colors">
-                        About
-                    </Link>
-
-                    <LoginButton>
-
-                        <Button variant="outline" className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
-                            size={'sm'} >
-                            Sign In
-                        </Button>
-                    </LoginButton>
-
-                </div>
-            </div>
-        </nav>
-    )
+  return (
+    <nav className="px-4 lg:px-6 h-14 flex items-center justify-between bg-gray-900">
+      <div className="container mx-auto flex justify-between items-center border-b border-gray-800 mb-4">
+        <Link className="flex items-center justify-center" href="#">
+          <Music className="h-6 w-6 text-purple-500" />
+          <span className="ml-2 text-2xl font-bold text-purple-500">MusicSpace</span>
+        </Link>
+        <div className="space-x-4">
+          {!session?.user && (
+            <>
+              <Link href="/about" className="text-white hover:text-purple-400 transition-colors">
+                About
+              </Link>
+              <LoginButton>
+                <Button 
+                  variant="outline" 
+                  className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
+                  size="sm"
+                >
+                  Sign In
+                </Button>
+              </LoginButton>
+            </>
+          )}
+          {session?.user && (
+            <LogoutButton>
+              <Button 
+                variant="outline" 
+                className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
+                size="sm"
+              >
+                Logout
+              </Button>
+            </LogoutButton>
+          )}
+        </div>
+      </div>
+    </nav>
+  )
 }
