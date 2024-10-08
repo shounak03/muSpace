@@ -1,5 +1,57 @@
 
 
+// 'use client'
+
+// import { useState } from 'react'
+// import { Button } from "@/components/ui/button"
+// import { Input } from "@/components/ui/input"
+// import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+// import Link from "next/link"
+// import { Appbar } from '@/components/Appbar'
+// import { z } from 'zod'
+// import { spaceSchema } from '@/schema'
+// import { useRouter } from 'next/router'
+
+// export default function Dashboard() {
+
+//     const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false)
+//     const [isNewSpaceDialogOpen, setIsNewSpaceDialogOpen] = useState(false)
+
+//     // const recommendedSpaces = [
+//     //     { id: 1, name: "Chill Vibes", members: 42, genre: "Lo-fi" },
+//     //     { id: 2, name: "Rock Legends", members: 78, genre: "Classic Rock" },
+//     //     { id: 3, name: "EDM Party", members: 103, genre: "Electronic" },
+//     // ]
+
+
+//     const onclick =  async (values: z.infer<typeof spaceSchema>) => {
+//         // const router = useRouter();
+//         try {
+//             const response = await fetch('/api/space/', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                 },
+//                 body: JSON.stringify(values),
+//             });
+
+//             const data = await response.json();
+
+//             if (data.success) {
+//                 // Close the dialog
+//                 setIsNewSpaceDialogOpen(false);
+//                 // Redirect to the new space page
+//                 // router.push('/space');
+//             } else {
+//                 console.error('Error creating space:', data.error);
+//                 // Handle error (e.g., show an error message to the user)
+//             }
+//         } catch (error) {
+
+//         }
+//     }
+
 'use client'
 
 import { useState } from 'react'
@@ -7,21 +59,57 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Music, Users, Play, Share2 } from "lucide-react"
 import Link from "next/link"
-// import Appbar from '@/components/Appbar'
 import { Appbar } from '@/components/Appbar'
+import { z } from 'zod'
+import { spaceSchema } from '@/schema'
+import { useRouter } from 'next/router'
 
 export default function Dashboard() {
+    // const router = useRouter();
     const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false)
     const [isNewSpaceDialogOpen, setIsNewSpaceDialogOpen] = useState(false)
+    
+    const [newSpaceValues, setNewSpaceValues] = useState({
+        name: '',
+        description: '',
+        privateKey: ''
+    })
 
-    const recommendedSpaces = [
-        { id: 1, name: "Chill Vibes", members: 42, genre: "Lo-fi" },
-        { id: 2, name: "Rock Legends", members: 78, genre: "Classic Rock" },
-        { id: 3, name: "EDM Party", members: 103, genre: "Electronic" },
-    ]
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setNewSpaceValues(prev => ({ ...prev, [name]: value }));
+    }
 
+    const handleCreateSpace = async () => {
+        try {
+            const validatedValues = spaceSchema.parse(newSpaceValues);
+            const response = await fetch('/api/space/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(validatedValues),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setIsNewSpaceDialogOpen(false);
+                // router.push('/space');
+            } else {
+                console.error('Error creating space:', data.error);
+                // Handle error (e.g., show an error message to the user)
+            }
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                console.error('Validation error:', error.errors);
+                // Handle validation error (e.g., show error messages to the user)
+            } else {
+                console.error('Unexpected error:', error);
+            }
+        }
+    }
     return (
         <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100">
 
@@ -53,23 +141,33 @@ export default function Dashboard() {
                                     <div className="space-y-4">
                                         <Input
                                             required
+                                            name="name"
                                             placeholder="Enter space name"
                                             className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                            value={newSpaceValues.name}
+                                            onChange={handleInputChange}
                                         />
                                         <Input
                                             required
+                                            name="description"
                                             placeholder="Enter space description"
                                             className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                            value={newSpaceValues.description}
+                                            onChange={handleInputChange}
                                         />
                                         <Input
+                                            name="privateKey"
                                             placeholder="Enter private key"
                                             className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                                            value={newSpaceValues.privateKey}
+                                            onChange={handleInputChange}
                                         />
-                                        <Link href="/space">
-                                            <Button className="w-full bg-purple-600 text-white hover:bg-purple-700 mt-4">
-                                                Create Space
-                                            </Button>
-                                        </Link>
+                                        <Button
+                                            className="w-full bg-purple-600 text-white hover:bg-purple-700 mt-4"
+                                            onClick={handleCreateSpace}
+                                        >
+                                            Create Space
+                                        </Button>
                                     </div>
                                 </DialogContent>
                             </Dialog>
@@ -107,34 +205,6 @@ export default function Dashboard() {
                     </Card>
 
                 </section>
-                <section>
-                    <h2 className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                        Recommended Spaces
-                    </h2>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {recommendedSpaces.map((space) => (
-                            <Card key={space.id} className="bg-gray-800 border-gray-700">
-                                <CardHeader>
-                                    <CardTitle className="text-blue-400">{space.name}</CardTitle>
-                                    <CardDescription className="text-gray-400">{space.genre}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400">
-                                            <Users className="inline mr-2 h-4 w-4" />
-                                            {space.members} members
-                                        </span>
-                                        <Link href="/space">
-                                            <Button className="bg-blue-600 text-white hover:bg-blue-700">
-                                                Join
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </section>
             </main>
             <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-gray-800">
                 <p className="text-xs text-gray-400">© 2024 MusicSpace. All rights reserved.</p>
@@ -150,3 +220,4 @@ export default function Dashboard() {
         </div>
     )
 }
+

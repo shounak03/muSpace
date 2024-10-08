@@ -9,13 +9,20 @@ datasource db {
 generator client{
   provider = "prisma-client-js"
 }
+
+enum UserRole{
+  ADMIN
+  USER
+}
 model User {
   id            String          @id @default(cuid())
-  fullname          String?
+  fullname      String?
   email         String?          @unique
   password      String?
   image         String?
+  role          UserRole        @default(USER)
   accounts      Account[]
+  hostedSpaces  Space[]          @relation("hostedBy")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -41,3 +48,16 @@ model Account {
  
   @@id([provider, providerAccountId])
 }
+
+model Space{
+  id            String          @id @default(cuid())
+  name          String
+  description   String
+  privateKey    String
+  url           String          @unique @default("")
+  hostId        String
+  host          User            @relation("hostedBy",fields: [hostId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

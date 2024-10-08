@@ -1,6 +1,7 @@
-"use client"
+'use client';
 
-import { useRouter } from "next/navigation"
+import { signOut } from "@/auth";
+import { useRouter } from "next/navigation";
 
 interface LogoutButtonProps {
     children: React.ReactNode;
@@ -13,16 +14,8 @@ export const LogoutButton = ({
 
     const onClick = async () => {
         try {
-            const response = await fetch('/api/auth/logout', {
-                method: 'POST',
-            });
-
-            if (response.ok) {
-                router.push('/'); // Redirect to home page after logout
-                router.refresh(); // Refresh the current route
-            } else {
-                console.error("Logout failed");
-            }
+            await signOut({ redirectTo: '/' });
+            router.refresh();
         } catch (error) {
             console.error("Logout error:", error);
         }

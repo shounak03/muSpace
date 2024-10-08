@@ -5,6 +5,7 @@ import { LoginSchema } from "@/schema";
 import { signIn } from '@/auth';
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
 import { AuthError } from 'next-auth';
+import { redirect } from 'next/navigation';
 
 export async function POST(request: Request) {
     try {
@@ -14,10 +15,10 @@ export async function POST(request: Request) {
         await signIn("credentials", {
             email,
             password,
-            redirectTo: DEFAULT_LOGIN_REDIRECT
-        });
 
+        });
         return NextResponse.json({ success: "Login successful" });
+        
     } catch (error) {
         if (error instanceof AuthError) {
             switch (error.type) {
@@ -29,9 +30,11 @@ export async function POST(request: Request) {
                     return NextResponse.json({ error: "An unexpected authentication error occurred" }, { status: 500 });
             }
         } else if (error instanceof Error) {
+            // console.log("next_redirect", error);
+            
             return NextResponse.json({ error: error.message }, { status: 400 });
         }
         
         return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 });
     }
-}
+} 

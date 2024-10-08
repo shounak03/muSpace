@@ -5,9 +5,11 @@ import { Music, Users, Play, Share2 } from "lucide-react"
 import Link from "next/link"
 import dynamic from 'next/dynamic'
 // import { Redirect } from "@/components/Redirect"
-const Appbar = dynamic(() => import('@/components/Appbar'), { ssr: false })
+// const Appbar = dynamic(() => import('@/components/Appbar'), { ssr: false })
+
 
 import Footer from "@/components/Footer"
+import { Appbar } from "@/components/Appbar"
 
 export default function LandingPage() {
   return (
@@ -32,8 +34,10 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="space-x-4">
-                <Button className="bg-purple-600 text-white hover:bg-purple-700">Create a Space</Button>
-                <Button variant="outline" className="text-purple-400 border-purple-400 hover:bg-purple-400 hover:text-gray-900">Join a Space</Button>
+                <Link href={'/dashboard'}>
+                  <Button className="bg-purple-600 text-white hover:bg-purple-700">Create a Space</Button>
+                </Link>
+                  <Button variant="outline" className="text-purple-400 border-purple-400 hover:bg-purple-400 hover:text-gray-900">Join a Space</Button>
               </div>
             </div>
           </div>

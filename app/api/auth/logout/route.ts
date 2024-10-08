@@ -2,12 +2,14 @@
 import { NextResponse } from "next/server";
 import { auth, signOut } from "@/auth";
 
+
 export async function POST(request: Request) {
   try {
     const session = await auth();
     if (session) {
       await signOut();
-      window.location.reload();
+      // window.location.reload();
+      // redirect('/')
       return NextResponse.json({ success: true });
     } else {
       return NextResponse.json({ success: false, message: "No active session" }, { status: 401 });
