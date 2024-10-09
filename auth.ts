@@ -1,59 +1,65 @@
-// import NextAuth from "next-auth"
-// import authConfig from "./auth.config"
-// import {PrismaAdapter} from "@auth/prisma-adapter"  
-// import { db } from "./lib/db"
-// export const { auth, handlers, signIn, signOut } = NextAuth({
-//     adapter: PrismaAdapter(db),
-//     session: {strategy:"jwt"},
-//     ...authConfig,
-//     callbacks:{
+import NextAuth, { CredentialsSignin } from "next-auth"
+import { PrismaClient } from "@prisma/client";
+import bcrypt from 'bcryptjs';
+import Credentials from "next-auth/providers/credentials";
+import { LoginSchema } from "./schema";
 
-//         async session({token,session}) {
-//             console.log("sessionToken: ",token);
-            
-//             if(session.user && token.sub){
-//                 session.user.id = token.sub
-//             }
+const prisma = new PrismaClient();
 
-//             return session
-//         },
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [
+    Credentials({
+      id: "credentials",
+      name: "Credentials",
+      credentials: {
+        email: { type: "email", label: "Email" },
+        password: { type: "password", label: "Password" }
+      },
+      async authorize(credentials) {
+        try {
+          const { email, password } = await LoginSchema.parseAsync(credentials);
 
-//         async jwt({token}){
-//             return token;
-//         }
-            
-//     }
-// })
+          if (!email || !password) {
+            throw new CredentialsSignin({cause:"Please provide both email and password"});
+          }
 
-import NextAuth from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { db } from "./lib/db"
-import authConfig from "./auth.config"
+          const user = await prisma.user.findUnique({
+            where: { email: email }
+          });
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
-  adapter: PrismaAdapter(db),
-  session: { strategy: "jwt" },
-  ...authConfig,
-  callbacks: {
-    async session({ token, session }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub
+          if (!user) {
+            throw new CredentialsSignin({cause:"User not found"});
+          }
+          //@ts-ignore
+          const isPasswordValid = await bcrypt.compare(password, user.password);
+
+          if (!isPasswordValid) {
+            throw new CredentialsSignin({cause: "Invalid email or password"});
+          }
+
+          return { id: user.id, name: user.username, email: user.email };
+        } catch (error:any) {
+          throw new CredentialsSignin({cause:error.message});
+        }
       }
-      return session
+    })
+  ],
+  pages: {
+    signIn: '/auth/login',
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
     },
-    async jwt({ token }) {
-      return token
+    async session({ session, token }) {
+      if (session.user) {
+        // session.user.id = token.id;
+      }
+      return session;
     }
   },
-  events: {
-    async signOut({ session, token }) {
-      // You can add custom logic here if needed
-      console.log("User signed out");
-    }
-  }
-})
+  secret: process.env.AUTH_SECRET,
+});

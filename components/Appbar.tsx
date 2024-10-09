@@ -1,12 +1,15 @@
+'use server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { LoginButton } from './auth/login-button'
-import { LogoutButton } from './auth/logout-button'
 import { Music } from "lucide-react"
-import { auth } from '@/auth'
+import { auth, signIn, signOut } from '@/auth'
+import { LogoutButton } from './auth/logout-button'
 
 export async function Appbar() {
+
   const session = await auth()
+
+
 
   return (
     <nav className="bg-gray-900 border-b border-gray-800 px-4 py-3">
@@ -21,27 +24,35 @@ export async function Appbar() {
               <Link href="/about" className="text-white hover:text-purple-400 transition-colors">
                 About
               </Link>
-              <LoginButton>
-                <Button 
-                  variant="outline" 
+              <Link href="/auth/login">
+
+                <Button
+                  variant="outline"
                   className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
                   size="sm"
                 >
-                  Sign In
+                  Login
+
                 </Button>
-              </LoginButton>
+              </Link>
+
             </>
           )}
           {session?.user && (
-            <LogoutButton>
-              <Button 
-                variant="outline" 
+            <form action={async()=>{
+              'use server'
+              await signOut()
+            }}>
+
+              <Button
+                variant="outline"
                 className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
                 size="sm"
               >
                 Logout
               </Button>
-            </LogoutButton>
+            </form >
+
           )}
         </div>
       </div>
