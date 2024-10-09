@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Music } from "lucide-react"
 import { auth, signIn, signOut } from '@/auth'
-import { LogoutButton } from './auth/logout-button'
+
+import { redirect } from 'next/navigation'
 
 export async function Appbar() {
 
@@ -31,7 +32,7 @@ export async function Appbar() {
                   className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
                   size="sm"
                 >
-                  Login
+                  Sign-In
 
                 </Button>
               </Link>
