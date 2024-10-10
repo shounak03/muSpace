@@ -20,9 +20,11 @@ export const CreateSpace = () => {
     const [success, setSuccess] = useState('');
     const [error, setError] = useState('');
 
+    const router = useRouter()
     const handleSpace = async () => {
-        // const router = useRouter()
-        const validatedData = spaceSchema.parseAsync({ name, description, privateKey })
+        console.log(name, description, privateKey);
+        const validatedData = spaceSchema.parse({ name, description, privateKey })
+        
 
         try {
             const response = await fetch('/api/spaces', {
@@ -41,7 +43,8 @@ export const CreateSpace = () => {
                 setError(data.error);
             } else {
                 setSuccess('space created successfully!');
-                // router.push('/spaces')
+                router.push(data.updatedSpace.url)
+
     
             }
         } catch (error) {
