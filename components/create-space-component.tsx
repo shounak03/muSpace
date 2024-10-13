@@ -33,7 +33,7 @@ export const CreateSpace = () => {
                 body: JSON.stringify(validatedData),
             });
             const data = await response.json();
-            console.log(data);
+            // console.log(data);
     
     
             if (!response.ok) {

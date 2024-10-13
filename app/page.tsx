@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Music, Users, Play, Share2 } from "lucide-react"
 import Link from "next/link"
-import dynamic from 'next/dynamic'
+import {SpaceCheckComp} from '@/components/landing-page'
 // import { Redirect } from "@/components/Redirect"
 // const Appbar = dynamic(() => import('@/components/Appbar'), { ssr: false })
 
@@ -12,36 +12,21 @@ import Footer from "@/components/Footer"
 import { Appbar } from "@/components/Appbar"
 
 export default function LandingPage() {
+
+  
+  
   return (
 
     <>
 
     <Appbar />
+    
     <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100 items-center justify-between">
 
       
       
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-b from-gray-900 to-gray-800">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter p-2 sm:text-4xl md:text-5xl lg:text-6xl/none text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                  Listen Together, Anywhere
-                </h1>
-                <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl">
-                  Create your own music space, invite friends, and enjoy synchronized listening experiences. Your music, your rules.
-                </p>
-              </div>
-              <div className="space-x-4">
-                <Link href={'/dashboard'}>
-                  <Button className="bg-purple-600 text-white hover:bg-purple-700">Create a Space</Button>
-                </Link>
-                  <Button variant="outline" className="text-purple-400 border-purple-400 hover:bg-purple-400 hover:text-gray-900">Join a Space</Button>
-              </div>
-            </div>
-          </div>
-        </section>
+        <SpaceCheckComp/>
         <section className="w-full py-8 md:py-24 lg:py-24 bg-gray-800">
           <div className="container px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
@@ -112,17 +97,7 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
-      {/* <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-gray-800">
-        <p className="text-xs text-gray-400">© 2024 MusicSpace. All rights reserved.</p>
-        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-xs hover:text-purple-400 transition-colors" href="#">
-            Terms of Service
-          </Link>
-          <Link className="text-xs hover:text-purple-400 transition-colors" href="#">
-            Privacy
-          </Link>
-        </nav> */}
-      {/* </footer> */}
+      
       <Footer/>
     </div>
     </>

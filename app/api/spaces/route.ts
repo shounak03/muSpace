@@ -54,13 +54,13 @@ export async function POST(request: Request) {
 
 
 export async function GET(req:NextRequest) {
-    // const session = await auth();
-    // if (!session?.user?.id) {
-    //     return NextResponse.json(
-    //       { success: false, message: "You must be logged in to retrieve space information" },
-    //       { status: 401 }
-    //     );
-    //   }
+    const session = await auth();
+    if (!session?.user?.id) {
+        return NextResponse.json(
+          { success: false, message: "You must be logged in to retrieve space information" },
+          { status: 401 }
+        );
+      }
     try {
         const { searchParams } = new URL(req.url);
         const spaceId = searchParams.get('spaceId');
@@ -76,6 +76,7 @@ export async function GET(req:NextRequest) {
             select: {
                 name: true,
                 description: true,
+                hostId:true
             },
         })
         if(!space)

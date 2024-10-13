@@ -1,9 +1,42 @@
+// 'use client'
 import { Appbar } from "@/components/Appbar";
 import { CreateSpace } from "@/components/create-space-component";
 import { JoinSpace } from "@/components/join-space";
 import Footer from "@/components/Footer";
 
+import { useEffect } from "react";
+
+
 export default function Dashboard() {
+
+
+
+
+    // useEffect(() => {
+    //     const fetchSpace = async () => {
+    //         try {
+    //             const response = await fetch('api/getSpaceId')
+    //             const data = await response.json();
+    //             console.log(data);
+
+    //         } catch (error) {
+    //             console.log(error)
+    //         }
+    //     };
+    //     fetchSpace(); 
+    // }, []);
+
+    const fetchSpace = async () => {
+        try {
+            const response = await fetch('api/getSpaceId')
+            const data = await response.json();
+            console.log(data);
+
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100">
             <Appbar />
