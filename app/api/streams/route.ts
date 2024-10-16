@@ -18,20 +18,39 @@ export async function POST(req: NextRequest,res: NextResponse) {
   }
 
 
-
+  
+  
+  try {
     const body = streamSchema.parse(await req.json())
     const { hostId, url, spaceId } = body
-    const isYt = url.match(YT_REGEX)
-    if (!isYt) {
 
-      return NextResponse.json({
-        message: "Unknown url"
-      }, {
-        status: 411
-      })
+    
+    if (!url.trim()) {
+      return NextResponse.json(
+        {
+          message: "YouTube link cannot be empty",
+        },
+        {
+          status: 400,
+        },
+      );
     }
-    const extractedId = url.split("?v=")[1]
 
+    const isYt = url.match(YT_REGEX);
+    const extractedId = url ? url.match(YT_REGEX)?.[1] : null;
+    
+    if (!isYt || !extractedId) {
+      return NextResponse.json(
+        {
+          message: "Invalid YouTube URL format",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+    const resp = await youtubesearchapi.GetVideoDetails(extractedId)
+    // console.log('check',resp);
     if (hostId !== session.user.id) {
       const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
       // const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
@@ -69,13 +88,6 @@ export async function POST(req: NextRequest,res: NextResponse) {
       );
     }
   }
-
-    
-
-      const resp = await youtubesearchapi.GetVideoDetails(extractedId)
-      console.log(res);
-
-
     const Thumbnails = resp.thumbnail.thumbnails
     Thumbnails.sort((a: { width: number }, b: { width: number }) => a.width < b.width ? -1 : 1)
 
@@ -83,9 +95,16 @@ export async function POST(req: NextRequest,res: NextResponse) {
       data: {
         userId:hostId,
         url,
+        artist:resp.channel ?? "Unknown",
         spaceId,
         extractedId,
-        img: Thumbnails[-1].url ?? "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
+        smallImg:
+          (Thumbnails.length > 1
+            ? Thumbnails[Thumbnails.length - 2].url
+            : Thumbnails[Thumbnails.length - 1].url) ??
+          "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
+        bigImg:  Thumbnails[Thumbnails.length - 1].url ??
+        "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
         title: resp.title ?? "Cant find title",
         addedBy: session.user.id,
 
@@ -97,6 +116,11 @@ export async function POST(req: NextRequest,res: NextResponse) {
       hasUpvoted: false,
       upvotes: 0,
     });
+  } catch (error:any) {
+    return NextResponse.json({
+      error: error.message,
+    },{status:501});
+  }
 
 }
 

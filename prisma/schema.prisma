@@ -14,17 +14,19 @@ enum UserRole {
   ADMIN
   USER
 }
-enum Provider{
+
+enum Provider {
   Google
   Credentials
 }
+
 model User {
   id           String    @id @default(cuid())
   username     String?   @unique
   email        String?   @unique
   password     String?
   image        String?
-  provider     Provider
+  provider     Provider?
   role         UserRole  @default(USER)
   accounts     Account[]
   hostedSpaces Space[]   @relation("hostedBy")
@@ -76,7 +78,8 @@ model Song {
   url           String
   extractedId   String
   title         String?
-  img           String?
+  bigImg        String?
+  smallImg      String?
   artist        String?
   duration      Int?
   active        Boolean      @default(false)

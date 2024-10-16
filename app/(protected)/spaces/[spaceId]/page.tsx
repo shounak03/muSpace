@@ -28,7 +28,6 @@ const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
     const [hostId,setCreatorId]=useState<string>();
     const [userId,setuserId]=useState<string>();
     const [loading1, setLoading1] = useState(true);
-    const [url,setUrl] = useState('');
     const [data, setData] = useState<SpaceData | null>(null)
     
 
@@ -42,7 +41,7 @@ const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
                 if (!response.ok || !data.success) {
                     throw new Error(data.message || "Failed to retreive space's host id");
                   }
-                console.log(data);
+
                 
                 setData(data.space)
                 setCreatorId(data.space.hostId)

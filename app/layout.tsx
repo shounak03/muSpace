@@ -2,7 +2,15 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "sonner";
 
+type ToasterProps = React.ComponentProps<typeof Toaster>;
+const toastOptions: ToasterProps = {
+  theme: "dark",
+  richColors: true,
+  closeButton: true,
+  pauseWhenPageIsHidden: true,
+};
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -30,6 +38,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {/* <SessionProvider> */}
+        <Toaster {...toastOptions} />
 
         {children}
         {/* </SessionProvider> */}

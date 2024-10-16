@@ -1,11 +1,16 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import { Music, Volume2, VolumeX, ThumbsUp, ThumbsDown, Play, Pause, Share2, Plus, Users, LogOut } from "lucide-react";
+import { PiArrowFatUpLight,PiArrowFatDownThin } from "react-icons/pi";
 import { Slider } from "@/components/ui/slider"
 import { Input } from './ui/input'
 import { streamSchema } from '@/schema';
-import {toast} from "sonner"
+import { toast } from "sonner"
+import { YT_REGEX } from '@/lib/utils';
+import LiteYouTubeEmbed from "react-lite-youtube-embed";
+import { CardContent } from './ui/card';
+import Image from 'next/image';
 
 
 interface Video {
@@ -15,13 +20,15 @@ interface Video {
   extractedId: string;
   title: string;
   bigImg: string;
+  smallImg: string;
   active: boolean;
   userId: string;
   upvotes: number;
   haveUpvoted: boolean;
-  spaceId:string
+  spaceId: string;
+  artist:string;
 }
-
+const REFRESH_INTERVAL_MS = 10 * 1000;
 export default function Stream({
   hostId,
   playVideo = false,
@@ -32,8 +39,8 @@ export default function Stream({
   spaceId: string;
 }) {
 
-  console.log(hostId,spaceId);
-  
+
+
   const [url, setUrl] = useState("");
   const [queue, setQueue] = useState<Video[]>([]);
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
@@ -44,155 +51,198 @@ export default function Stream({
   const togglePlay = () => setIsPlaying(!isPlaying)
   const toggleMute = () => setIsMuted(!isMuted)
 
+  
+  async function refresh() {
+    try {
+      const res = await fetch(`/api/streams/?spaceId=${spaceId}`)
+      const data = await res.json()
+      if(data.streams && Array.isArray(data.streams)){
+        setQueue(
+          data.streams.length > 0
+            ? data.streams.sort((a: any, b: any) => b.upvotes - a.upvotes)
+            : [],
+        );
+      }
+      else{
+
+        setQueue([]);
+      }
+      
+    } catch (error:any) {
+        console.log(error.message);
+        
+    }
+  }
+
+  useEffect(()=>{
+    refresh();
+  },[spaceId])
+  
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if(!url.trim()){
+  e.preventDefault()
+    if (!url.trim()) {
       toast.error("Song url cannot cannot be empty")
     }
-    // const postData = streamSchema.parse({ url, hostId, spaceId });
-    // const response = await fetch(`/api/streams?spaceId=${spaceId}`, {
-    //   method: 'POST',
-    //   headers: { 'content-type': "application/json" },
-    //   body: JSON.stringify(postData)
-    // })
+    if (!url.match(YT_REGEX)) {
+      toast.error("Invalid YouTube URL format");
+      return;
+    }
+    setLoading(true);
+    try {
+      const postData = streamSchema.parse({ url, hostId, spaceId });
+      const response = await fetch(`/api/streams`, {
+        method: 'POST',
+        headers: { 'content-type': "application/json" },
+        body: JSON.stringify(postData)
+      })
+      const data = await response.json();
+      console.log(data);
+      if (!response.ok)
+        throw new Error(data.message || "An error occured")
 
-    // const data = await response.json();
-    // console.log(data);
-
+      setQueue([...queue, data])
+      setUrl("")
+      toast.success("song added to queue successfully")
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
 
 
 
-return (
-  <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
-    <div className="max-w-4xl mx-auto space-y-8">
+  return (
+    <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
+      <div className="max-w-4xl mx-auto space-y-8">
 
 
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
-            Song URL
-          </label>
-          {/* <div className="flex space-x-2"> */}
-          <form className="space-y-3" onSubmit={handleSubmit}>
-            <Input
-              id="song-url"
-              placeholder="Enter song URL here"
-              className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 flex-grow"
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
+              Song URL
+            </label>
+            {/* <div className="flex space-x-2"> */}
+            <form className="space-y-3" onSubmit={handleSubmit}>
+              <Input
+                id="song-url"
+                placeholder="Enter song URL here"
+                className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 flex-grow"
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
 
-            />
-            <Button className="bg-purple-600 text-white hover:bg-purple-700" >
-              <Plus className="mr-2 h-4 w-4" />
-              Add to Queue
-            </Button>
+              />
 
-          </form>
-          {/* <Card className="bg-gray-800 border-gray-700 shadow-lg">
-                <CardContent className="p-6 space-y-4">
-                  <h2 className="text-2xl font-bold text-white">Add a song</h2>
-                  <form  className="space-y-3">
-                    <Input
-                      type="text"
-                      placeholder="Paste YouTube link here"
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400"
-                    />
-                    <Button
-                      disabled={loading}
-                      type="submit"
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white transition-colors"
-                    >
-                      {loading ? "Loading..." : "Add to Queue"}
+              <Button
+                disabled={loading}
+                type="submit"
+                className="bg-purple-600 text-white hover:bg-purple-700" >
+                {loading ? "Loading..." : "Add to Queue"}
 
-                    </Button>
-                  </form>
-                  {url && inputLink.match(YT_REGEX) && !loading && (
-                    <div className="mt-4">
-                      <LiteYouTubeEmbed
-                        title=""
-                        id={inputLink.split("?v=")[1]}
-                      />
-                    </div>
-                  )}
-                </CardContent>
-              </Card> */}
+              </Button>
+            </form>
+            <CardContent>
+
+            {url && url.match(YT_REGEX) && !loading && (
+              <div className="mt-4">
+                <LiteYouTubeEmbed
+                  title=""
+                  id={url.split("?v=")[1]}
+                  />
+              </div>
+            )}
+            </CardContent>
+          </div>
         </div>
-      </div>
 
-      <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
-        <div className="flex items-center space-x-4">
-          <div className="w-20 h-20 bg-gray-700 rounded-md flex items-center justify-center">
-            <Music className="h-10 w-10 text-gray-500" />
-          </div>
-          <div className="flex-grow">
-            <h2 className="text-xl font-semibold">Currently Playing</h2>
-            <p className="text-gray-400">Artist - Song Name</p>
-          </div>
+        <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
           <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={togglePlay}
-              className="text-purple-400 hover:text-purple-300"
-            >
-              {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
-            </Button>
-            <div className="flex items-center space-x-2">
+            <div className="w-20 h-20 bg-gray-700 rounded-md flex items-center justify-center">
+              <Music className="h-10 w-10 text-gray-500" />
+            </div>
+            <div className="flex-grow">
+              <h2 className="text-xl font-semibold">Currently Playing</h2>
+              <p className="text-gray-400">Artist - Song Name</p>
+            </div>
+            <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={toggleMute}
+                onClick={togglePlay}
                 className="text-purple-400 hover:text-purple-300"
               >
-                {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
+                {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
               </Button>
-              <Slider
-                value={[volume]}
-                max={100}
-                step={1}
-                className="w-24"
-                onValueChange={(value) => setVolume(value[0])}
-              />
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleMute}
+                  className="text-purple-400 hover:text-purple-300"
+                >
+                  {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
+                </Button>
+                <Slider
+                  value={[volume]}
+                  max={100}
+                  step={1}
+                  className="w-24"
+                  onValueChange={(value) => setVolume(value[0])}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="space-y-4">
-        <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
-        {[1, 2, 3].map((index) => (
-          <div key={index} className="bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gray-700 rounded-md flex items-center justify-center">
-                <Music className="h-6 w-6 text-gray-500" />
+        <div className="space-y-4">
+          <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
+          {queue.map((song) => (
+            <div key={song.id} className="bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+              <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
+                  <Image  
+                      width={120}
+                      height={120}
+                      alt='thumbnail'
+                      src={song.smallImg} 
+                      className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" />
+                </CardContent>
+                <div>
+                  <p className="font-medium">{song.title}</p>
+                  <p className="text-sm text-gray-400">{song.artist}</p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium">Song Name {index}</p>
-                <p className="text-sm text-gray-400">Artist {index}</p>
+              <div className="flex items-center space-x-1 ml-8">
+                {/* <span className="text-sm text-gray-400">3:45</span> */}
+                {!song.haveUpvoted ?(
+                  <Button variant="ghost" size="icon" className="text-red-400 hover:bg-gray-700 hover:text-red-400">
+                    
+                  <PiArrowFatUpLight className="h-8 w-8" />
+                  </Button>
+                ):(
+                  <PiArrowFatDownThin className="h-8 w-8" />
+                ) 
+                }
+                <span>{song.upvotes}</span>
+                {/* <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-300">
+                  <ThumbsDown className="h-5 w-5" />
+                </Button> */}
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-400">3:45</span>
-              <Button variant="ghost" size="icon" className="text-green-400 hover:text-green-300">
-                <ThumbsUp className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-300">
-                <ThumbsDown className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
+
+
       </div>
-
-
-
     </div>
-  </div>
-)
+  )
 
 }
