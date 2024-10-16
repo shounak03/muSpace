@@ -26,16 +26,16 @@ export default function Dashboard() {
     //     fetchSpace(); 
     // }, []);
 
-    const fetchSpace = async () => {
-        try {
-            const response = await fetch('api/getSpaceId')
-            const data = await response.json();
-            console.log(data);
+    // const fetchSpace = async () => {
+    //     try {
+    //         const response = await fetch('api/getSpaceId')
+    //         const data = await response.json();
+    //         console.log(data);
 
-        } catch (error) {
-            console.log(error)
-        }
-    };
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // };
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100">

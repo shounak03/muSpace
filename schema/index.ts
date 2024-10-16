@@ -19,3 +19,14 @@ export const spaceSchema = z.object({
     description: z.string(),
     privateKey: z.string()
 })
+
+export const streamSchema = z.object({
+    hostId: z.string(),
+    spaceId: z.string(),
+    url: z.string()
+})
+
+export const upvoteSchema = z.object({
+    songId: z.string(),
+
+})

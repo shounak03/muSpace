@@ -1,22 +1,36 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Slider } from "@/components/ui/slider"
 
-import SpaceHeader from '@/components/space-header'
+import { Input } from "@/components/ui/input"
+
+
+
+// import { SpaceHeader } from '@/components/space-header'
+// import Stream from "@/components/stream";
+import { Music, Volume2, VolumeX, ThumbsUp, ThumbsDown, Play, Pause, Share2, Plus, Users, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import LoadingScreen from "@/components/Loading";
 import Stream from "@/components/stream";
-import { LogOut, Share2, Users } from "lucide-react";
+import Footer from "@/components/Footer";
+import { Appbar } from "@/components/Appbar";
+import { SpaceHeader } from "@/components/space-header";
+
 interface SpaceData {
     name: string;
     description: string;
-    hostId:string
+    hostId: string;
+    userId: string;
 }
 
 
 const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
-    const [data,setData] = useState<SpaceData | null>(null)
+    const [hostId,setCreatorId]=useState<string>();
+    const [userId,setuserId]=useState<string>();
+    const [loading1, setLoading1] = useState(true);
+    const [url,setUrl] = useState('');
+    const [data, setData] = useState<SpaceData | null>(null)
+    
 
     useEffect(() => {
         const fetchSpace = async () => {
@@ -25,57 +39,43 @@ const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
                     method: 'GET',
                 });
                 const data = await response.json();
-                console.log(data.space);
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || "Failed to retreive space's host id");
+                  }
+                console.log(data);
                 
                 setData(data.space)
-               
+                setCreatorId(data.space.hostId)
+                setuserId(data.userId)
                 return data;
             } catch (error) {
                 console.error('Error fetching space:', error);
             }
+            finally{
+                setLoading1(false)
+            }
+            
         };
-        fetchSpace(); 
+        fetchSpace();
     }, [spaceId]);
 
-    const hostId = data?.hostId;
+    if (loading1) {
+        return <LoadingScreen />;
+    }
     return (
 
-        
+
         <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
-          <div className="max-w-4xl mx-auto space-y-8">
-            
-            {/* <SpaceHeader data={data as String[]} /> */}
-            <div className="flex justify-between items-center">
-            <div className="space-y-2">
-                <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                    {data?.name}
-                </h1>
-                <p className="text-gray-400 text-3xl">{data?.description}</p>
+            <div className="max-w-4xl mx-auto space-y-8">
+
+                {/* <Appbar/> */}
+                <SpaceHeader data={{ name: data?.name, description: data?.description, hostId: data?.hostId,userId }} />
+                
+              <Stream hostId={hostId as string} playVideo={false} spaceId={spaceId} />
             </div>
-            <div className="flex items-center space-x-4 flex-col-2">
-                <div className="flex items-center space-x-2 bg-gray-800 rounded-full px-3 py-1">
-                    <Users className="h-4 w-4 text-purple-400" />
-                    <span className="text-sm font-medium">{42}</span>
-                </div>
-                <Button variant="outline" className="text-purple-400 border-purple-400 hover:bg-purple-400 hover:text-gray-900">
-                    <Share2
-                        className="mr-2 h-4 w-4" />
-                    Share
-                </Button>
-                <Button variant="outline" className="text-red-400 border-red-400 hover:bg-red-400 hover:text-gray-900">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Leave Space
-                </Button>
-            </div>
+        <Footer/>
         </div>
 
-            <Stream/>
-
-    
-            
-          </div>
-        </div>
-
-      )
-    }
+    )
+}
 export default Page;

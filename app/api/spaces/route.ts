@@ -64,6 +64,9 @@ export async function GET(req:NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const spaceId = searchParams.get('spaceId');
+        const userId = session.user.id;
+        console.log(userId);
+        
 
         if(!spaceId){
             return NextResponse.json({ success: false, error: 'spaceId is required' }, { status: 400 });
@@ -80,10 +83,10 @@ export async function GET(req:NextRequest) {
             },
         })
         if(!space)
-            return NextResponse.json({success:false,message:"space not found",space},{status:404});
+            return NextResponse.json({success:false,message:"space not found"},{status:404});
         
         
-        return NextResponse.json({success:true,message:"space found",space},{status:200});
+        return NextResponse.json({success:true,message:"space found",space,userId: userId},{status:200});
     } catch (error) {
         console.error('Error creating space:', error);
         NextResponse.json({ success: false, message: 'Error fetching space' }, { status: 500 });
