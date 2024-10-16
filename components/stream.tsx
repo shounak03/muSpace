@@ -13,6 +13,7 @@ import { CardContent } from './ui/card';
 import Image from 'next/image';
 
 
+
 interface Video {
   id: string;
   type: string;
@@ -115,6 +116,20 @@ export default function Stream({
     }
   }
 
+  async function handleUpvote(songId:string,isUpvote:boolean){
+
+    setQueue(
+      queue.map((song)=>song.id===songId?{
+        ...song,
+        upvotes:isUpvote?song.upvotes+1:song.upvotes-1,
+        haveUpvoted: !song.haveUpvoted
+      }:song).sort((a,b)=>b.upvotes - a.upvotes)
+    )
+    const resp = await fetch(`/api/streams/upvote`,{
+      method: isUpvote?"POST":"DELETE",
+      body: JSON.stringify({songId})
+    })
+  }
 
 
 
@@ -171,6 +186,18 @@ export default function Stream({
               <h2 className="text-xl font-semibold">Currently Playing</h2>
               <p className="text-gray-400">Artist - Song Name</p>
             </div>
+            {/* <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
+                  <Image  
+                      width={120}
+                      height={120}
+                      alt='thumbnail'
+                      src={"https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.dreamstime.com%2Fillustration%2Fprofile-icon.html&psig=AOvVaw1NIkVeU9nxbBJw7knyA0da&ust=1729187153798000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCMiT46K6k4kDFQAAAAAdAAAAABAE"} 
+                      className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" />
+                <div>
+                  <p className="font-medium">song name</p>
+                  <p className="text-sm text-gray-400">artist</p>
+                </div>
+                </CardContent> */}
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
@@ -213,23 +240,22 @@ export default function Stream({
                       alt='thumbnail'
                       src={song.smallImg} 
                       className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" />
-                </CardContent>
                 <div>
                   <p className="font-medium">{song.title}</p>
                   <p className="text-sm text-gray-400">{song.artist}</p>
                 </div>
+                </CardContent>
               </div>
               <div className="flex items-center space-x-1 ml-8">
                 {/* <span className="text-sm text-gray-400">3:45</span> */}
+                <Button variant="ghost" size="icon" className="text-red-400 hover:bg-gray-700 hover:text-red-400"
+                  onClick={() => handleUpvote(song.id, song.haveUpvoted ? false : true,)}>
                 {!song.haveUpvoted ?(
-                  <Button variant="ghost" size="icon" className="text-red-400 hover:bg-gray-700 hover:text-red-400">
-                    
                   <PiArrowFatUpLight className="h-8 w-8" />
-                  </Button>
-                ):(
+                  ):(
                   <PiArrowFatDownThin className="h-8 w-8" />
-                ) 
-                }
+                  )}
+              </Button>
                 <span>{song.upvotes}</span>
                 {/* <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-300">
                   <ThumbsDown className="h-5 w-5" />
