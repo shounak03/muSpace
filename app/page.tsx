@@ -4,12 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Music, Users, Play, Share2 } from "lucide-react"
 import Link from "next/link"
 import {SpaceCheckComp} from '@/components/landing-page'
-// import { Redirect } from "@/components/Redirect"
-// const Appbar = dynamic(() => import('@/components/Appbar'), { ssr: false })
 
-
-import Footer from "@/components/Footer"
-import { Appbar } from "@/components/Appbar"
 
 export default function LandingPage() {
 
@@ -17,10 +12,7 @@ export default function LandingPage() {
   
   return (
 
-    <>
-
-    <Appbar />
-    
+  
     <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100 items-center justify-between">
 
       
@@ -97,9 +89,7 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
-      
-      <Footer/>
     </div>
-    </>
+
   )
 }

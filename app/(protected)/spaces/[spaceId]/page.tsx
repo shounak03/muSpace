@@ -68,11 +68,11 @@ const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
             <div className="max-w-4xl mx-auto space-y-8">
 
                 {/* <Appbar/> */}
-                <SpaceHeader data={{ name: data?.name, description: data?.description, hostId: data?.hostId,userId }} />
+                {/* <SpaceHeader data={{ name: data?.name, description: data?.description, hostId: data?.hostId,userId }} /> */}
                 
               <Stream hostId={hostId as string} playVideo={false} spaceId={spaceId} />
             </div>
-        <Footer/>
+        
         </div>
 
     )

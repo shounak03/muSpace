@@ -1,8 +1,8 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button } from './ui/button'
 import { Music, Volume2, VolumeX, ThumbsUp, ThumbsDown, Play, Pause, Share2, Plus, Users, LogOut } from "lucide-react";
-import { PiArrowFatUpLight,PiArrowFatDownThin } from "react-icons/pi";
+import { PiArrowFatUpLight, PiArrowFatDownThin } from "react-icons/pi";
 import { Slider } from "@/components/ui/slider"
 import { Input } from './ui/input'
 import { streamSchema } from '@/schema';
@@ -11,8 +11,14 @@ import { YT_REGEX } from '@/lib/utils';
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import { CardContent } from './ui/card';
 import Image from 'next/image';
+import { SpaceHeader } from './space-header';
 
 
+interface SpaceData {
+  spaceName?: string;
+  spaceDesc?: string;
+  isCreator?: boolean;
+}
 
 interface Video {
   id: string;
@@ -27,7 +33,7 @@ interface Video {
   upvotes: number;
   haveUpvoted: boolean;
   spaceId: string;
-  artist:string;
+  artist: string;
 }
 const REFRESH_INTERVAL_MS = 10 * 1000;
 export default function Stream({
@@ -44,44 +50,48 @@ export default function Stream({
 
   const [url, setUrl] = useState("");
   const [queue, setQueue] = useState<Video[]>([]);
-  const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
+  const [data, setData] = useState<SpaceData>()
+  const [currentSong, setCurrentSong] = useState<Video | null>(null);
+  const [nextSong, setNextSong] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolume] = useState(50)
   const [isMuted, setIsMuted] = useState(false)
   const togglePlay = () => setIsPlaying(!isPlaying)
   const toggleMute = () => setIsMuted(!isMuted)
+  const videoPlayer = useRef<HTMLDivElement>(null);
 
-  
   async function refresh() {
     try {
       const res = await fetch(`/api/streams/?spaceId=${spaceId}`)
       const data = await res.json()
-      if(data.streams && Array.isArray(data.streams)){
+      console.log(data);
+      setData(data)
+      if (data.streams && Array.isArray(data.streams)) {
         setQueue(
           data.streams.length > 0
             ? data.streams.sort((a: any, b: any) => b.upvotes - a.upvotes)
             : [],
         );
       }
-      else{
+      else {
 
         setQueue([]);
       }
-      
-    } catch (error:any) {
-        console.log(error.message);
-        
+
+    } catch (error: any) {
+      console.log(error.message);
+
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     refresh();
-  },[spaceId])
-  
+  }, [spaceId])
+
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
+    e.preventDefault()
     if (!url.trim()) {
       toast.error("Song url cannot cannot be empty")
     }
@@ -116,20 +126,28 @@ export default function Stream({
     }
   }
 
-  async function handleUpvote(songId:string,isUpvote:boolean){
+  async function handleUpvote(songId: string, isUpvote: boolean) {
 
     setQueue(
-      queue.map((song)=>song.id===songId?{
+      queue.map((song) => song.id === songId ? {
         ...song,
-        upvotes:isUpvote?song.upvotes+1:song.upvotes-1,
+        upvotes: isUpvote ? song.upvotes + 1 : song.upvotes - 1,
         haveUpvoted: !song.haveUpvoted
-      }:song).sort((a,b)=>b.upvotes - a.upvotes)
+      } : song).sort((a, b) => b.upvotes - a.upvotes)
     )
-    const resp = await fetch(`/api/streams/upvote`,{
-      method: isUpvote?"POST":"DELETE",
-      body: JSON.stringify({songId})
+    const resp = await fetch(`/api/streams/upvote`, {
+      method: isUpvote ? "POST" : "DELETE",
+      body: JSON.stringify({ songId })
     })
   }
+
+  useEffect(() => {
+    refresh();
+    const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [spaceId]);
+
+
 
 
 
@@ -137,7 +155,7 @@ export default function Stream({
     <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
       <div className="max-w-4xl mx-auto space-y-8">
 
-
+        <SpaceHeader data={{ spaceName: data?.spaceName, spaceDesc: data?.spaceDesc, isCreator: data?.isCreator ?? false }} />
         <div className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
@@ -165,14 +183,14 @@ export default function Stream({
             </form>
             <CardContent>
 
-            {url && url.match(YT_REGEX) && !loading && (
-              <div className="mt-4">
-                <LiteYouTubeEmbed
-                  title=""
-                  id={url.split("?v=")[1]}
+              {url && url.match(YT_REGEX) && !loading && (
+                <div className="mt-4">
+                  <LiteYouTubeEmbed
+                    title=""
+                    id={url.split("?v=")[1]}
                   />
-              </div>
-            )}
+                </div>
+              )}
             </CardContent>
           </div>
         </div>
@@ -233,29 +251,34 @@ export default function Stream({
           {queue.map((song) => (
             <div key={song.id} className="bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
               <div className="flex items-center space-x-4">
-              <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
-                  <Image  
-                      width={120}
-                      height={120}
-                      alt='thumbnail'
-                      src={song.smallImg} 
-                      className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" />
-                <div>
-                  <p className="font-medium">{song.title}</p>
-                  <p className="text-sm text-gray-400">{song.artist}</p>
-                </div>
+                <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
+                  <Image
+                    width={120}
+                    height={120}
+                    alt='thumbnail'
+                    src={song.smallImg}
+                    className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" />
+                  <div>
+                    <p className="font-medium">{song.title}</p>
+                    <p className="text-sm text-gray-400">{song.artist}</p>
+                  </div>
                 </CardContent>
               </div>
               <div className="flex items-center space-x-1 ml-8">
                 {/* <span className="text-sm text-gray-400">3:45</span> */}
-                <Button variant="ghost" size="icon" className="text-red-400 hover:bg-gray-700 hover:text-red-400"
-                  onClick={() => handleUpvote(song.id, song.haveUpvoted ? false : true,)}>
-                {!song.haveUpvoted ?(
-                  <PiArrowFatUpLight className="h-8 w-8" />
-                  ):(
-                  <PiArrowFatDownThin className="h-8 w-8" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`hover:bg-gray-700 ${!song.haveUpvoted ? 'text-green-400' : 'text-red-400'}`}
+                  onClick={() => handleUpvote(song.id, song.haveUpvoted ? false : true)}
+                >
+                  {!song.haveUpvoted ? (
+                    <PiArrowFatUpLight className="h-8 w-8" />
+                  ) : (
+                    <PiArrowFatDownThin className="h-8 w-8" />
                   )}
-              </Button>
+                </Button>
+
                 <span>{song.upvotes}</span>
                 {/* <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-300">
                   <ThumbsDown className="h-5 w-5" />
