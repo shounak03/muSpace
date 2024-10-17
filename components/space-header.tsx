@@ -2,18 +2,29 @@
 import { LogOut, Share2, Users } from 'lucide-react';
 import React from 'react'
 import { Button } from './ui/button';
+import { toast } from 'sonner';
 
 
 interface SpaceData {
     spaceName?: string;
     spaceDesc?: string;
     isCreator:boolean
+    spaceId:string
 }
 
 
 export const SpaceHeader = ({ data }: { data?: SpaceData }) =>{
 
-
+    function shareVideo(){
+        // share video logic
+        const shareableLink = `${window.location.hostname}/spaces/${data?.spaceId}`
+        navigator.clipboard.writeText(shareableLink).then(() => {
+            toast.success('Link copied to clipboard!')
+          }).catch((err) => {
+            console.error('Could not copy text: ', err)
+            toast.error('Failed to copy link. Please try again.')
+          })
+    }
 
     return (
         <div className="flex justify-between items-center">
@@ -28,7 +39,7 @@ export const SpaceHeader = ({ data }: { data?: SpaceData }) =>{
                             <Users className="h-4 w-4 text-purple-400" />
                             <span className="text-sm font-medium">{42}</span>
                         </div> */}
-                        <Button variant="outline" className="text-purple-400 border-purple-400 hover:bg-purple-400 hover:text-gray-900">
+                        <Button variant="outline" className="text-purple-400 border-purple-400 hover:bg-purple-400 hover:text-gray-900" onClick={shareVideo}>
                             <Share2
                                 className="mr-2 h-4 w-4" />
                             Share

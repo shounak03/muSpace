@@ -18,6 +18,7 @@ interface SpaceData {
   spaceName?: string;
   spaceDesc?: string;
   isCreator?: boolean;
+  spaceId:string
 }
 
 interface Video {
@@ -155,7 +156,7 @@ export default function Stream({
     <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
       <div className="max-w-4xl mx-auto space-y-8">
 
-        <SpaceHeader data={{ spaceName: data?.spaceName, spaceDesc: data?.spaceDesc, isCreator: data?.isCreator ?? false }} />
+        <SpaceHeader data={{ spaceName: data?.spaceName, spaceDesc: data?.spaceDesc, isCreator: data?.isCreator ?? false, spaceId:spaceId}}  />
         <div className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
