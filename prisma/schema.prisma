@@ -100,8 +100,8 @@ model Song {
 model CurrentSong {
   id       String  @id @default(uuid())
   userId   String
-  streamId String? @unique
-  song     Song?   @relation(fields: [streamId], references: [id])
+  songId String? @unique
+  song     Song?   @relation(fields: [songId], references: [id])
   spaceId  String? @unique
   space    Space?  @relation(fields: [spaceId], references: [id], onDelete: Cascade)
 }

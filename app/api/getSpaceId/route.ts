@@ -16,9 +16,10 @@ export async function GET(req:NextRequest) {
 
 
     try {
-        // Find the user by email
+        console.log(session.user.id);
+        
         const user = await prisma.user.findUnique({
-          where: { id: session.user.id },
+          where: { id: session?.user?.id },
           include: { hostedSpaces: true },
         });
     
@@ -26,9 +27,10 @@ export async function GET(req:NextRequest) {
             return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
         }
     
-        // Check if the user is hosting any space
+        
         if (user.hostedSpaces.length > 0) {
-          // Return the first space ID (assuming the user could host multiple spaces)
+          console.log("space exisits");
+          
           return NextResponse.json({ success: true, spaceId: user.hostedSpaces[0].id }, { status: 200 });
 
         } else {

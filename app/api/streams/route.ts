@@ -8,7 +8,7 @@ import { NextResponse, NextRequest } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(req: NextRequest,res: NextResponse) {
+export async function POST(req: NextRequest, res: NextResponse) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(
@@ -17,14 +17,13 @@ export async function POST(req: NextRequest,res: NextResponse) {
     );
   }
 
-
-  
-  
   try {
     const body = streamSchema.parse(await req.json())
     const { hostId, url, spaceId } = body
+    console.log("host", hostId);
+    console.log("user", session?.user?.id);
 
-    
+
     if (!url.trim()) {
       return NextResponse.json(
         {
@@ -38,7 +37,7 @@ export async function POST(req: NextRequest,res: NextResponse) {
 
     const isYt = url.match(YT_REGEX);
     const extractedId = url ? url.match(YT_REGEX)?.[1] : null;
-    
+
     if (!isYt || !extractedId) {
       return NextResponse.json(
         {
@@ -50,27 +49,11 @@ export async function POST(req: NextRequest,res: NextResponse) {
       );
     }
     const resp = await youtubesearchapi.GetVideoDetails(extractedId)
-    // console.log('check',resp);
-    if (hostId !== session.user.id) {
-      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-      // const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
-    
 
-      const userRecentStreams = await prisma.song.count({
-        where: {
-          userId:hostId,
-          addedBy: session.user.id,
-          createdAt: {
-            gte: tenMinutesAgo,
-          },
-        },
-      });
-
-    
-      
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
     const duplicateSong = await prisma.song.findFirst({
       where: {
-        userId:hostId,
+        userId: hostId,
         extractedId,
         createdAt: {
           gte: tenMinutesAgo,
@@ -87,15 +70,15 @@ export async function POST(req: NextRequest,res: NextResponse) {
         },
       );
     }
-  }
+
     const Thumbnails = resp.thumbnail.thumbnails
     Thumbnails.sort((a: { width: number }, b: { width: number }) => a.width < b.width ? -1 : 1)
 
     const newSong = await prisma.song.create({
       data: {
-        userId:hostId,
+        userId: hostId,
         url,
-        artist:resp.channel ?? "Unknown",
+        artist: resp.channel ?? "Unknown",
         spaceId,
         extractedId,
         smallImg:
@@ -103,23 +86,38 @@ export async function POST(req: NextRequest,res: NextResponse) {
             ? Thumbnails[Thumbnails.length - 2].url
             : Thumbnails[Thumbnails.length - 1].url) ??
           "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
-        bigImg:  Thumbnails[Thumbnails.length - 1].url ??
-        "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
+        bigImg: Thumbnails[Thumbnails.length - 1].url ??
+          "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
         title: resp.title ?? "Cant find title",
         addedBy: session.user.id,
 
       },
     });
 
+    // const currentSong = await prisma.currentSong.findFirst({
+    //   where: { spaceId },
+    // });
+
+    // if (!currentSong) {
+    //   await prisma.currentSong.create({
+    //     data: {
+    //       songId: newSong.id,
+    //       spaceId,
+    //       userId: session.user.id, // Assuming the current song is added by the current user
+    //     },
+    //   });
+    // }
+
+
     return NextResponse.json({
       ...newSong,
       hasUpvoted: false,
       upvotes: 0,
     });
-  } catch (error:any) {
+  } catch (error: any) {
     return NextResponse.json({
       error: error.message,
-    },{status:501});
+    }, { status: 501 });
   }
 
 }
@@ -144,6 +142,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     }
 
     const [space, activeStream] = await Promise.all([
+
       prisma.space.findUnique({
         where: {
           id: spaceId,
@@ -203,43 +202,8 @@ export async function GET(req: NextRequest, res: NextResponse) {
     });
   } catch (error) {
     console.log(error);
-    
-    return NextResponse.json({error:"Something went wrong"},{status:501})
+
+    return NextResponse.json({ error: "Something went wrong" }, { status: 501 })
   }
 }
 
-//   export default async function PUT(req: NextRequest, res: NextResponse) {
-//     const session = await auth()
-//      if (!session?.user?.id) {
-//         return NextResponse.json(
-//           { success: false, message: "You must be logged in to retrieve space information" },
-//           { status: 401 }
-//         );
-//       }
-//       const userId = session.user.id
-//       try {
-//         const body = upvoteSchema.parse(await req.json());
-//         const { songId } = body;
-
-//       const vote = await prisma.vote.upsert({
-//         where: {
-//           userId_songId: {
-//             userId,
-//             songId,
-//           },
-//         },
-//         update: {
-//           value,
-//         },
-//         create: {
-//           songId,
-//           userId,
-//           value,
-//         },
-//       });
-
-//       res.status(200).json({ message: 'Vote updated successfully', vote });
-//     } catch (error) {
-//       res.status(500).json({ message: 'Error updating vote', error });
-//     }
-//   } 
