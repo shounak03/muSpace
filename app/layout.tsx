@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
 import { Appbar } from "@/components/Appbar";
 import Footer from "@/components/Footer";
@@ -39,7 +38,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* <SessionProvider> */}
+
         <Toaster {...toastOptions} />
         <Appbar/>
 

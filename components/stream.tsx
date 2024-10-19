@@ -12,6 +12,7 @@ import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import { Card, CardContent } from './ui/card';
 import Image from 'next/image';
 import { SpaceHeader } from './space-header';
+//@ts-ignore
 import YouTubePlayer from "youtube-player";
 
 
@@ -67,7 +68,7 @@ export default function Stream({
       const res = await fetch(`/api/streams/?spaceId=${spaceId}`)
       const data = await res.json()
       setData(data)
-      setCurrentSong(data?.activeStream?.song)
+      // setCurrentSong(data?.activeStream?.song)
       if (data.streams && Array.isArray(data.streams)) {
         setQueue(
           data.streams.length > 0
@@ -78,6 +79,12 @@ export default function Stream({
       else {
         setQueue([]);
       }
+      setCurrentSong((video) => {
+        if (video?.extractedId === data.activeStream?.song?.extractedId) {
+          return video;
+        }
+        return data.activeStream?.song || null;
+      });
     } catch (error: any) {
       console.log(error.message);
       setQueue([]);
