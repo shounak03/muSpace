@@ -12,7 +12,6 @@ import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import { Card, CardContent } from './ui/card';
 import Image from 'next/image';
 import { SpaceHeader } from './space-header';
-//@ts-ignore
 import YouTubePlayer from "youtube-player";
 
 
@@ -41,7 +40,7 @@ interface Video {
 const REFRESH_INTERVAL_MS = 10 * 1000;
 export default function Stream({
   hostId,
-  playVideo = true,
+  playVideo = false,
   spaceId
 }: {
   hostId: string;
@@ -61,6 +60,7 @@ export default function Stream({
   const [isMuted, setIsMuted] = useState(false)
   const toggleMute = () => setIsMuted(!isMuted)
   const videoPlayer = useRef<HTMLDivElement>(null);
+
 
   async function refresh() {
     try {
@@ -83,9 +83,50 @@ export default function Stream({
       setQueue([]);
       setCurrentSong(null);
     }
-    
-    
   }
+
+
+  useEffect(() => {
+    refresh();
+    const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [spaceId]);
+
+  
+  useEffect(() => {
+    if (!currentSong || !videoPlayer.current)
+      return;
+
+    const player = YouTubePlayer(videoPlayer.current,
+      {
+        videoId: currentSong.extractedId,
+        host: 'https://www.youtube-nocookie.com',
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          disablekb: 1,
+          enablejsapi: 1,
+          fs: 0,
+          modestbranding: 1,
+          origin: window.location.origin,
+          widget_referrer: window.location.origin,
+        }
+      }
+    );
+    player.playVideo();
+
+    const eventHandler = (event: { data: number }) => {
+      if (event.data === 0) {
+        playNext();
+      }
+    };
+    player.on("stateChange", eventHandler);
+
+    return () => {
+      player.destroy();
+    };
+  }, [currentSong, videoPlayer]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!url.trim()) {
@@ -121,64 +162,6 @@ export default function Stream({
     }
   }
 
-  useEffect(() => {
-    refresh();
-    const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [spaceId]);
-
-
-  useEffect(() => {
-
-    if (!currentSong || !videoPlayer.current)
-      return;
-
-    const player = YouTubePlayer(videoPlayer.current,
-     {
-        videoId: currentSong.id,
-        playerVars: {
-          enablejsapi: 1,
-          'origin': 'http://localhost:3000', // This will be 'http://localhost:3000' in development
-          playsinline: 1
-        }
-      }
-      );
-    player.loadVideoById(currentSong.id)
-    player.playVideo()
-
-    const eventHandler = (event: { data: number }) => {
-      if (event.data === 0) {
-        playNext();
-      }
-    };
-    player.on("stateChange", eventHandler);
-
-    return () => {
-      player.destroy();
-    };
-  }, [currentSong, videoPlayer]);
-
-  // const setVideoPlayerRef = useCallback((node:any) => {
-  //   if (node !== null) {
-  //     // videoPlayer.current = node;
-  //     // console.log('Video player node set:', node);
-      
-  //     if (currentSong) {
-  //       const player = YouTubePlayer(node);
-  //       player.loadVideoById(currentSong.id);
-  //       player.playVideo();
-        
-  //       const eventHandler = (event: { data: number }) => {
-  //         if (event.data === 0) {
-  //           playNext();
-  //         }
-  //       };
-  //       player.on("stateChange", eventHandler);
-  //     }
-  //   }
-  // }, [currentSong]);
-  
-
   const playNext = async () => {
     if (queue.length > 0) {
       try {
@@ -187,8 +170,6 @@ export default function Stream({
           method: "GET",
         });
         const json = await data.json();
-        // console.log(json);
-
         setCurrentSong(json.stream);
         setQueue((q) => q.filter((x) => x.id !== json.stream?.id));
       } catch (e) {
@@ -214,15 +195,6 @@ export default function Stream({
       body: JSON.stringify({ songId })
     })
   }
-
-  useEffect(() => {
-    refresh();
-    const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [spaceId]);
-
-
-
 
 
   return (
@@ -261,9 +233,11 @@ export default function Stream({
                 {url && url.match(YT_REGEX) && !loading && (
                   <div className="mt-4">
                     <LiteYouTubeEmbed
-                      title=""
-                      id={url.split("?v=")[1]}
+                      id={"url Id"}
+                      title={"url song"}
+                      params={`enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`}
                     />
+
                   </div>
                 )}
               </CardContent>
@@ -272,43 +246,34 @@ export default function Stream({
           <h2 className="text-2xl font-bold text-white">Now Playing</h2>
 
           <Card className="bg-gray-800 border-gray-700 shadow-lg">
-                <CardContent className="p-6 space-y-2">
-                  <div ref={videoPlayer} className="w-full aspect-video"></div>
-                  {currentSong && playVideo &&
-                        <>
-                          <Image
-                            width={150}
-                            height={150}
-                            src={currentSong.bigImg}
-                            className="w-full aspect-video object-cover rounded-md"
-                            alt={currentSong.title}
-                          />
-                          <p className="mt-2 text-center font-semibold text-white">
-                            {currentSong.title}
-                          </p>
-                          <p className="mt-2 text-center font-semibold text-white">
-                            {currentSong.artist}
-                          </p>
-                        </>
-                      }
-                  {!currentSong && 
-                    <p className="text-center py-8 text-gray-400">
-                      No video playing
-                    </p>
-                  }
-                  {playVideo && (
-                    <Button
-                      disabled={nextSong}
-                      onClick={playNext}
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white transition-colors"
-                    >
-                      <Play className="mr-2 h-4 w-4" />{" "}
-                      {nextSong ? "Loading..." : "Play next"}
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            <div className="space-y-4">
+            <CardContent className="p-6 space-y-2">
+              <div ref={videoPlayer} className="w-full aspect-video" style={{ pointerEvents: 'none' }}></div>
+
+              {currentSong && playVideo &&
+                <>
+                  {/* <Image
+                    width={150}
+                    height={150}
+                    src={currentSong.bigImg}
+                    className="w-full aspect-video object-cover rounded-md"
+                    alt={currentSong.title}
+                  /> */}
+                  <p className="mt-2 text-center font-semibold text-white">
+                    {currentSong.title}
+                  </p>
+                  <p className="mt-2 text-center font-semibold text-white">
+                    {currentSong.artist}
+                  </p>
+                </>
+              }
+              {!currentSong &&
+                <p className="text-center py-8 text-gray-400">
+                  No video playing
+                </p>
+              }
+            </CardContent>
+          </Card>
+          <div className="space-y-4">
             <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
             {queue.length === 0 ? (
               <Card className="bg-gray-800 border-gray-700 shadow-lg">

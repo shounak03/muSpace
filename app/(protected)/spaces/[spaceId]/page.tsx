@@ -70,7 +70,7 @@ const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
                 {/* <Appbar/> */}
                 {/* <SpaceHeader data={{ name: data?.name, description: data?.description, hostId: data?.hostId,userId }} /> */}
                 
-              <Stream hostId={hostId as string} playVideo={false} spaceId={spaceId} />
+              <Stream hostId={hostId as string} playVideo={true} spaceId={spaceId} />
             </div>
         
         </div>
