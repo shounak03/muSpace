@@ -1,15 +1,8 @@
-
-
-
-
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Link from 'next/link';
-
-
 import { FcGoogle } from "react-icons/fc"
-import { FaGithub } from "react-icons/fa"
 import { LoginForm } from '@/components/login-form';
 
 const Page = () => {
@@ -24,12 +17,9 @@ const Page = () => {
           <Button size="lg" className="w-full" variant={"outline"}>
             <FcGoogle className="h-5 w-5" />
           </Button>
-          <Button size="lg" className="w-full" variant={"outline"}>
-            <FaGithub className="h-5 w-5" />
-          </Button>
         </div>
         <div className="text-center text-sm">
-          Don't have an account?{' '}
+        Don't have an account?{' '}
           <Link href="/auth/register" className="text-blue-500 hover:underline">
             Register
           </Link>

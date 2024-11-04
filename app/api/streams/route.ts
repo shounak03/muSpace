@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { YT_REGEX } from "@/lib/utils";
-import { streamSchema, upvoteSchema } from "@/schema";
+import { streamSchema } from "@/schema";
 //@ts-ignore
 import youtubesearchapi from 'youtube-search-api';
 import { PrismaClient } from '@prisma/client';
@@ -8,7 +8,7 @@ import { NextResponse, NextRequest } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(
@@ -18,12 +18,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
   }
 
   try {
-    console.log("in stream");
+
     
     const body = streamSchema.parse(await req.json())
     const { hostId, url, spaceId } = body
-    console.log("host", hostId);
-    console.log("user", session?.user?.id);
+
 
 
     if (!url.trim()) {
@@ -95,22 +94,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
       },
     });
-
-    // const currentSong = await prisma.currentSong.findFirst({
-    //   where: { spaceId },
-    // });
-
-    // if (!currentSong) {
-    //   await prisma.currentSong.create({
-    //     data: {
-    //       songId: newSong.id,
-    //       spaceId,
-    //       userId: session.user.id, // Assuming the current song is added by the current user
-    //     },
-    //   });
-    // }
-
-
     return NextResponse.json({
       ...newSong,
       hasUpvoted: false,

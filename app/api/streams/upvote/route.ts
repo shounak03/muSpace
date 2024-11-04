@@ -29,10 +29,10 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
           message: "Done!",
         });
-      } catch (e) {
+      } catch (e:any) {
         return NextResponse.json(
           {
-            message: "Error while upvoting",
+            message: "Error while upvoting",error:e.message
           },
           {
             status: 403,
@@ -69,10 +69,10 @@ export async function DELETE(req: NextRequest){
       },
     });
     return NextResponse.json({message:"Downvoted successfully"});
-  } catch (error) {
+  } catch (error:any) {
     return NextResponse.json(
       {
-        message: "Error while downvoting",
+        message: "Error while downvoting",error:error.message
       },
       {
         status: 403,
