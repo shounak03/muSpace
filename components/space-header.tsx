@@ -1,5 +1,5 @@
 // 'use server'
-import { LogOut, Share2, Users } from 'lucide-react';
+import { LogOut, Share2 } from 'lucide-react';
 import React from 'react'
 import { Button } from './ui/button';
 import { toast } from 'sonner';

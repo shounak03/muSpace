@@ -2,19 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-import { Input } from "@/components/ui/input"
 
-
-
-// import { SpaceHeader } from '@/components/space-header'
-// import Stream from "@/components/stream";
-import { Music, Volume2, VolumeX, ThumbsUp, ThumbsDown, Play, Pause, Share2, Plus, Users, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import LoadingScreen from "@/components/Loading";
 import Stream from "@/components/stream";
-import Footer from "@/components/Footer";
-import { Appbar } from "@/components/Appbar";
-import { SpaceHeader } from "@/components/space-header";
+
+
+
 
 interface SpaceData {
     name: string;

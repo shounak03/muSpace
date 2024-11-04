@@ -18,6 +18,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
   }
 
   try {
+    console.log("in stream");
+    
     const body = streamSchema.parse(await req.json())
     const { hostId, url, spaceId } = body
     console.log("host", hostId);

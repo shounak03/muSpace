@@ -1,9 +1,9 @@
 'use client'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {  useEffect, useRef, useState } from 'react'
 import { Button } from './ui/button'
-import { Play, Volume2, VolumeX } from "lucide-react";
+
 import { PiArrowFatUpLight, PiArrowFatDownThin } from "react-icons/pi";
-import { Slider } from "@/components/ui/slider"
+
 import { Input } from './ui/input'
 import { streamSchema } from '@/schema';
 import { toast } from "sonner"
@@ -12,7 +12,7 @@ import LiteYouTubeEmbed from "react-lite-youtube-embed";
 import { Card, CardContent } from './ui/card';
 import Image from 'next/image';
 import { SpaceHeader } from './space-header';
-//@ts-ignore
+
 import YouTubePlayer from "youtube-player";
 
 
@@ -57,9 +57,6 @@ export default function Stream({
   const [currentSong, setCurrentSong] = useState<Video | null>(null);
   const [nextSong, setNextSong] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [volume, setVolume] = useState(50)
-  const [isMuted, setIsMuted] = useState(false)
-  const toggleMute = () => setIsMuted(!isMuted)
   const videoPlayer = useRef<HTMLDivElement>(null);
 
 

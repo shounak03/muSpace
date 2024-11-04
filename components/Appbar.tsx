@@ -2,9 +2,9 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Music } from "lucide-react"
-import { auth, signIn, signOut } from '@/auth'
+import { auth, signOut } from '@/auth'
 
-import { redirect } from 'next/navigation'
+
 
 export async function Appbar() {
 

@@ -1,7 +1,5 @@
 'use client'
 import React, { useState } from 'react';
-import { signIn } from 'next-auth/react';
-import { z } from 'zod';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";

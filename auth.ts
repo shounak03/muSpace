@@ -30,8 +30,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (!user) {
             throw new CredentialsSignin({cause:"User not found"});
           }
-          //@ts-ignore
-          const isPasswordValid = await bcrypt.compare(password, user.password);
+          if (!user.password) {
+            throw new CredentialsSignin({cause:"User not found"});
+          }
+
+          const isPasswordValid = await bcrypt.compare(password, user.password );
 
           if (!isPasswordValid) {
             throw new CredentialsSignin({cause: "Invalid email or password"});
