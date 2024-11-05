@@ -59,8 +59,8 @@ export async function  GET(req: NextRequest) {
           return NextResponse.json({
             stream: mostVotedSong,
           });
-    } catch (error) {
-        return NextResponse.json({error:"Something went wrong"},{status:501})
+    } catch (error:any) {
+        return NextResponse.json({message:"Something went wrong",error:error.message},{status:501})
     }
 
 }

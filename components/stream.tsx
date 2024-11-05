@@ -55,7 +55,7 @@ export default function Stream({
   const [queue, setQueue] = useState<Video[]>([]);
   const [data, setData] = useState<SpaceData>()
   const [currentSong, setCurrentSong] = useState<Video | null>(null);
-  const [nextSong, setNextSong] = useState(false);
+  // const [nextSong, setNextSong] = useState(false);
   const [loading, setLoading] = useState(false);
   const videoPlayer = useRef<HTMLDivElement>(null);
 
@@ -94,8 +94,8 @@ export default function Stream({
     refresh();
     const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, [spaceId]);
-
+  }, [refresh, spaceId]);
+  
   
   useEffect(() => {
     if (!currentSong || !videoPlayer.current)
@@ -169,7 +169,7 @@ export default function Stream({
   const playNext = async () => {
     if (queue.length > 0) {
       try {
-        setNextSong(true);
+        // setNextSong(true);
         const data = await fetch(`/api/streams/next?spaceId=${spaceId}`, {
           method: "GET",
         });
@@ -179,7 +179,7 @@ export default function Stream({
       } catch (e) {
         console.error("Error playing next song:", e);
       } finally {
-        setNextSong(false);
+        // setNextSong(false);
       }
     }
   };
@@ -194,7 +194,7 @@ export default function Stream({
         haveUpvoted: !song.haveUpvoted
       } : song).sort((a, b) => b.upvotes - a.upvotes)
     )
-    const resp = await fetch(`/api/streams/upvote`, {
+    await fetch(`/api/streams/upvote`, {
       method: isUpvote ? "POST" : "DELETE",
       body: JSON.stringify({ songId })
     })

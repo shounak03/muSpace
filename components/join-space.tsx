@@ -1,7 +1,7 @@
 'use client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DialogHeader } from "@/components/ui/dialog";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
+import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Button } from "./ui/button";

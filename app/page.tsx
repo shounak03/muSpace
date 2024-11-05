@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Music, Users, Play, Share2 } from "lucide-react"
+import { Users, Play, Share2 } from "lucide-react"
 import Link from "next/link"
 import {SpaceCheckComp} from '@/components/landing-page'
 

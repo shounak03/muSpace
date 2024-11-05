@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { YT_REGEX } from "@/lib/utils";
 import { streamSchema } from "@/schema";
-//@ts-ignore
+//@ts-expect-error
 import youtubesearchapi from 'youtube-search-api';
 import { PrismaClient } from '@prisma/client';
 import { NextResponse, NextRequest } from 'next/server';
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
 
 }
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(

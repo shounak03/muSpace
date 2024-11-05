@@ -13,8 +13,6 @@ export async function GET() {
         return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 });
     }
 
-
-
     try {
         console.log(session.user.id);
         
@@ -37,7 +35,7 @@ export async function GET() {
             return NextResponse.json({ success: false, message:"no space found" }, { status: 200 });
         }
     
-      } catch (error) {
-        return NextResponse.json({ success: false, err:"Something went wrong" }, { status: 500 });
+      } catch (e:any) {
+        return NextResponse.json({ success: false, err:"Something went wrong",e }, { status: 500 });
       }
 }
