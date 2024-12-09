@@ -18,7 +18,6 @@ export const RegisterSchema = z.object({
 export const spaceSchema = z.object({
     name: z.string(),
     description: z.string(),
-    privateKey: z.string()
 })
 
 export const streamSchema = z.object({

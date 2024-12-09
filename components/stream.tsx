@@ -9,6 +9,7 @@ import { streamSchema } from '@/schema';
 import { toast } from "sonner"
 import { YT_REGEX } from '@/lib/utils';
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import { Card, CardContent } from './ui/card';
 import Image from 'next/image';
 import { SpaceHeader } from './space-header';
@@ -55,7 +56,7 @@ export default function Stream({
   const [queue, setQueue] = useState<Video[]>([]);
   const [data, setData] = useState<SpaceData>()
   const [currentSong, setCurrentSong] = useState<Video | null>(null);
-  // const [nextSong, setNextSong] = useState(false);
+  const [nextSong, setNextSong] = useState(false);
   const [loading, setLoading] = useState(false);
   const videoPlayer = useRef<HTMLDivElement>(null);
 
@@ -65,6 +66,8 @@ export default function Stream({
       const res = await fetch(`/api/streams/?spaceId=${spaceId}`)
       const data = await res.json()
       setData(data)
+      console.log(data);
+      
       // setCurrentSong(data?.activeStream?.song)
       if (data.streams && Array.isArray(data.streams)) {
         setQueue(
@@ -82,6 +85,8 @@ export default function Stream({
         }
         return data.activeStream?.song || null;
       });
+      console.log(currentSong);
+      
     } catch (error: any) {
       console.log(error.message);
       setQueue([]);
@@ -94,7 +99,7 @@ export default function Stream({
     refresh();
     const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, [refresh, spaceId]);
+  }, [spaceId]);
   
   
   useEffect(() => {
@@ -169,17 +174,19 @@ export default function Stream({
   const playNext = async () => {
     if (queue.length > 0) {
       try {
-        // setNextSong(true);
+        setNextSong(true);
         const data = await fetch(`/api/streams/next?spaceId=${spaceId}`, {
           method: "GET",
         });
         const json = await data.json();
         setCurrentSong(json.stream);
+        console.log(currentSong);
+        
         setQueue((q) => q.filter((x) => x.id !== json.stream?.id));
       } catch (e) {
         console.error("Error playing next song:", e);
       } finally {
-        // setNextSong(false);
+        setNextSong(false);
       }
     }
   };
@@ -212,7 +219,6 @@ export default function Stream({
               <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
                 Song URL
               </label>
-              {/* <div className="flex space-x-2"> */}
               <form className="space-y-3" onSubmit={handleSubmit}>
                 <Input
                   id="song-url"
@@ -237,13 +243,13 @@ export default function Stream({
                 {url && url.match(YT_REGEX) && !loading && (
                   <div className="mt-4">
                     <LiteYouTubeEmbed
-                      id={"url Id"}
-                      title={"url song"}
-                      params={`enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`}
+                     title=""
+                     id={url.split("?v=")[1]}
                     />
 
                   </div>
                 )}
+
               </CardContent>
             </div>
           </div>
@@ -251,17 +257,18 @@ export default function Stream({
 
           <Card className="bg-gray-800 border-gray-700 shadow-lg">
             <CardContent className="p-6 space-y-2">
+              
               <div ref={videoPlayer} className="w-full aspect-video" style={{ pointerEvents: 'none' }}></div>
 
               {currentSong && playVideo &&
                 <>
-                  {/* <Image
-                    width={150}
-                    height={150}
+                  <Image
+                    width={100}
+                    height={100}
                     src={currentSong.bigImg}
                     className="w-full aspect-video object-cover rounded-md"
                     alt={currentSong.title}
-                  /> */}
+                  />
                   <p className="mt-2 text-center font-semibold text-white">
                     {currentSong.title}
                   </p>
@@ -323,9 +330,6 @@ export default function Stream({
                 </div>
               )))}
           </div>
-
-
-
         </div>
       </div>
     </>

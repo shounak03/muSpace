@@ -1,7 +1,7 @@
 'use server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Music } from "lucide-react"
+import { AudioWaveform, Music } from "lucide-react"
 import { auth, signOut } from '@/auth'
 
 
@@ -9,15 +9,16 @@ import { auth, signOut } from '@/auth'
 export async function Appbar() {
 
   const session = await auth()
-
+  // console.log(session);
+  
 
 
   return (
-    <nav className="bg-gray-900 border-b border-gray-800 px-4 py-3">
+    <nav className="bg-gradient-to-br from-gray-950 to-gray-900 border-b border-gray-800 px-4 py-3">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-2">
-          <Music className="h-6 w-6 text-purple-500" />
-          <span className="text-2xl font-bold text-purple-500">muSpace</span>
+          <AudioWaveform className="h-6 w-6 text-purple-500" />
+          <h1 className="text-2xl font-bold text-transparent bg-clip-text  bg-gradient-to-r from-purple-400  to-red-500 ">muSpace</h1>
         </Link>
         <div className="space-x-4">
           {!session?.user && (

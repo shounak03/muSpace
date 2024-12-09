@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
 import { FcGoogle } from "react-icons/fc"
-import { FaGithub } from "react-icons/fa"
 import { RegisterSchema } from '@/schema';
 
 
@@ -93,9 +92,7 @@ const RegisterForm = () => {
           <Button size="lg" className="w-full" variant={"outline"}>
             <FcGoogle className="h-5 w-5" />
           </Button >
-          <Button size="lg" className="w-full" variant={"outline"}>
-            <FaGithub className="h-5 w-5" />
-          </Button>
+          
         </div>
         <div className="text-center text-sm">
           Already have an account?{' '}

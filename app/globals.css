@@ -13,6 +13,16 @@ body {
   }
 }
 
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  grid-template-rows: repeat(20, 1fr);
+}
+
+.grid-item {
+  aspect-ratio: 1/1;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

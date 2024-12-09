@@ -171,7 +171,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     const hostId = space?.hostId;
-    const isCreator = session.user.id === hostId
+    const isCreator = session?.user?.id === hostId
 
     return NextResponse.json({
       streams: space?.songs.map(({ _count, ...rest }) => ({

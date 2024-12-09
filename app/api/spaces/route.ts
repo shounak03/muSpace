@@ -18,8 +18,10 @@ export async function POST(request: Request) {
     try {
         
         const body = await request.json();
-        const { name, description, privateKey } = spaceSchema.parse(body)
-
+        const { name, description } = spaceSchema.parse(body)
+        const hostId = session?.user?.id;
+        console.log(hostId);
+        
 
         
 
@@ -28,8 +30,7 @@ export async function POST(request: Request) {
             data: {
                 name:name,
                 description:description,
-                privateKey: privateKey,
-                hostId:session.user.id,
+                hostId:hostId,
             },
         });
         const url = `/spaces/${space.id}`; 

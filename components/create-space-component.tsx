@@ -14,14 +14,12 @@ export const CreateSpace = () => {
     const [isNewSpaceDialogOpen, setIsNewSpaceDialogOpen] = useState(false)
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [privateKey, setPrivateKey] = useState('');
     const [success, setSuccess] = useState('');
     const [error, setError] = useState('');
 
     const router = useRouter()
     const handleSpace = async () => {
-        console.log(name, description, privateKey);
-        const validatedData = spaceSchema.parse({ name, description, privateKey })
+        const validatedData = spaceSchema.parse({ name, description })
         
 
         try {
@@ -31,7 +29,6 @@ export const CreateSpace = () => {
                 body: JSON.stringify(validatedData),
             });
             const data = await response.json();
-            // console.log(data);
     
     
             if (!response.ok) {
@@ -95,13 +92,6 @@ export const CreateSpace = () => {
                                 className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                            />
-                            <Input
-                                name="privateKey"
-                                placeholder="Enter private key"
-                                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                                value={privateKey}
-                                onChange={(e) => setPrivateKey(e.target.value)}
                             />
                              <FormSuccess message={success}/>
                             <Button

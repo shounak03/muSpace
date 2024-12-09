@@ -4,23 +4,36 @@ import { Separator } from "@/components/ui/separator";
 import Link from 'next/link';
 import { FcGoogle } from "react-icons/fc"
 import { LoginForm } from '@/components/login-form';
+import { signIn } from "@/auth";
+import { redirect } from "next/navigation";
 
 const Page = () => {
  
   return (
     <Card className="w-[350px]">
+      
       <CardHeader className="text-2xl font-bold text-center">Login</CardHeader>
+
       <LoginForm/>
+
       <CardFooter className="flex flex-col space-y-4">
         <Separator />
-        <div className="flex items-center w-full gap-x-2">
-          <Button size="lg" className="w-full" variant={"outline"}>
-            <FcGoogle className="h-5 w-5" />
-          </Button>
-        </div>
-        <div className="text-center text-sm">
+        <form className="flex items-center w-full gap-x-2"
+          action={async()=>{
+            "use server"
+            await signIn("google");
+            redirect("/dashboard");
+          }}
+        >
+
+            <Button size="lg" className="w-full" variant={"outline"} type="submit">
+              <FcGoogle className="h-5 w-5" />
+            </Button>
+        </form>
+        
+        <div className="text-center text-sm cursor-pointer">
         Don't have an account?{' '}
-          <Link href="/auth/register" className="text-blue-500 hover:underline">
+          <Link href="/auth/register" className="text-blue-500 hover:underline cursor-pointer">
             Register
           </Link>
         </div>

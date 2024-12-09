@@ -27,6 +27,7 @@ model User {
   password     String?
   image        String?
   provider     Provider?
+  googleId     String?
   role         UserRole  @default(USER)
   accounts     Account[]
   hostedSpaces Space[]   @relation("hostedBy")
@@ -62,12 +63,10 @@ model Space {
   id          String @id @default(cuid())
   name        String
   description String
-  privateKey  String
   url         String @unique @default("")
   hostId      String
   host        User   @relation("hostedBy", fields: [hostId], references: [id])
   songs       Song[]
-
   currentSong CurrentSong?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt

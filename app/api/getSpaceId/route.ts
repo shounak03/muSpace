@@ -32,7 +32,7 @@ export async function GET() {
           return NextResponse.json({ success: true, spaceId: user.hostedSpaces[0].id }, { status: 200 });
 
         } else {
-            return NextResponse.json({ success: false, message:"no space found" }, { status: 200 });
+            return NextResponse.json({ success: false, message:"no space found" }, { status: 404 });
         }
     
       } catch (e:any) {

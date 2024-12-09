@@ -1,4 +1,4 @@
-// app/api/auth/register/route.ts
+
 
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
@@ -11,14 +11,14 @@ export async function POST(request: Request) {
   try {
     
     const body = await request.json();
-    console.log(body);
+
     
     const { email, password, username } = RegisterSchema.parse(body);
     
     const existingUser = await prisma.user.findUnique({
       where: { email }
     });
-    console.log(existingUser);
+
     
     if (existingUser) {
       return NextResponse.json({ error: "Email already exists" }, { status: 400 });
