@@ -1,9 +1,7 @@
 'use client'
-import React, {  useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button } from './ui/button'
-
 import { PiArrowFatUpLight, PiArrowFatDownThin } from "react-icons/pi";
-
 import { Input } from './ui/input'
 import { streamSchema } from '@/schema';
 import { toast } from "sonner"
@@ -13,9 +11,7 @@ import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import { Card, CardContent } from './ui/card';
 import Image from 'next/image';
 import { SpaceHeader } from './space-header';
-
 import YouTubePlayer from "youtube-player";
-
 
 interface SpaceData {
   spaceName?: string;
@@ -39,7 +35,9 @@ interface Video {
   spaceId: string;
   artist: string;
 }
+
 const REFRESH_INTERVAL_MS = 10 * 1000;
+
 export default function Stream({
   hostId,
   playVideo = false,
@@ -49,9 +47,6 @@ export default function Stream({
   playVideo: boolean;
   spaceId: string;
 }) {
-
-
-
   const [url, setUrl] = useState("");
   const [queue, setQueue] = useState<Video[]>([]);
   const [data, setData] = useState<SpaceData>()
@@ -60,15 +55,12 @@ export default function Stream({
   const [loading, setLoading] = useState(false);
   const videoPlayer = useRef<HTMLDivElement>(null);
 
-
   async function refresh() {
     try {
       const res = await fetch(`/api/streams/?spaceId=${spaceId}`)
       const data = await res.json()
       setData(data)
-      console.log(data);
       
-      // setCurrentSong(data?.activeStream?.song)
       if (data.streams && Array.isArray(data.streams)) {
         setQueue(
           data.streams.length > 0
@@ -79,14 +71,13 @@ export default function Stream({
       else {
         setQueue([]);
       }
+
       setCurrentSong((video) => {
         if (video?.extractedId === data.activeStream?.song?.extractedId) {
           return video;
         }
-        return data.activeStream?.song || null;
+        return data?.activeStream?.song || null;
       });
-      console.log(currentSong);
-      
     } catch (error: any) {
       console.log(error.message);
       setQueue([]);
@@ -94,13 +85,36 @@ export default function Stream({
     }
   }
 
+  const playNext = async () => {
+    if (queue.length > 0) {
+      try {
+        setNextSong(true);
+        const data = await fetch(`/api/streams/next?spaceId=${spaceId}`, {
+          method: "GET",
+        });
+        const json = await data.json();
+        setCurrentSong(json.stream);
+        setQueue((q) => q.filter((x) => x.id !== json.stream?.id));
+      } catch (e) {
+        console.error("Error playing next song:", e);
+      } finally {
+        setNextSong(false);
+      }
+    }
+  };
+
+  // Add this new useEffect to auto-play when currentSong is null and queue has songs
+  useEffect(() => {
+    if (!currentSong && queue.length > 0 && !nextSong) {
+      playNext();
+    }
+  }, [currentSong, queue, nextSong]);
 
   useEffect(() => {
     refresh();
     const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [spaceId]);
-  
   
   useEffect(() => {
     if (!currentSong || !videoPlayer.current)
@@ -112,7 +126,7 @@ export default function Stream({
         host: 'https://www.youtube-nocookie.com',
         playerVars: {
           autoplay: 1,
-          controls: 0,
+          controls: 1,
           disablekb: 1,
           enablejsapi: 1,
           fs: 0,
@@ -171,29 +185,7 @@ export default function Stream({
     }
   }
 
-  const playNext = async () => {
-    if (queue.length > 0) {
-      try {
-        setNextSong(true);
-        const data = await fetch(`/api/streams/next?spaceId=${spaceId}`, {
-          method: "GET",
-        });
-        const json = await data.json();
-        setCurrentSong(json.stream);
-        console.log(currentSong);
-        
-        setQueue((q) => q.filter((x) => x.id !== json.stream?.id));
-      } catch (e) {
-        console.error("Error playing next song:", e);
-      } finally {
-        setNextSong(false);
-      }
-    }
-  };
-
-
   async function handleUpvote(songId: string, isUpvote: boolean) {
-
     setQueue(
       queue.map((song) => song.id === songId ? {
         ...song,
@@ -206,6 +198,8 @@ export default function Stream({
       body: JSON.stringify({ songId })
     })
   }
+
+
 
 
   return (
@@ -227,63 +221,65 @@ export default function Stream({
                   type="text"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-
                 />
 
                 <Button
                   disabled={loading}
                   type="submit"
                   className="bg-purple-600 text-white hover:bg-purple-700" >
-                  {loading ? "Loading..." : "Add to Queue"}
-
+                  {loading ? "adding..." : "Add to Queue"}
                 </Button>
               </form>
               <CardContent>
-
                 {url && url.match(YT_REGEX) && !loading && (
                   <div className="mt-4">
                     <LiteYouTubeEmbed
-                     title=""
-                     id={url.split("?v=")[1]}
+                      title=""
+                      id={url.split("?v=")[1]}
                     />
-
                   </div>
                 )}
-
               </CardContent>
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-white">Now Playing</h2>
 
           <Card className="bg-gray-800 border-gray-700 shadow-lg">
-            <CardContent className="p-6 space-y-2">
-              
-              <div ref={videoPlayer} className="w-full aspect-video" style={{ pointerEvents: 'none' }}></div>
-
-              {currentSong && playVideo &&
-                <>
-                  <Image
-                    width={100}
-                    height={100}
-                    src={currentSong.bigImg}
-                    className="w-full aspect-video object-cover rounded-md"
-                    alt={currentSong.title}
-                  />
-                  <p className="mt-2 text-center font-semibold text-white">
-                    {currentSong.title}
-                  </p>
-                  <p className="mt-2 text-center font-semibold text-white">
-                    {currentSong.artist}
-                  </p>
-                </>
-              }
-              {!currentSong &&
-                <p className="text-center py-8 text-gray-400">
+            <CardContent className="p-6 space-y-4">
+              <h2 className="text-2xl font-bold text-white">Now Playing</h2>
+              {currentSong ? (
+                <div>
+                  {playVideo ? (
+                    <div
+                      ref={videoPlayer}
+                      className="w-full aspect-video"
+                      style={{ pointerEvents: 'none' }}
+                    />
+                  ) : (
+                    <>
+                      <Image
+                        src={currentSong.bigImg}
+                        className="w-full aspect-video object-cover rounded-md"
+                        alt={currentSong.title}
+                        width={1920}
+                        height={1080}
+                      />
+                      <p className="mt-2 text-center font-semibold text-white">
+                        {currentSong.title}
+                      </p>
+                      <p className="mt-2 text-center font-semibold text-white">
+                        {currentSong.artist}
+                      </p>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <p className="text-center text-gray-400">
                   No video playing
                 </p>
-              }
+              )}
             </CardContent>
           </Card>
+
           <div className="space-y-4">
             <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
             {queue.length === 0 ? (
@@ -304,7 +300,8 @@ export default function Stream({
                         height={60}
                         alt='thumbnail'
                         src={song.smallImg}
-                        className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" />
+                        className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" 
+                      />
                       <div>
                         <p className="font-medium">{song.title}</p>
                         <p className="text-sm text-gray-400">{song.artist}</p>
@@ -324,15 +321,18 @@ export default function Stream({
                         <PiArrowFatDownThin className="h-8 w-8" />
                       )}
                     </Button>
-
                     <span>{song.upvotes}</span>
                   </div>
                 </div>
-              )))}
+              ))
+            )}
           </div>
         </div>
       </div>
     </>
-  )
-
+  );
 }
+
+
+
+

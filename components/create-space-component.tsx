@@ -11,6 +11,7 @@ import { FormSuccess } from '@/components/form-success';
 import { useRouter } from "next/navigation";
 
 export const CreateSpace = () => {
+
     const [isNewSpaceDialogOpen, setIsNewSpaceDialogOpen] = useState(false)
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -39,16 +40,16 @@ export const CreateSpace = () => {
             } else {
                 setSuccess('space created successfully!');
                 router.push(data.updatedSpace.url)
+            }
 
     
-            }
         } catch (error) {
             if (error instanceof Error) {
               setError(error.message);
             } else {
               setError('An unknown error occurred');
             }
-            // setSuccess('');
+
         }
     }
 
@@ -93,7 +94,7 @@ export const CreateSpace = () => {
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                             />
-                             <FormSuccess message={success}/>
+                            <FormSuccess message={success}/>
                             <Button
                                 className="w-full bg-purple-600 text-white hover:bg-purple-700 mt-4"
                                 onClick={handleSpace}
