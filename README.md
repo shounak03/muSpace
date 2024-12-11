@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# muSpace
 
-## Getting Started
+muSpace is a collaborative music listening platform where users can create or join spaces to share and enjoy music together. It allows users to add songs via YouTube URLs, maintain a song queue, and vote on songs. The song with the highest votes is played next, ensuring a democratic music experience for all participants.
 
-First, run the development server:
+## Features
 
+### 1. User Authentication
+- Users can create an account and log in to access the platform.
+- Authentication is implemented using secure, scalable methods.
+
+### 2. Create or Join a Space
+- Users can create a new space to start a collaborative music session.
+- Other users can join existing spaces by entering a space code or URL.
+
+### 3. Add Songs
+- Add songs to the queue by pasting YouTube URLs.
+- The platform automatically validates and queues the song.
+
+### 4. Voting System
+- Each song in the queue can be upvoted or downvoted.
+- Songs with the most votes are prioritized and played next.
+
+### 5. Song Queue Management
+- The queue dynamically updates based on votes.
+- Users can view the current song and the next in line.
+
+### 6. Real-Time Updates
+- Spaces are updated in real-time, ensuring a seamless collaborative experience.
+
+### 7. Responsive Design
+- The platform is fully responsive and works smoothly on devices of all sizes.
+
+## Tech Stack
+
+### Frontend
+- **Framework**: Next.js
+- **Styling**: Tailwind CSS
+- **State Management**: React Context API / Redux
+
+### Backend
+- **Framework**: Next.js API Routes
+- **Database**: PostgreSQL (using Prisma ORM)
+- **Authentication**: NextAuth.js v5
+
+### Other Tools
+- **Real-Time Communication**: WebSockets
+- **Hosting**: Vercel (for production deployment)
+
+## Installation and Setup
+
+Follow these steps to set up muSpace on your local machine:
+
+### Prerequisites
+- Node.js (>= 16.x)
+- PostgreSQL database
+- Git
+
+### Steps
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/your-username/muspace.git
+   cd muspace
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set Up Environment Variables**
+   - Create a `.env.local` file in the root directory.
+   - Add the following variables:
+     ```env
+     DATABASE_URL=your_postgresql_database_url
+     NEXTAUTH_SECRET=your_secret_key
+     NEXTAUTH_URL=http://localhost:3000
+     ```
+
+4. **Migrate the Database**
+   Run the following command to set up the database schema:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. **Start the Development Server**
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:3000`.
+
+### Optional: Seed Data
+If you have a seed script set up in your Prisma configuration, you can run:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx prisma db seed
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
+Contributions are welcome! If you find any bugs or have feature suggestions, feel free to open an issue or create a pull request.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Steps to Contribute
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Commit your changes and push them to your fork.
+4. Open a pull request to the main repository.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+Enjoy using muSpace to create and share music collaboratively!
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
