@@ -192,3 +192,60 @@ export async function GET(req: NextRequest) {
   }
 }
 
+
+export async function DELETE(req: NextRequest) {
+    const body = await req.json()
+    const { spaceId } = body
+    
+    if (!spaceId) {
+        return NextResponse.json({
+            success: false, 
+            message: "Space ID is required"
+        }, { status: 400 })
+    }
+
+    try {
+        // Delete related votes first
+        await prisma.vote.deleteMany({
+            where: {
+                song: {
+                    spaceId: spaceId
+                }
+            }
+        })
+
+        // Delete current song reference
+        await prisma.currentSong.deleteMany({
+            where: {
+                spaceId: spaceId
+            }
+        })
+
+        // Delete songs associated with the space
+        await prisma.song.deleteMany({
+            where: {
+                spaceId: spaceId
+            }
+        })
+
+        // Finally, delete the space
+        await prisma.space.delete({
+            where: {
+                id: spaceId
+            }
+        })
+
+        return NextResponse.json({
+            success: true, 
+            message: "Space and all associated data deleted successfully"
+        }, { status: 200 })
+    } catch(error) {
+        console.error("Error deleting space:", error)
+
+        return NextResponse.json({
+            success: false, 
+            message: "Something went wrong while deleting the space",
+            error: error instanceof Error ? error.message : "Unknown error"
+        }, { status: 500 })
+    }
+}

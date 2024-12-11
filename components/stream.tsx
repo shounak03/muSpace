@@ -55,67 +55,107 @@ export default function Stream({
   const [loading, setLoading] = useState(false);
   const videoPlayer = useRef<HTMLDivElement>(null);
 
+  async function removeCurrentSongFromDB() {
+    try {
+      await fetch(`/api/streams/current`, {
+        method: "DELETE",
+        body: JSON.stringify({ spaceId })
+      });
+    } catch (error) {
+      console.error("Error removing current song:", error);
+    }
+  }
+
   async function refresh() {
     try {
+      setLoading(true)
       const res = await fetch(`/api/streams/?spaceId=${spaceId}`)
       const data = await res.json()
+      
       setData(data)
       
       if (data.streams && Array.isArray(data.streams)) {
-        setQueue(
-          data.streams.length > 0
-            ? data.streams.sort((a: any, b: any) => b.upvotes - a.upvotes)
-            : [],
-        );
+        const sortedStreams = data.streams
+          .sort((a: any, b: any) => b.upvotes - a.upvotes);
+        
+        setQueue(sortedStreams);
       }
       else {
         setQueue([]);
       }
 
-      setCurrentSong((video) => {
-        if (video?.extractedId === data.activeStream?.song?.extractedId) {
-          return video;
+      // Only update current song if it's different from the active stream
+      setCurrentSong((prevSong) => {
+        if (data?.activeStream?.song) {
+          // If the active stream is different from the previous current song
+          if (!prevSong || prevSong.id !== data.activeStream.song.id) {
+            return data.activeStream.song;
+          }
         }
-        return data?.activeStream?.song || null;
+        return prevSong;
       });
     } catch (error: any) {
       console.log(error.message);
       setQueue([]);
       setCurrentSong(null);
+    } finally {
+      setLoading(false)
     }
   }
 
   const playNext = async () => {
+    // Remove the current song from the database first
+    if (currentSong) {
+      await removeCurrentSongFromDB();
+    }
+
     if (queue.length > 0) {
       try {
         setNextSong(true);
+        
         const data = await fetch(`/api/streams/next?spaceId=${spaceId}`, {
           method: "GET",
         });
         const json = await data.json();
-        setCurrentSong(json.stream);
-        setQueue((q) => q.filter((x) => x.id !== json.stream?.id));
+        
+        // Ensure we're not replaying the same song
+        if (json.stream) {
+          setCurrentSong(json.stream);
+          setQueue((q) => q.filter((x) => x.id !== json.stream.id));
+        } else {
+          // If no new song, clear current song and queue
+          setCurrentSong(null);
+          setQueue([]);
+        }
       } catch (e) {
         console.error("Error playing next song:", e);
+        // Reset state if something goes wrong
+        setCurrentSong(null);
+        setQueue([]);
       } finally {
         setNextSong(false);
       }
+    } else {
+      // If queue is empty, clear the current song
+      setCurrentSong(null);
     }
   };
 
-  // Add this new useEffect to auto-play when currentSong is null and queue has songs
+  // Auto-play logic
   useEffect(() => {
     if (!currentSong && queue.length > 0 && !nextSong) {
       playNext();
     }
   }, [currentSong, queue, nextSong]);
 
+  // Periodic refresh
   useEffect(() => {
     refresh();
     const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [spaceId]);
   
+  // YouTube Player setup
   useEffect(() => {
     if (!currentSong || !videoPlayer.current)
       return;
@@ -140,6 +180,7 @@ export default function Stream({
 
     const eventHandler = (event: { data: number }) => {
       if (event.data === 0) {
+        // Song ended, play next
         playNext();
       }
     };
@@ -149,6 +190,8 @@ export default function Stream({
       player.destroy();
     };
   }, [currentSong, videoPlayer]);
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -184,6 +227,7 @@ export default function Stream({
       setLoading(false);
     }
   }
+
 
   async function handleUpvote(songId: string, isUpvote: boolean) {
     setQueue(

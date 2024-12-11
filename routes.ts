@@ -1,6 +1,6 @@
 //Array of public routes, doesn't req any authemtication
 export const publicRoutes = [
-    "/"
+    "/","/about"
 ];
 export const authRoutes = [
     "/auth/login",

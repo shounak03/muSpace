@@ -92,8 +92,8 @@ export default function Dashboard() {
                     </section>}
                 { space === false && 
 
-                    <section className="flex items-start mt-6">
-                        <h1 className="text-3xl font-bold text-white">No Existing spaces</h1>
+                    <section className="flex items-center mt-6">
+                        <h1 className="  text-white mx-6">No Existing spaces</h1>
                     </section>
                 }
             </div>

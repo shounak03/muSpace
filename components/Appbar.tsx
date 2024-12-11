@@ -41,19 +41,36 @@ export async function Appbar() {
             </>
           )}
           {session?.user && (
-            <form action={async()=>{
-              'use server'
-              await signOut()
-            }}>
+            <div className='flex space-x-4'>
+                <Link href="/about" className="text-white hover:text-purple-400 transition-colors mt-1">
+                    About
+                </Link>
+              <Link href={'/dashboard'}>
+                  <Button
+                    variant="outline"
+                    className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
+                    size="sm"
+                  >
+                    Dashboard
+                  </Button>
+              
+              </Link>
 
-              <Button
-                variant="outline"
-                className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
-                size="sm"
-              >
-                Logout
-              </Button>
-            </form >
+              <form action={async()=>{
+                'use server'
+                await signOut()
+              }}> 
+                
+                <Button
+                  variant="outline"
+                  className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
+                  size="sm"
+                  >
+                  Logout
+                </Button>
+              </form >
+              
+            </div>
 
           )}
         </div>
