@@ -56,36 +56,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: '/auth/login',
   },
   callbacks: {
-    signIn: async({ user, account }) => {
-      if(account?.provider === 'google') {
-        try {
-          const  {email, name, id} = user;
+    // signIn: async({ user, account }) => {
+    //   if(account?.provider === 'google') {
+    //     try {
+    //       const  {email, name, id} = user;
           
-          if(!email){
-            throw new CredentialsSignin({cause:"Email not found"});
-          }
+    //       if(!email){
+    //         throw new CredentialsSignin({cause:"Email not found"});
+    //       }
 
-          const existingUser = await prisma.user.findUnique({
-            where: { email }
-          });
+    //       const existingUser = await prisma.user.findUnique({
+    //         where: { email }
+    //       });
       
           
-          if (existingUser) 
-            await prisma.user.create({
-              data: {
-                email,
-                username:name,
-              },
-            });
-          return true
-        } catch (error) {
-            throw new AuthError("Error creating User")
-        }
+    //       if (existingUser) 
+    //         await prisma.user.create({
+    //           data: {
+    //             email,
+    //             username:name,
+    //           },
+    //         });
+    //       return true
+    //     } catch (error) {
+    //         throw new AuthError("Error creating User")
+    //     }
         
-      }
-      if(account?.provider === "credentials")
-        return true
-    },
+    //   }
+    //   if(account?.provider === "credentials")
+    //     return true
+    // },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
