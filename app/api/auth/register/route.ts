@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     
-    const { email, password, username } = RegisterSchema.parse(body);
+    const { email, password, name } = RegisterSchema.parse(body);
     
     const existingUser = await prisma.user.findUnique({
       where: { email }
@@ -31,13 +31,13 @@ export async function POST(request: Request) {
     const user = await prisma.user.create({
       data: {
         email,
-        username,
+        name,
         password: hashedPassword,
       },
     });
 
     return NextResponse.json({ 
-      user: { id: user.id, email: user.email, username: user.username } 
+      user: { id: user.id, email: user.email, username: user.name } 
     }, { status: 201 });
 
   } catch (error) {
