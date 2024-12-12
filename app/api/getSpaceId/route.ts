@@ -14,10 +14,10 @@ export async function GET() {
     }
 
     try {
-        console.log(session.user.id);
+        console.log(session.user.email);
         
         const user = await prisma.user.findUnique({
-          where: { id: session?.user?.id },
+          where: { email: session?.user?.email ?? "" },
           include: { hostedSpaces: true },
         });
     

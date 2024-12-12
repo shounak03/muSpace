@@ -9,7 +9,7 @@ import { auth, signOut } from '@/auth'
 export async function Appbar() {
 
   const session = await auth()
-  // console.log(session);
+  console.log(session);
   
 
 
@@ -33,7 +33,7 @@ export async function Appbar() {
                   className="text-white bg-black border-purple-400 hover:bg-purple-400 hover:text-gray-900"
                   size="sm"
                 >
-                  Sign-In
+                  Login
 
                 </Button>
               </Link>

@@ -29,12 +29,10 @@ export default function Dashboard() {
     const fetchSpace = async()=>{
         const res = await fetch('api/getSpaceId')
         const sp = await res.json()
-        console.log(sp);
         
         if(sp.success === true){
             setSpaceId(sp)
             setSpace(true);
-            console.log(sp);
             
         }
         
@@ -42,7 +40,6 @@ export default function Dashboard() {
     const fetchSpaceData = async()=>{
         const res = await fetch(`/api/spaces/?spaceId=${spaceId?.spaceId}`)
         const data = await res.json()
-        console.log(data)
         if(data.success === true){
             setSpacedata(data)
         }

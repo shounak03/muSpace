@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { FcGoogle } from "react-icons/fc"
 import { LoginForm } from '@/components/login-form';
 import { signIn } from "@/auth";
-import { redirect } from "next/navigation";
 
 const Page = () => {
  
@@ -21,8 +20,7 @@ const Page = () => {
         <form className="flex items-center w-full gap-x-2"
           action={async()=>{
             "use server"
-            await signIn("google");
-            redirect("/dashboard");
+            await signIn("google",{callbackUrl:"/dashboard"});
           }}
         >
 

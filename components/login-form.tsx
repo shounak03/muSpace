@@ -47,7 +47,7 @@ export const LoginForm = ()=>{
           />
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button type="submit" className="w-full cursor-pointer">Sign In</Button>
+          <Button type="submit" className="w-full cursor-pointer">Login</Button>
         </CardContent>
       </form>
     )

@@ -1,7 +1,6 @@
-
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 
   directUrl = env("DATABASE_URL_UNPOOLED")
 }
@@ -21,21 +20,23 @@ enum Provider {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  username     String?   @unique
-  email        String?   @unique
-  password     String?
-  image        String?
-  provider     Provider?
-  googleId     String?
-  role         UserRole  @default(USER)
-  accounts     Account[]
-  hostedSpaces Space[]   @relation("hostedBy")
-  votes        Vote[]
-  song         Song[]    @relation("user")
-  addedSongs   Song[]    @relation("addedBy")
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  role          UserRole  @default(USER)
+  password      String?
+  image         String?
+  provider      Provider?
+  googleId      String?
+  accounts      Account[]
+  hostedSpaces  Space[]   @relation("hostedBy")
+  votes         Vote[]
+  song          Song[]    @relation("user")
+  addedSongs    Song[]    @relation("addedBy")
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Account {
@@ -60,16 +61,26 @@ model Account {
 }
 
 model Space {
-  id          String @id @default(cuid())
+  id          String       @id @default(cuid())
   name        String
   description String
-  url         String @unique @default("")
+  url         String       @unique @default("")
   hostId      String
-  host        User   @relation("hostedBy", fields: [hostId], references: [id])
+  host        User         @relation("hostedBy", fields: [hostId], references: [id])
   songs       Song[]
   currentSong CurrentSong?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
 }
 
 model Song {
@@ -97,12 +108,12 @@ model Song {
 }
 
 model CurrentSong {
-  id       String  @id @default(uuid())
-  userId   String
-  songId String? @unique
-  song     Song?   @relation(fields: [songId], references: [id])
-  spaceId  String? @unique
-  space    Space?  @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  id      String  @id @default(uuid())
+  userId  String
+  songId  String? @unique
+  song    Song?   @relation(fields: [songId], references: [id])
+  spaceId String? @unique
+  space   Space?  @relation(fields: [spaceId], references: [id], onDelete: Cascade)
 }
 
 model Vote {

@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs';
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "./schema";
 import GoogleProvider from "next-auth/providers/google"
+import { PrismaAdapter } from "@auth/prisma-adapter"
+import { db } from "./lib/db";
 
 const prisma = new PrismaClient();
 
@@ -45,7 +47,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             throw new CredentialsSignin({cause: "Invalid email or password"});
           }
 
-          return { id: user.id, name: user.username, email: user.email };
+          return { id: user.id, name: user.name, email: user.email };
         } catch (error:any) {
           throw new CredentialsSignin({cause:error.message});
         }
@@ -55,37 +57,48 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: '/auth/login',
   },
+  // adapter: PrismaAdapter(db),
   callbacks: {
-    // signIn: async({ user, account }) => {
-    //   if(account?.provider === 'google') {
-    //     try {
-    //       const  {email, name, id} = user;
-          
-    //       if(!email){
-    //         throw new CredentialsSignin({cause:"Email not found"});
-    //       }
-
-    //       const existingUser = await prisma.user.findUnique({
-    //         where: { email }
-    //       });
-      
-          
-    //       if (existingUser) 
-    //         await prisma.user.create({
-    //           data: {
-    //             email,
-    //             username:name,
-    //           },
-    //         });
-    //       return true
-    //     } catch (error) {
-    //         throw new AuthError("Error creating User")
-    //     }
-        
-    //   }
-    //   if(account?.provider === "credentials")
-    //     return true
-    // },
+      async signIn({ user, account, profile }) {
+        if (account?.provider === "google") {
+          try {
+            // Check if user exists
+            const existingUser = await prisma.user.findUnique({
+              where: {
+                email: user.email!,
+              },
+            });
+  
+            if (!existingUser) {
+              // Create new user if they don't exist
+              await prisma.user.create({
+                data: {
+                  email: user.email!,
+                  name: user.name,
+                  image: user.image,
+                  provider: "Google",
+                  googleId: profile?.sub,
+                  accounts: {
+                    create: {
+                      type: account.type,
+                      provider: account.provider,
+                      providerAccountId: account.providerAccountId,
+                      access_token: account.access_token,
+                      token_type: account.token_type,
+                      scope: account.scope,
+                      id_token: account.id_token,
+                    },
+                  },
+                },
+              });
+            }
+          } catch (error) {
+            console.error("Error during sign in:", error);
+            return false;
+          }
+        }
+        return true;
+      },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;

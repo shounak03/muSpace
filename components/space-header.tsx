@@ -63,10 +63,6 @@ export const SpaceHeader = ({ data }: { data?: SpaceData }) => {
         setShowConfirmModal(false);
     }
 
-    if (end) {
-       
-    }
-
     return (
         <div className="flex justify-between items-center">
             <div className="space-y-2">

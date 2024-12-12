@@ -8,21 +8,7 @@ import {
 import { NextResponse } from "next/server"
 
 
-const checkSpace = async()=>{
-  const resp = await fetch('api/getSpaceId')
-  const data = await resp.json();
-  if(resp.status === 200){
-      if(data.spaceId){
-          return data.spaceId;
-      }
-      else{
-          return null;
-      }
-  }
-  else{
-    return null;
-  }
-}
+
 export default auth((req) => {
   const { nextUrl } = req
   const isLoggedIn = !!req.auth
