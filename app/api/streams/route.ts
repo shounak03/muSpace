@@ -9,6 +9,7 @@ import { NextResponse, NextRequest } from 'next/server';
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
+  
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(

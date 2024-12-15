@@ -68,7 +68,7 @@ export default function Stream({
 
   async function refresh() {
     try {
-      setLoading(true)
+
       const res = await fetch(`/api/streams/?spaceId=${spaceId}`)
       const data = await res.json()
       
