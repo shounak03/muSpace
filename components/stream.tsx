@@ -73,6 +73,8 @@ export default function Stream({
       const data = await res.json()
       
       setData(data)
+      console.log("data",data)
+      
       
       if (data.streams && Array.isArray(data.streams)) {
         const sortedStreams = data.streams

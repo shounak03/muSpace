@@ -11,20 +11,27 @@ const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
   
   const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json(
-      { success: false, message: "You must be logged in to retrieve space information" },
-      { status: 401 }
-    );
-  }
+  // if (!session?.user?.id) {
+  //   return NextResponse.json(
+  //     { success: false, message: "You must be logged in to retrieve space information" },
+  //     { status: 401 }
+  //   );
+  // }
 
   try {
-
+    const host = await prisma.user.findUnique({
+      where: {
+          email: session?.user?.email || "",
+      },
+      select: {
+        id: true,
+      },
+    });
     
     const body = streamSchema.parse(await req.json())
     const { hostId, url, spaceId } = body
 
-
+    // console.log("hostId",hostId,url,spaceId)
 
     if (!url.trim()) {
       return NextResponse.json(
@@ -39,7 +46,6 @@ export async function POST(req: NextRequest) {
 
     const isYt = url.match(YT_REGEX);
     const extractedId = url ? url.match(YT_REGEX)?.[1] : null;
-
     if (!isYt || !extractedId) {
       return NextResponse.json(
         {
@@ -51,31 +57,34 @@ export async function POST(req: NextRequest) {
       );
     }
     const resp = await youtubesearchapi.GetVideoDetails(extractedId)
+    // console.log("extractedId",resp)
 
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-    const duplicateSong = await prisma.song.findFirst({
-      where: {
-        userId: hostId,
-        extractedId,
-        createdAt: {
-          gte: tenMinutesAgo,
-        },
-      },
-    });
-    if (duplicateSong) {
-      return NextResponse.json(
-        {
-          message: "This song was already added in the last 10 minutes",
-        },
-        {
-          status: 429,
-        },
-      );
-    }
+    // const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    // const duplicateSong = await prisma.song.findFirst({
+    //   where: {
+    //     userId: hostId,
+    //     extractedId,
+    //     createdAt: {
+    //       gte: tenMinutesAgo,
+    //     },
+    //   },
+    // });
+    // console.log("duplicateSong",duplicateSong)
+    // if (duplicateSong) {
+    //   return NextResponse.json(
+    //     {
+    //       message: "This song was already added in the last 10 minutes",
+    //     },
+    //     {
+    //       status: 429,
+    //     },
+    //   );
+    // }
 
     const Thumbnails = resp.thumbnail.thumbnails
     Thumbnails.sort((a: { width: number }, b: { width: number }) => a.width < b.width ? -1 : 1)
-
+    console.log(Thumbnails)
+    
     const newSong = await prisma.song.create({
       data: {
         userId: hostId,
@@ -91,7 +100,7 @@ export async function POST(req: NextRequest) {
         bigImg: Thumbnails[Thumbnails.length - 1].url ??
           "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
         title: resp.title ?? "Cant find title",
-        addedBy: session.user.id,
+        addedBy: host?.id || "",
 
       },
     });

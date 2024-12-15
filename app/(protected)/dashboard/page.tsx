@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
+import  { HashLoader} from 'react-spinners';
 interface SpaceData{
     space:{
         name:string,
@@ -25,6 +25,7 @@ export default function Dashboard() {
 
     const [space, setSpace] = useState(false)
     const [spacedata, setSpacedata] = useState<SpaceData>()
+    const [loading, setLoading] = useState(false)
     
     const fetchSpace = async()=>{
         const res = await fetch('api/getSpaceId')
@@ -38,10 +39,12 @@ export default function Dashboard() {
         
     }
     const fetchSpaceData = async()=>{
+        setLoading(true)
         const res = await fetch(`/api/spaces/?spaceId=${spaceId?.spaceId}`)
         const data = await res.json()
         if(data.success === true){
             setSpacedata(data)
+            setLoading(false)
         }
     }
 
@@ -51,6 +54,20 @@ export default function Dashboard() {
     useEffect(()=>{
         fetchSpaceData()
     },[space])
+
+    if (loading) {
+        return (
+          <div className="min-h-screen flex items-center justify-center">
+            <HashLoader
+              color="white"
+              loading={true}
+              size={70}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
+          </div>
+        );
+      }
     return (
         <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100">
             <div className="flex-1 flex flex-col items-center p-4 md:p-6">

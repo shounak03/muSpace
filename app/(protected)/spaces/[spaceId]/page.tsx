@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import LoadingScreen from "@/components/Loading";
 import Stream from "@/components/stream";
+import { HashLoader } from "react-spinners";
 
 
 const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
@@ -34,7 +35,15 @@ const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
     }, [spaceId]);
 
     if (loading1) {
-        return <LoadingScreen />;
+        <div className="min-h-screen flex items-center justify-center">
+            <HashLoader
+              color="white"
+              loading={true}
+              size={70}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
+          </div>
     }
     return (
 

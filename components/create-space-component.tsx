@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 import { spaceSchema } from "@/schema";
 import { FormSuccess } from '@/components/form-success';
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export const CreateSpace = () => {
 
@@ -17,6 +18,7 @@ export const CreateSpace = () => {
     const [description, setDescription] = useState('');
     const [success, setSuccess] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const router = useRouter()
     const handleSpace = async () => {
@@ -24,6 +26,7 @@ export const CreateSpace = () => {
         
 
         try {
+            setLoading(true)
             const response = await fetch('/api/spaces', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -37,18 +40,24 @@ export const CreateSpace = () => {
             }
             if (data?.error) {
                 setError(data.error);
+                
+            
             } else {
+                setLoading(false);
                 setSuccess('space created successfully!');
                 router.push(data.updatedSpace.url)
+                router.refresh()
             }
 
     
         } catch (error) {
+            setLoading(false);
             if (error instanceof Error) {
               setError(error.message);
             } else {
               setError('An unknown error occurred');
             }
+            toast.error("An error occured")
 
         }
     }
@@ -66,7 +75,7 @@ export const CreateSpace = () => {
                         className="w-full bg-purple-600 text-white hover:bg-purple-700"
                         onClick={() => setIsNewSpaceDialogOpen(true)}
                     >
-                        Create Space
+                         Create Space
                     </Button>
                 </CardContent>
             </Card>
@@ -97,9 +106,10 @@ export const CreateSpace = () => {
                             <FormSuccess message={success}/>
                             <Button
                                 className="w-full bg-purple-600 text-white hover:bg-purple-700 mt-4"
+                                disabled={loading}
                                 onClick={handleSpace}
                             >
-                                Create Space
+                                {loading? 'Creating...' : 'Create Space'}
                             </Button>
 
                         </div>

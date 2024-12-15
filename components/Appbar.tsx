@@ -1,7 +1,7 @@
 'use server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { AudioWaveform, Music } from "lucide-react"
+import { AudioWaveform } from "lucide-react"
 import { auth, signOut } from '@/auth'
 
 
@@ -9,7 +9,7 @@ import { auth, signOut } from '@/auth'
 export async function Appbar() {
 
   const session = await auth()
-  console.log(session);
+  // console.log("session", session);
   
 
 
@@ -58,7 +58,7 @@ export async function Appbar() {
 
               <form action={async()=>{
                 'use server'
-                await signOut()
+                await signOut({redirect: true})
               }}> 
                 
                 <Button

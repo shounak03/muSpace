@@ -2,6 +2,7 @@
 import { auth } from '@/auth';
 import { spaceSchema } from '@/schema';
 import { PrismaClient } from '@prisma/client';
+import { redirect } from 'next/dist/server/api-utils';
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -11,6 +12,7 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
 
     const session = await auth();
+    console.log("session is - ",session);
     
     if (!session?.user?.id) {
         return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 });
@@ -19,8 +21,16 @@ export async function POST(request: Request) {
         
         const body = await request.json();
         const { name, description } = spaceSchema.parse(body)
-        const hostId = session?.user?.id;
-        console.log(hostId);
+        
+        const host = await prisma.user.findUnique({
+            where: {
+                email: session?.user?.email || "",
+            },
+            select: {
+              id: true,
+            },
+          });
+        console.log("host id",host?.id) ; 
         
 
         
@@ -30,7 +40,7 @@ export async function POST(request: Request) {
             data: {
                 name:name,
                 description:description,
-                hostId:hostId,
+                hostId:host?.id || "",
             },
         });
         const url = `/spaces/${space.id}`; 
@@ -46,7 +56,7 @@ export async function POST(request: Request) {
 
                
 
-        return NextResponse.json({ success: true,message:"space created successfully", updatedSpace }, { status: 201 });
+        return NextResponse.json({ success: true,message:"space created successfully", updatedSpace,redirect:url }, { status: 201 });
     } catch (error) {
         console.error('Error creating space:', error);
         NextResponse.json({ success: false, error: 'Error creating space' }, { status: 500 });
