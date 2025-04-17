@@ -8,83 +8,133 @@ import { NextResponse, NextRequest } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(req: NextRequest) {
+// export async function POST(req: NextRequest) {
   
+//   const session = await auth();
+  
+
+//   try {
+//     const host = await prisma.user.findUnique({
+//       where: {
+//           email: session?.user?.email || "",
+//       },
+//       select: {
+//         id: true,
+//       },
+//     });
+    
+//     const body = streamSchema.parse(await req.json())
+//     const { hostId, url, spaceId } = body
+
+//     // console.log("hostId",hostId,url,spaceId)
+
+//     if (!url.trim()) {
+//       return NextResponse.json(
+//         {
+//           message: "YouTube link cannot be empty",
+//         },
+//         {
+//           status: 400,
+//         },
+//       );
+//     }
+
+//     const isYt = url.match(YT_REGEX);
+//     const extractedId = url ? url.match(YT_REGEX)?.[1] : null;
+//     if (!isYt || !extractedId) {
+//       return NextResponse.json(
+//         {
+//           message: "Invalid YouTube URL format",
+//         },
+//         {
+//           status: 400,
+//         },
+//       );
+//     }
+//     const resp = await youtubesearchapi.GetVideoDetails(extractedId)
+    
+
+//     const Thumbnails = resp.thumbnail.thumbnails
+//     Thumbnails.sort((a: { width: number }, b: { width: number }) => a.width < b.width ? -1 : 1)
+//     console.log(Thumbnails)
+    
+//     const newSong = await prisma.song.create({
+//       data: {
+//         userId: hostId,
+//         url,
+//         artist: resp.channel ?? "Unknown",
+//         spaceId,
+//         extractedId,
+//         smallImg:
+//           (Thumbnails.length > 1
+//             ? Thumbnails[Thumbnails.length - 2].url
+//             : Thumbnails[Thumbnails.length - 1].url) ??
+//           "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
+//         bigImg: Thumbnails[Thumbnails.length - 1].url ??
+//           "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
+//         title: resp.title ?? "Cant find title",
+//         addedBy: host?.id || "",
+
+//       },
+//     });
+//     return NextResponse.json({
+//       ...newSong,
+//       hasUpvoted: false,
+//       upvotes: 0,
+//     });
+//   } catch (error: any) {
+//     return NextResponse.json({
+//       error: error.message,
+//     }, { status: 501 });
+//   }
+
+// }
+
+export async function POST(req: NextRequest) {
   const session = await auth();
-  // if (!session?.user?.id) {
-  //   return NextResponse.json(
-  //     { success: false, message: "You must be logged in to retrieve space information" },
-  //     { status: 401 }
-  //   );
-  // }
+  const defaultThumbnail = "/song-static.jpg"; // Default thumbnail URL
 
   try {
     const host = await prisma.user.findUnique({
-      where: {
-          email: session?.user?.email || "",
-      },
-      select: {
-        id: true,
-      },
+      where: { email: session?.user?.email || "" },
+      select: { id: true },
     });
-    
-    const body = streamSchema.parse(await req.json())
-    const { hostId, url, spaceId } = body
 
-    // console.log("hostId",hostId,url,spaceId)
+    const body = streamSchema.parse(await req.json());
+    const { hostId, url, spaceId } = body;
 
     if (!url.trim()) {
       return NextResponse.json(
-        {
-          message: "YouTube link cannot be empty",
-        },
-        {
-          status: 400,
-        },
+        { message: "YouTube link cannot be empty" },
+        { status: 400 }
       );
     }
 
-    const isYt = url.match(YT_REGEX);
-    const extractedId = url ? url.match(YT_REGEX)?.[1] : null;
-    if (!isYt || !extractedId) {
+    const extractedId = url.match(YT_REGEX)?.[1];
+    if (!extractedId) {
       return NextResponse.json(
-        {
-          message: "Invalid YouTube URL format",
-        },
-        {
-          status: 400,
-        },
+        { message: "Invalid YouTube URL format" },
+        { status: 400 }
       );
     }
-    const resp = await youtubesearchapi.GetVideoDetails(extractedId)
-    // console.log("extractedId",resp)
 
-    // const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-    // const duplicateSong = await prisma.song.findFirst({
-    //   where: {
-    //     userId: hostId,
-    //     extractedId,
-    //     createdAt: {
-    //       gte: tenMinutesAgo,
-    //     },
-    //   },
-    // });
-    // console.log("duplicateSong",duplicateSong)
-    // if (duplicateSong) {
-    //   return NextResponse.json(
-    //     {
-    //       message: "This song was already added in the last 10 minutes",
-    //     },
-    //     {
-    //       status: 429,
-    //     },
-    //   );
-    // }
+    const resp = await youtubesearchapi.GetVideoDetails(extractedId);
+    if (!resp || !resp.thumbnail) {
+      return NextResponse.json(
+        { message: "Could not fetch video details from YouTube" },
+        { status: 400 }
+      );
+    }
 
-    const Thumbnails = resp.thumbnail.thumbnails
-    Thumbnails.sort((a: { width: number }, b: { width: number }) => a.width < b.width ? -1 : 1)
-    console.log(Thumbnails)
-    
+    // Robust thumbnail handling
+    let smallImg = defaultThumbnail;
+    let bigImg = defaultThumbnail;
+    if (resp.thumbnail.thumbnails?.length > 0) {
+      const sortedThumbnails = [...resp.thumbnail.thumbnails].sort((a, b) => a.width - b.width);
+      smallImg = sortedThumbnails[0]?.url || defaultThumbnail;
+      bigImg = sortedThumbnails[sortedThumbnails.length - 1]?.url || defaultThumbnail;
+    }
+
     const newSong = await prisma.song.create({
       data: {
         userId: hostId,
@@ -92,29 +142,26 @@ export async function POST(req: NextRequest) {
         artist: resp.channel ?? "Unknown",
         spaceId,
         extractedId,
-        smallImg:
-          (Thumbnails.length > 1
-            ? Thumbnails[Thumbnails.length - 2].url
-            : Thumbnails[Thumbnails.length - 1].url) ??
-          "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
-        bigImg: Thumbnails[Thumbnails.length - 1].url ??
-          "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
-        title: resp.title ?? "Cant find title",
+        smallImg,
+        bigImg,
+        title: resp.title ?? "Unknown title",
         addedBy: host?.id || "",
-
       },
     });
+
     return NextResponse.json({
       ...newSong,
       hasUpvoted: false,
       upvotes: 0,
     });
-  } catch (error: any) {
-    return NextResponse.json({
-      error: error.message,
-    }, { status: 501 });
-  }
 
+  } catch (error: any) {
+    console.error("Error in song creation:", error);
+    return NextResponse.json(
+      { error: error.message || "An unexpected error occurred" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function GET(req: NextRequest) {

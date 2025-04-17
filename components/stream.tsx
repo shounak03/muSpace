@@ -220,6 +220,8 @@ export default function Stream({
         body: JSON.stringify(postData)
       })
       const data = await response.json();
+      console.log(data);
+      
       if (!response.ok)
         throw new Error(data.message || "An error occured")
 
