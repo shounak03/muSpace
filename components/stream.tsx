@@ -14,6 +14,11 @@ import { SpaceHeader } from './space-header';
 import YouTubePlayer from "youtube-player";
 
 interface SpaceData {
+  activeStream:{
+    song:{
+      id:string
+    }
+  }
   spaceName?: string;
   spaceDesc?: string;
   isCreator?: boolean;
