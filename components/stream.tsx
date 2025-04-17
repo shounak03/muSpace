@@ -57,9 +57,9 @@ export default function Stream({
 
   async function removeCurrentSongFromDB() {
     try {
-      await fetch(`/api/streams/current`, {
+      await fetch(`/api/streams/remove`, {
         method: "DELETE",
-        body: JSON.stringify({ spaceId })
+        body: JSON.stringify({ spaceId:spaceId,songId:data?.activeStream?.song.id })
       });
     } catch (error) {
       console.error("Error removing current song:", error);
@@ -88,7 +88,7 @@ export default function Stream({
 
       // Only update current song if it's different from the active stream
       setCurrentSong((prevSong) => {
-        if (data?.activeStream?.song) {
+        if (data?.activeStream?.song && data.streams.length > 0) {
           // If the active stream is different from the previous current song
           if (!prevSong || prevSong.id !== data.activeStream.song.id) {
             return data.activeStream.song;
@@ -97,7 +97,7 @@ export default function Stream({
         return prevSong;
       });
     } catch (error: any) {
-      console.log(error.message);
+      // console.log(error.message);
       setQueue([]);
       setCurrentSong(null);
     } finally {
@@ -107,6 +107,8 @@ export default function Stream({
 
   const playNext = async () => {
     // Remove the current song from the database first
+    // console.log("curr song = ",currentSong);
+    
     if (currentSong) {
       await removeCurrentSongFromDB();
     }
@@ -171,7 +173,7 @@ export default function Stream({
           controls: 1,
           disablekb: 1,
           enablejsapi: 1,
-          fs: 0,
+          fs: 1,
           modestbranding: 1,
           origin: window.location.origin,
           widget_referrer: window.location.origin,
@@ -232,6 +234,8 @@ export default function Stream({
 
 
   async function handleUpvote(songId: string, isUpvote: boolean) {
+
+    
     setQueue(
       queue.map((song) => song.id === songId ? {
         ...song,
@@ -298,7 +302,7 @@ export default function Stream({
                     <div
                       ref={videoPlayer}
                       className="w-full aspect-video"
-                      style={{ pointerEvents: 'none' }}
+                      // style={{ pointerEvents: 'none' }}
                     />
                   ) : (
                     <>
@@ -320,7 +324,7 @@ export default function Stream({
                 </div>
               ) : (
                 <p className="text-center text-gray-400">
-                  No video playing
+                  No song playing, Add a song in the queue
                 </p>
               )}
             </CardContent>

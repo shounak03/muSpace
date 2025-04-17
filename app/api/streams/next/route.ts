@@ -12,6 +12,15 @@ export async function  GET(req: NextRequest) {
           { status: 401 }
         );
       }
+
+      const user = await prisma.user.findUnique({
+        where: {
+            email: session?.user?.email || "",
+        },
+        select: {
+          id: true,
+        },
+      });
     try {
         const spaceId = req.nextUrl.searchParams.get("spaceId");
         if(!spaceId)
@@ -20,7 +29,7 @@ export async function  GET(req: NextRequest) {
             where:{
                 spaceId:spaceId,
                 played:false,
-                userId:session.user.id
+                userId: user?.id 
             },
             orderBy:{
                 votes:{

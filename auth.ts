@@ -78,20 +78,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   image: user.image,
                   provider: "Google",
                   googleId: profile?.sub,
-                  accounts: {
-                    create: {
-                      type: account.type,
-                      provider: account.provider,
-                      providerAccountId: account.providerAccountId,
-                      access_token: account.access_token,
-                      token_type: account.token_type,
-                      scope: account.scope,
-                      id_token: account.id_token,
-                    },
-                  },
+                  
                 },
               });
             }
+            
+            
           } catch (error) {
             console.error("Error during sign in:", error);
             return false;
