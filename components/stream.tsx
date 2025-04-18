@@ -13,6 +13,8 @@ import Image from 'next/image';
 import { SpaceHeader } from './space-header';
 import YouTubePlayer from "youtube-player";
 
+
+
 interface SpaceData {
   activeStream:{
     song:{
@@ -174,10 +176,10 @@ export default function Stream({
         videoId: currentSong.extractedId,
         host: 'https://www.youtube-nocookie.com',
         playerVars: {
-          autoplay: 1,
-          controls: 1,
-          disablekb: 1,
-          enablejsapi: 1,
+          autoplay: 0,
+          controls: 0,
+          disablekb: 0,
+          enablejsapi: 0,
           fs: 1,
           modestbranding: 1,
           origin: window.location.origin,
@@ -239,6 +241,7 @@ export default function Stream({
     }
   }
 
+  
 
   async function handleUpvote(songId: string, isUpvote: boolean) {
 
@@ -270,7 +273,7 @@ export default function Stream({
               <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
                 Song URL
               </label>
-              <form className="space-y-3" onSubmit={handleSubmit}>
+              <form className="space-y-3" onSubmit={handleSubmit} >
                 <Input
                   id="song-url"
                   placeholder="Enter song URL here"
@@ -282,7 +285,7 @@ export default function Stream({
 
                 <Button
                   disabled={loading}
-                  type="submit"
+                  type='submit'
                   className="bg-purple-600 text-white hover:bg-purple-700" >
                   {loading ? "adding..." : "Add to Queue"}
                 </Button>

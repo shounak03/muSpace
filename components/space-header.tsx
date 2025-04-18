@@ -18,7 +18,7 @@ export const SpaceHeader = ({ data }: { data?: SpaceData }) => {
 
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const router = useRouter();
-    console.log("data",data?.isCreator)
+    // console.log("data",data?.isCreator)
     
     function shareVideo() {
         const shareableLink = `${window.location.hostname}/spaces/${data?.spaceId}`;

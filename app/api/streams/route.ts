@@ -1,94 +1,12 @@
 import { auth } from "@/auth";
 import { YT_REGEX } from "@/lib/utils";
 import { streamSchema } from "@/schema";
-//@ts-expect-error
-import youtubesearchapi from 'youtube-search-api';
 import { PrismaClient } from '@prisma/client';
 import { NextResponse, NextRequest } from 'next/server';
-
+import axios from 'axios';
 const prisma = new PrismaClient();
 
-// export async function POST(req: NextRequest) {
-  
-//   const session = await auth();
-  
 
-//   try {
-//     const host = await prisma.user.findUnique({
-//       where: {
-//           email: session?.user?.email || "",
-//       },
-//       select: {
-//         id: true,
-//       },
-//     });
-    
-//     const body = streamSchema.parse(await req.json())
-//     const { hostId, url, spaceId } = body
-
-//     // console.log("hostId",hostId,url,spaceId)
-
-//     if (!url.trim()) {
-//       return NextResponse.json(
-//         {
-//           message: "YouTube link cannot be empty",
-//         },
-//         {
-//           status: 400,
-//         },
-//       );
-//     }
-
-//     const isYt = url.match(YT_REGEX);
-//     const extractedId = url ? url.match(YT_REGEX)?.[1] : null;
-//     if (!isYt || !extractedId) {
-//       return NextResponse.json(
-//         {
-//           message: "Invalid YouTube URL format",
-//         },
-//         {
-//           status: 400,
-//         },
-//       );
-//     }
-//     const resp = await youtubesearchapi.GetVideoDetails(extractedId)
-    
-
-//     const Thumbnails = resp.thumbnail.thumbnails
-//     Thumbnails.sort((a: { width: number }, b: { width: number }) => a.width < b.width ? -1 : 1)
-//     console.log(Thumbnails)
-    
-//     const newSong = await prisma.song.create({
-//       data: {
-//         userId: hostId,
-//         url,
-//         artist: resp.channel ?? "Unknown",
-//         spaceId,
-//         extractedId,
-//         smallImg:
-//           (Thumbnails.length > 1
-//             ? Thumbnails[Thumbnails.length - 2].url
-//             : Thumbnails[Thumbnails.length - 1].url) ??
-//           "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
-//         bigImg: Thumbnails[Thumbnails.length - 1].url ??
-//           "https://cdn.pixabay.com/photo/2024/02/28/07/42/european-shorthair-8601492_640.jpg",
-//         title: resp.title ?? "Cant find title",
-//         addedBy: host?.id || "",
-
-//       },
-//     });
-//     return NextResponse.json({
-//       ...newSong,
-//       hasUpvoted: false,
-//       upvotes: 0,
-//     });
-//   } catch (error: any) {
-//     return NextResponse.json({
-//       error: error.message,
-//     }, { status: 501 });
-//   }
-
-// }
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -99,7 +17,7 @@ export async function POST(req: NextRequest) {
       where: { email: session?.user?.email || "" },
       select: { id: true },
     });
-
+``
     const body = streamSchema.parse(await req.json());
     const { hostId, url, spaceId } = body;
 
@@ -117,34 +35,53 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    console.log("trying to fetch video details");
+    
+    
+    
+    const response = await axios.get(
+      `https://www.googleapis.com/youtube/v3/videos`,
+      {
+        params: {
+          part: 'snippet',
+          id: extractedId,
+          key: process.env.YT_API_KEY,
+        },
 
-    const resp = await youtubesearchapi.GetVideoDetails(extractedId);
-    if (!resp || !resp.thumbnail) {
-      return NextResponse.json(
-        { message: "Could not fetch video details from YouTube" },
-        { status: 400 }
-      );
-    }
+      }
+    );
 
-    // Robust thumbnail handling
-    let smallImg = defaultThumbnail;
-    let bigImg = defaultThumbnail;
-    if (resp.thumbnail.thumbnails?.length > 0) {
-      const sortedThumbnails = [...resp.thumbnail.thumbnails].sort((a, b) => a.width - b.width);
-      smallImg = sortedThumbnails[0]?.url || defaultThumbnail;
-      bigImg = sortedThumbnails[sortedThumbnails.length - 1]?.url || defaultThumbnail;
-    }
+    const video = response.data.items[0]?.snippet;
+    console.log("video data = ",video);
+    
+
+    // const resp = await youtubesearchapi.GetVideoDetails(extractedId);
+    // if (!resp || !resp.thumbnail) {
+    //   return NextResponse.json(
+    //     { message: "Could not fetch video details from YouTube" },
+    //     { status: 400 }
+    //   );
+    // }
+
+    // // Robust thumbnail handling
+    // let smallImg = defaultThumbnail;
+    // let bigImg = defaultThumbnail;
+    // if (resp.thumbnail.thumbnails?.length > 0) {
+    //   const sortedThumbnails = [...resp.thumbnail.thumbnails].sort((a, b) => a.width - b.width);
+    //   smallImg = sortedThumbnails[0]?.url || defaultThumbnail;
+    //   bigImg = sortedThumbnails[sortedThumbnails.length - 1]?.url || defaultThumbnail;
+    // }
 
     const newSong = await prisma.song.create({
       data: {
         userId: hostId,
         url,
-        artist: resp.channel ?? "Unknown",
+        artist: video.channelTitle ?? "Unknown",
         spaceId,
         extractedId,
-        smallImg,
-        bigImg,
-        title: resp.title ?? "Unknown title",
+        smallImg: video.thumbnails.standard?.url || defaultThumbnail,
+        bigImg: video.thumbnails.high?.url || defaultThumbnail,
+        title: video.title ?? "Unknown title",
         addedBy: host?.id || "",
       },
     });
