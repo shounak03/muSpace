@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       where: { email: session?.user?.email || "" },
       select: { id: true },
     });
-``
+
     const body = streamSchema.parse(await req.json());
     const { hostId, url, spaceId } = body;
 
