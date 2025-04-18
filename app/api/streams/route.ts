@@ -111,13 +111,32 @@ export async function GET(req: NextRequest) {
   }
   try {
     const spaceId = req.nextUrl.searchParams.get("spaceId");
-    const user = session.user
+    // const user = session.user
     if (!spaceId) {
       return NextResponse.json({
         message: "Error"
       }, {
         status: 411
       })
+    }
+
+    const user= await prisma.user.findUnique({
+      where: {
+          email: session?.user?.email || "",
+      },
+      select: {
+        id: true,
+      },
+    });
+    if(!user) {
+      return NextResponse.json(
+        {
+          message: "User not found",
+        },
+        {
+          status: 404,
+        },
+      );
     }
 
     const [space, activeStream] = await Promise.all([
@@ -165,7 +184,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     const hostId = space?.hostId;
-    const isCreator = session?.user?.id === hostId
+    const isCreator = user?.id === hostId
 
     return NextResponse.json({
       streams: space?.songs.map(({ _count, ...rest }) => ({
