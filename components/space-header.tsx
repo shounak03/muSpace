@@ -3,7 +3,7 @@ import { LogOut, Share2 } from 'lucide-react';
 import React, { useState } from 'react'
 import { Button } from './ui/button';
 import { toast } from 'sonner';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 
 interface SpaceData {
@@ -18,7 +18,6 @@ export const SpaceHeader = ({ data }: { data?: SpaceData }) => {
 
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const router = useRouter();
-    // console.log("data",data?.isCreator)
     
     function shareVideo() {
         const shareableLink = `${window.location.hostname}/spaces/${data?.spaceId}`;
@@ -41,7 +40,7 @@ export const SpaceHeader = ({ data }: { data?: SpaceData }) => {
             if (res.ok) {
                 toast.success("Stream ended successfully");
                 router.refresh()
-                router.push('/ThanksForWatching')
+                router.push('/dashboard')
 
             } else {
                 throw new Error('Failed to end stream');

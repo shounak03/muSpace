@@ -53,24 +53,6 @@ export async function POST(req: NextRequest) {
 
     const video = response.data.items[0]?.snippet;
     console.log("video data = ",video);
-    
-
-    // const resp = await youtubesearchapi.GetVideoDetails(extractedId);
-    // if (!resp || !resp.thumbnail) {
-    //   return NextResponse.json(
-    //     { message: "Could not fetch video details from YouTube" },
-    //     { status: 400 }
-    //   );
-    // }
-
-    // // Robust thumbnail handling
-    // let smallImg = defaultThumbnail;
-    // let bigImg = defaultThumbnail;
-    // if (resp.thumbnail.thumbnails?.length > 0) {
-    //   const sortedThumbnails = [...resp.thumbnail.thumbnails].sort((a, b) => a.width - b.width);
-    //   smallImg = sortedThumbnails[0]?.url || defaultThumbnail;
-    //   bigImg = sortedThumbnails[sortedThumbnails.length - 1]?.url || defaultThumbnail;
-    // }
 
     const newSong = await prisma.song.create({
       data: {
@@ -209,6 +191,7 @@ export async function GET(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
     const body = await req.json()
     const { spaceId } = body
+    console.log(spaceId);
     
     if (!spaceId) {
         return NextResponse.json({

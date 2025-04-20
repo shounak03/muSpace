@@ -12,6 +12,8 @@ import { Card, CardContent } from './ui/card';
 import Image from 'next/image';
 import { SpaceHeader } from './space-header';
 import YouTubePlayer from "youtube-player";
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 
 
@@ -61,6 +63,7 @@ export default function Stream({
   const [nextSong, setNextSong] = useState(false);
   const [loading, setLoading] = useState(false);
   const videoPlayer = useRef<HTMLDivElement>(null);
+  const router = useRouter()
 
   async function removeCurrentSongFromDB() {
     try {
@@ -112,6 +115,22 @@ export default function Stream({
     }
   }
 
+  if(data?.activeStream === null ){
+    return (
+      <div className='flex flex-col min-h-screen items-center justify-center'>
+          <h1 className='text-4xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400  to-red-500'>
+              Thanks for tuning in, The space has been ended</h1>
+            <div className='flex justify-center items-center space-x-4 mt-4'>
+              <Link href="/dashboard">
+                  <Button type="submit" className="bg-purple-600 text-white hover:bg-purple-700">
+                      Dashboard
+                  </Button>
+              </Link>
+          </div>
+      </div>
+  );
+  }
+
   const playNext = async () => {
     // Remove the current song from the database first
     // console.log("curr song = ",currentSong);
@@ -152,58 +171,6 @@ export default function Stream({
     }
   };
 
-  // Auto-play logic
-  useEffect(() => {
-    if (!currentSong && queue.length > 0 && !nextSong) {
-      playNext();
-    }
-  }, [currentSong, queue, nextSong]);
-
-  // Periodic refresh
-  useEffect(() => {
-    refresh();
-    const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [spaceId]);
-  
-  // YouTube Player setup
-  useEffect(() => {
-    if (!currentSong || !videoPlayer.current)
-      return;
-
-    const player = YouTubePlayer(videoPlayer.current,
-      {
-        videoId: currentSong.extractedId,
-        host: 'https://www.youtube-nocookie.com',
-        playerVars: {
-          autoplay: 0,
-          controls: 0,
-          disablekb: 0,
-          enablejsapi: 0,
-          fs: 1,
-          modestbranding: 1,
-          origin: window.location.origin,
-          widget_referrer: window.location.origin,
-        }
-      }
-    );
-    player.playVideo();
-
-    const eventHandler = (event: { data: number }) => {
-      if (event.data === 0) {
-        // Song ended, play next
-        playNext();
-      }
-    };
-    player.on("stateChange", eventHandler);
-
-    return () => {
-      player.destroy();
-    };
-  }, [currentSong, videoPlayer]);
-
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!url.trim()) {
@@ -241,8 +208,6 @@ export default function Stream({
     }
   }
 
-  
-
   async function handleUpvote(songId: string, isUpvote: boolean) {
 
     
@@ -260,6 +225,55 @@ export default function Stream({
   }
 
 
+  // Auto-play logic
+  useEffect(() => {
+    if (!currentSong && queue.length > 0 && !nextSong) {
+      playNext();
+    }
+  }, [currentSong, queue, nextSong]);
+
+  // Periodic refresh
+  useEffect(() => {
+    refresh();
+    const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [spaceId]);
+  
+  // YouTube Player setup
+  useEffect(() => {
+    if (!currentSong || !videoPlayer.current)
+      return;
+
+    const player = YouTubePlayer(videoPlayer.current,
+      {
+        videoId: currentSong.extractedId,
+        host: 'https://www.youtube-nocookie.com',
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          disablekb: 0,
+          enablejsapi: 0,
+          fs: 1,
+          modestbranding: 1,
+          origin: window.location.origin,
+          widget_referrer: window.location.origin,
+        }
+      }
+    );
+    player.playVideo();
+
+    const eventHandler = (event: { data: number }) => {
+      if (event.data === 0) {
+        // Song ended, play next
+        playNext();
+      }
+    };
+    player.on("stateChange", eventHandler);
+
+    return () => {
+      player.destroy();
+    };
+  }, [currentSong, videoPlayer]);
 
 
   return (

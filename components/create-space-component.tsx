@@ -68,7 +68,7 @@ export const CreateSpace = () => {
             <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
                     <CardTitle className="text-purple-400">Create a New Space</CardTitle>
-                    <CardDescription className="text-gray-400">Start your own music listening room</CardDescription>
+                    <CardDescription className="text-gray-400">Start your own muSpace</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Button
