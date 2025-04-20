@@ -225,21 +225,21 @@ export default function Stream({
   }
 
 
-  // Auto-play logic
+
   useEffect(() => {
     if (!currentSong && queue.length > 0 && !nextSong) {
       playNext();
     }
   }, [currentSong, queue, nextSong]);
 
-  // Periodic refresh
+
   useEffect(() => {
     refresh();
     const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [spaceId]);
   
-  // YouTube Player setup
+
   useEffect(() => {
     if (!currentSong || !videoPlayer.current)
       return;
