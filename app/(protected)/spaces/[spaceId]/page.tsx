@@ -46,15 +46,11 @@ const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
           </div>
     }
     return (
-
-
-        <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
-            <div className="max-w-4xl mx-auto space-y-8">                
-              <Stream hostId={hostId as string} playVideo={true} spaceId={spaceId} />
-            </div>
-        
+        <div className="min-h-screen bg-gray-900 text-gray-100">
+          <div className="container mx-auto px-4">
+            <Stream hostId={hostId as string} playVideo={true} spaceId={spaceId} />
+          </div>
         </div>
-
-    )
+      )
 }
 export default Page;

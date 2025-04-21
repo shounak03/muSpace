@@ -14,6 +14,7 @@ import { SpaceHeader } from './space-header';
 import YouTubePlayer from "youtube-player";
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Chat from './chat';
 
 
 
@@ -96,10 +97,8 @@ export default function Stream({
         setQueue([]);
       }
 
-      // Only update current song if it's different from the active stream
       setCurrentSong((prevSong) => {
         if (data?.activeStream?.song && data.streams.length > 0) {
-          // If the active stream is different from the previous current song
           if (!prevSong || prevSong.id !== data.activeStream.song.id) {
             return data.activeStream.song;
           }
@@ -115,7 +114,7 @@ export default function Stream({
     }
   }
 
-  if(data?.activeStream === null ){
+  if(!spaceId ){
     return (
       <div className='flex flex-col min-h-screen items-center justify-center'>
           <h1 className='text-4xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400  to-red-500'>
@@ -132,8 +131,6 @@ export default function Stream({
   }
 
   const playNext = async () => {
-    // Remove the current song from the database first
-    // console.log("curr song = ",currentSong);
     
     if (currentSong) {
       await removeCurrentSongFromDB();
@@ -249,12 +246,12 @@ export default function Stream({
         videoId: currentSong.extractedId,
         host: 'https://www.youtube-nocookie.com',
         playerVars: {
-          autoplay: 1,
+          autoplay:1,
           controls: 0,
           disablekb: 0,
           enablejsapi: 0,
-          fs: 1,
-          modestbranding: 1,
+          fs: 0,
+          rel:0,
           origin: window.location.origin,
           widget_referrer: window.location.origin,
         }
@@ -276,48 +273,193 @@ export default function Stream({
   }, [currentSong, videoPlayer]);
 
 
+ 
+  //   <>
+  //     <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
+  //       <div className="max-w-4xl mx-auto space-y-8">
+  //         <SpaceHeader data={{ spaceName: data?.spaceName, spaceDesc: data?.spaceDesc, isCreator: data?.isCreator ?? false, spaceId: spaceId }} />
+
+  //         <div className="space-y-4">
+  //           <div className="space-y-2">
+  //             <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
+  //               Song URL
+  //             </label>
+  //             <form className="space-y-3" onSubmit={handleSubmit} >
+  //               <Input
+  //                 id="song-url"
+  //                 placeholder="Enter song URL here"
+  //                 className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 flex-grow"
+  //                 type="text"
+  //                 value={url}
+  //                 onChange={(e) => setUrl(e.target.value)}
+  //               />
+
+  //               <Button
+  //                 disabled={loading}
+  //                 type='submit'
+  //                 className="bg-purple-600 text-white hover:bg-purple-700" >
+  //                 {loading ? "adding..." : "Add to Queue"}
+  //               </Button>
+  //             </form>
+  //             <CardContent>
+  //               {url && url.match(YT_REGEX) && !loading && (
+  //                 <div className="mt-4">
+  //                   <LiteYouTubeEmbed
+  //                     title=""
+  //                     id={url.split("?v=")[1]}
+  //                   />
+  //                 </div>
+  //               )}
+  //             </CardContent>
+  //           </div>
+  //         </div>
+
+  //         <Card className="bg-gray-800 border-gray-700 shadow-lg">
+  //           <CardContent className="p-6 space-y-4">
+  //             <h2 className="text-2xl font-bold text-white">Now Playing</h2>
+  //             {currentSong ? (
+  //               <div>
+  //                 {playVideo ? (
+  //                   <div
+  //                     ref={videoPlayer}
+  //                     className="w-full aspect-video"
+  //                     // style={{ pointerEvents: 'none' }}
+  //                   />
+  //                 ) : (
+  //                   <>
+  //                     <Image
+  //                       src={currentSong.bigImg}
+  //                       className="w-full aspect-video object-cover rounded-md"
+  //                       alt={currentSong.title}
+  //                       width={1920}
+  //                       height={1080}
+  //                     />
+  //                     <p className="mt-2 text-center font-semibold text-white">
+  //                       {currentSong.title}
+  //                     </p>
+  //                     <p className="mt-2 text-center font-semibold text-white">
+  //                       {currentSong.artist}
+  //                     </p>
+  //                   </>
+  //                 )}
+  //               </div>
+  //             ) : (
+  //               <p className="text-center text-gray-400">
+  //                 No song playing, Add a song in the queue
+  //               </p>
+  //             )}
+  //           </CardContent>
+  //         </Card>
+
+  //         <div className="space-y-4">
+  //           <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
+  //           {queue.length === 0 ? (
+  //             <Card className="bg-gray-800 border-gray-700 shadow-lg">
+  //               <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
+  //                 <p className="text-center py-8 text-gray-400">
+  //                   No Songs in queue
+  //                 </p>
+  //               </CardContent>
+  //             </Card>
+  //           ) : (
+  //             queue.map((song) => (
+  //               <div key={song.id} className="bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
+  //                 <div className="flex items-center space-x-4">
+  //                   <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
+  //                     <Image
+  //                       width={60}
+  //                       height={60}
+  //                       alt='thumbnail'
+  //                       src={song.smallImg}
+  //                       className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" 
+  //                     />
+  //                     <div>
+  //                       <p className="font-medium">{song.title}</p>
+  //                       <p className="text-sm text-gray-400">{song.artist}</p>
+  //                     </div>
+  //                   </CardContent>
+  //                 </div>
+  //                 <div className="flex items-center space-x-1 ml-8">
+  //                   <Button
+  //                     variant="ghost"
+  //                     size="icon"
+  //                     className={`hover:bg-gray-700 ${!song.haveUpvoted ? 'text-green-400' : 'text-red-400'}`}
+  //                     onClick={() => handleUpvote(song.id, song.haveUpvoted ? false : true)}
+  //                   >
+  //                     {!song.haveUpvoted ? (
+  //                       <PiArrowFatUpLight className="h-8 w-8" />
+  //                     ) : (
+  //                       <PiArrowFatDownThin className="h-8 w-8" />
+  //                     )}
+  //                   </Button>
+  //                   <span>{song.upvotes}</span>
+  //                 </div>
+  //               </div>
+  //             ))
+  //           )}
+  //         </div>
+
+  //       </div>
+  //     </div>
+  //   </>
+  // );
+
   return (
-    <>
-      <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <SpaceHeader data={{ spaceName: data?.spaceName, spaceDesc: data?.spaceDesc, isCreator: data?.isCreator ?? false, spaceId: spaceId }} />
+    <div className="py-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header with more space */}
+        <div className="mb-8">
+          <SpaceHeader
+            data={{
+              spaceName: data?.spaceName || "Music Stream",
+              spaceDesc: data?.spaceDesc || "Join the stream and chat with others!",
+              isCreator: data?.isCreator ?? false,
+              spaceId: spaceId,
+            }}
+          />
+        </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
-                Song URL
-              </label>
-              <form className="space-y-3" onSubmit={handleSubmit} >
-                <Input
-                  id="song-url"
-                  placeholder="Enter song URL here"
-                  className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 flex-grow"
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                />
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column (Music Player & Queue) - Takes 2/3 of the space */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Song URL Input */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
+                  Song URL
+                </label>
+                <form className="space-y-3" onSubmit={handleSubmit}>
+                  <Input
+                    id="song-url"
+                    placeholder="Enter song URL here"
+                    className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 flex-grow"
+                    type="text"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                  />
 
-                <Button
-                  disabled={loading}
-                  type='submit'
-                  className="bg-purple-600 text-white hover:bg-purple-700" >
-                  {loading ? "adding..." : "Add to Queue"}
-                </Button>
-              </form>
-              <CardContent>
-                {url && url.match(YT_REGEX) && !loading && (
-                  <div className="mt-4">
-                    <LiteYouTubeEmbed
+                  <Button disabled={loading} type="submit" className="bg-purple-600 text-white hover:bg-purple-700">
+                    {loading ? "adding..." : "Add to Queue"}
+                  </Button>
+                </form>
+                <CardContent>
+                  {url && url.match(YT_REGEX) && !loading && (
+                    <div className="mt-4">
+                      <LiteYouTubeEmbed
                       title=""
                       id={url.split("?v=")[1]}
-                    />
-                  </div>
-                )}
-              </CardContent>
+                      />
+                      <div className="aspect-video bg-gray-700 flex items-center justify-center">
+                        <p>YouTube Preview</p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </div>
             </div>
-          </div>
 
-          <Card className="bg-gray-800 border-gray-700 shadow-lg">
+            {/* Now Playing */}
+            <Card className="bg-gray-800 border-gray-700 shadow-lg">
             <CardContent className="p-6 space-y-4">
               <h2 className="text-2xl font-bold text-white">Now Playing</h2>
               {currentSong ? (
@@ -354,59 +496,62 @@ export default function Stream({
             </CardContent>
           </Card>
 
-          <div className="space-y-4">
-            <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
-            {queue.length === 0 ? (
-              <Card className="bg-gray-800 border-gray-700 shadow-lg">
-                <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
-                  <p className="text-center py-8 text-gray-400">
-                    No Songs in queue
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              queue.map((song) => (
-                <div key={song.id} className="bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
-                      <Image
-                        width={60}
-                        height={60}
-                        alt='thumbnail'
-                        src={song.smallImg}
-                        className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" 
-                      />
-                      <div>
-                        <p className="font-medium">{song.title}</p>
-                        <p className="text-sm text-gray-400">{song.artist}</p>
-                      </div>
-                    </CardContent>
-                  </div>
-                  <div className="flex items-center space-x-1 ml-8">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`hover:bg-gray-700 ${!song.haveUpvoted ? 'text-green-400' : 'text-red-400'}`}
-                      onClick={() => handleUpvote(song.id, song.haveUpvoted ? false : true)}
-                    >
-                      {!song.haveUpvoted ? (
-                        <PiArrowFatUpLight className="h-8 w-8" />
-                      ) : (
-                        <PiArrowFatDownThin className="h-8 w-8" />
+            {/* Queue */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
+              {queue.length === 0 ? (
+                <Card className="bg-gray-800 border-gray-700 shadow-lg">
+                  <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
+                    <p className="text-center py-8 text-gray-400">
+                      No Songs in queue
+                    </p>
+                  </CardContent>
+                </Card>
+              ):(
+
+                queue.map((song) => (
+                  <div key={song.id} className="bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
+                        <Image
+                          width={60}
+                          height={60}
+                          alt='thumbnail'
+                          src={song.smallImg}
+                          className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" 
+                        />
+                        <div>
+                          <p className="font-medium">{song.title}</p>
+                          <p className="text-sm text-gray-400">{song.artist}</p>
+                        </div>
+                      </CardContent>
+                    </div>
+                    <div className="flex items-center space-x-1 ml-8">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`hover:bg-gray-700 ${!song.haveUpvoted ? 'text-green-400' : 'text-red-400'}`}
+                        onClick={() => handleUpvote(song.id, song.haveUpvoted ? false : true)}
+                      >
+                        {!song.haveUpvoted ? (
+                          <PiArrowFatUpLight className="h-8 w-8" />
+                        ):(
+                          <PiArrowFatDownThin className="h-8 w-8" />
                       )}
                     </Button>
                     <span>{song.upvotes}</span>
                   </div>
                 </div>
-              ))
-            )}
+              )))}
+            </div>
+          </div>
+
+          {/* Right Column (Chat) - Takes 1/3 of the space */}
+          <div className="h-[calc(100vh-10rem)]">
+            <Chat spaceId={spaceId} />
           </div>
         </div>
       </div>
-    </>
-  );
+    </div>
+  )
 }
-
-
-
-
