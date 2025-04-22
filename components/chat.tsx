@@ -5,36 +5,38 @@ import { useState, useEffect, useRef } from 'react';
 import { chatService } from '@/lib/chat-service';
 import { Message } from '../types/index';
 import { getMail } from '@/app/action';
+import { Switch } from './ui/switch';
 
 interface ChatProps {
   spaceId: string;
+  isCreator:boolean
 }
 
-export default function Chat({ spaceId }: ChatProps) {
+export default function Chat({ spaceId, isCreator }: ChatProps) {
   const [email, setEmail] = useState('')
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [disableChat, setDisableChat] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const isAtBottom = useRef(true);
- 
-    async function fetchMail() {
-        const mail = await getMail()
-        setEmail(mail)
-    }
-    useEffect(()=>{
-        fetchMail()
-    },[])
 
-  // Function to scroll to bottom of messages
+  async function fetchMail() {
+    const mail = await getMail()
+    setEmail(mail)
+  }
+  useEffect(() => {
+    fetchMail()
+  }, [])
+
   const scrollToBottom = () => {
     if (messagesEndRef.current && isAtBottom.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  // Check if user is at bottom when scrolling
+
   const handleScroll = () => {
     if (chatContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
@@ -44,12 +46,14 @@ export default function Chat({ spaceId }: ChatProps) {
 
 
   useEffect(() => {
+    if (disableChat === true)
+      return
     const loadInitialMessages = async () => {
       setLoading(true);
       chatService.reset();
       const initialMessages = await chatService.fetchMessages(spaceId);
-      console.log("ini msgs = ",initialMessages);
-      
+      console.log("ini msgs = ", initialMessages);
+
       setMessages(initialMessages);
       setLoading(false);
     };
@@ -59,30 +63,46 @@ export default function Chat({ spaceId }: ChatProps) {
     return () => {
       chatService.reset();
     };
-  }, [spaceId]);
+  }, [spaceId, disableChat]);
 
 
   useEffect(() => {
+    if (disableChat === true)
+      return
     let isMounted = true;
 
     const pollMessages = async () => {
       while (isMounted) {
         const newMessages = await chatService.fetchMessages(spaceId);
         console.log(newMessages);
-        
-        if (isMounted && newMessages.length > 0) {
-          setMessages(prevMessages => {
 
-            const existingIds = new Set(prevMessages.map(msg => msg.id));
+        if (isMounted && newMessages.length > 0) {
+          //   setMessages(prevMessages => {
+
+          //     const existingIds = new Set(prevMessages.map(msg => msg.id));
+          //     const uniqueNewMessages = newMessages.filter(msg => !existingIds.has(msg.id));
+
+          //     if (uniqueNewMessages.length === 0) return prevMessages;
+
+          //     return [...prevMessages, ...uniqueNewMessages];
+          //   });
+          setMessages(prevMessages => {
+            const filtered = prevMessages.filter(msg =>
+              !(msg.id.startsWith('temp-') && newMessages.some(newMsg =>
+                newMsg.content === msg.content &&
+                newMsg.user.email === msg.user.email
+              ))
+            );
+
+            const existingIds = new Set(filtered.map(msg => msg.id));
             const uniqueNewMessages = newMessages.filter(msg => !existingIds.has(msg.id));
-            
-            if (uniqueNewMessages.length === 0) return prevMessages;
-            
-            return [...prevMessages, ...uniqueNewMessages];
+
+            return [...filtered, ...uniqueNewMessages];
           });
+
         }
-        
-        
+
+
       }
     };
 
@@ -95,39 +115,42 @@ export default function Chat({ spaceId }: ChatProps) {
 
 
   useEffect(() => {
+    if (disableChat === true)
+      return
     scrollToBottom();
   }, [messages]);
 
 
   const handleSendMessage = async (e: React.FormEvent) => {
+    if (disableChat === true)
+      return
     e.preventDefault();
-    
+
     if (!newMessage.trim()) return;
-    
-    // Optimistically add message to UI
+
     const optimisticMessage: Message = {
       id: `temp-${Date.now()}`,
       content: newMessage,
-    //   userId: session.user.id as string,
+      //   userId: session.user.id as string,
       user: {
-    //     id: session.user.id as string,
+        //     id: session.user.id as string,
         // name: session.user.name,
-            email :email,
+        email: email,
       },
       spaceId,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    
-    setMessages(prev => [...prev, optimisticMessage]);
+
+    setMessages(prev => [...prev]);
     setNewMessage('');
-    
+
     // Send to server
     await chatService.sendMessage({
       content: newMessage,
       spaceId,
     });
-    
+
     // Force scroll to bottom
     isAtBottom.current = true;
     scrollToBottom();
@@ -141,16 +164,32 @@ export default function Chat({ spaceId }: ChatProps) {
 
   return (
     <div className="flex flex-col h-full bg-gray-800 rounded-lg shadow overflow-hidden mt-7">
-      <div className="px-4 py-3 bg-gray-700 border-b border-gray-600">
+      <div className="px-4 py-3 bg-gray-700 border-b border-gray-600 flex justify-between">
         <h3 className="text-lg font-medium text-white">Chat</h3>
+        <div>
+
+        {isCreator === true && <Switch
+          checked={disableChat}
+          onCheckedChange={(checked) => setDisableChat(checked)}
+          />}
+       
+          </div>
       </div>
 
       <div ref={chatContainerRef} className="flex-1 p-4 overflow-y-auto" onScroll={handleScroll}>
-        {loading ? (
+        {disableChat === true &&
+
+
+          <div className="flex justify-center items-center h-full text-gray-400">
+            Chat is disabled, Contact the space owner.
+          </div>
+
+        }
+        {!disableChat && loading ? (
           <div className="flex justify-center items-center h-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
           </div>
-        ) : messages.length === 0 ? (
+        ) : !disableChat && messages.length === 0 ? (
           <div className="flex justify-center items-center h-full text-gray-400">
             No messages yet. Start the conversation!
           </div>
@@ -166,14 +205,13 @@ export default function Chat({ spaceId }: ChatProps) {
                   >
                     <div>
                       <div
-                        className={`px-4 py-2 rounded-lg ${
-                          isCurrentUser ? "bg-blue-500 text-white" : "bg-gray-600 text-gray-100"
-                        }`}
+                        className={`px-4 py-2 rounded-lg ${isCurrentUser ? "bg-blue-500 text-white" : "bg-gray-600 text-gray-100"
+                          }`}
                       >
                         <p className="whitespace-pre-wrap break-words">{message.content}</p>
                       </div>
                       <div className={`text-xs text-gray-400 mt-1 ${isCurrentUser ? "text-right" : "text-left"}`}>
-                        {message.user.email} • {formatTime(message.createdAt)}
+                        {message.user.name ?? message.user.email} • {formatTime(message.createdAt)}
                       </div>
                     </div>
                   </div>
@@ -183,21 +221,23 @@ export default function Chat({ spaceId }: ChatProps) {
             <div ref={messagesEndRef} />
           </div>
         )}
+
       </div>
 
       <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-700 bg-gray-800">
         <div className="flex gap-2">
           <input
             type="text"
-            className="flex-1 px-4 py-2 border border-gray-600 bg-gray-700 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-4 py-2 border border-gray-600 bg-gray-700 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed"
             placeholder="Type a message..."
             value={newMessage}
+            disabled={disableChat}
             onChange={(e) => setNewMessage(e.target.value)}
           />
           <button
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-            disabled={!newMessage.trim()}
+            disabled={!newMessage.trim() || disableChat === true}
           >
             Send
           </button>

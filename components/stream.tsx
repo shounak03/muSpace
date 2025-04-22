@@ -28,6 +28,7 @@ interface SpaceData {
   spaceDesc?: string;
   isCreator?: boolean;
   spaceId: string
+  spaceRunning: boolean
 }
 
 interface Video {
@@ -114,7 +115,7 @@ export default function Stream({
     }
   }
 
-  if(!spaceId ){
+  if(data?.spaceRunning === false ){
     return (
       <div className='flex flex-col min-h-screen items-center justify-center'>
           <h1 className='text-4xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400  to-red-500'>
@@ -411,8 +412,8 @@ export default function Stream({
         <div className="mb-8">
           <SpaceHeader
             data={{
-              spaceName: data?.spaceName || "Music Stream",
-              spaceDesc: data?.spaceDesc || "Join the stream and chat with others!",
+              spaceName: data?.spaceName ,
+              spaceDesc: data?.spaceDesc ,
               isCreator: data?.isCreator ?? false,
               spaceId: spaceId,
             }}
@@ -468,7 +469,7 @@ export default function Stream({
                     <div
                       ref={videoPlayer}
                       className="w-full aspect-video"
-                      // style={{ pointerEvents: 'none' }}
+                      style={{ pointerEvents: 'none' }}
                     />
                   ) : (
                     <>
@@ -546,9 +547,9 @@ export default function Stream({
             </div>
           </div>
 
-          {/* Right Column (Chat) - Takes 1/3 of the space */}
+              
           <div className="h-[calc(100vh-10rem)]">
-            <Chat spaceId={spaceId} />
+            <Chat spaceId={spaceId} isCreator= {data?.isCreator as boolean} />
           </div>
         </div>
       </div>

@@ -15,7 +15,7 @@ import { RegisterSchema } from '@/schema';
 const RegisterForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
 
@@ -25,7 +25,11 @@ const RegisterForm = () => {
     setSuccess('');
 
     try {
-      const validatedData = RegisterSchema.parse({ email, password, username });
+      console.log(email,name,password);
+      console.log(typeof(name));
+      
+      
+      const validatedData = RegisterSchema.parse({ email, password, name });
 
       console.log(validatedData);
       
@@ -44,6 +48,7 @@ const RegisterForm = () => {
       }
       if (data?.error) {
         setError(data.error);
+        
       } else {
         setSuccess('Registered successfully!');
       }
@@ -52,6 +57,8 @@ const RegisterForm = () => {
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
+        console.log(error);
+        
       } else {
         setError('An unknown error occurred');
       }
@@ -72,8 +79,8 @@ const RegisterForm = () => {
           <Input
             type="username"
             placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
           <Input
             type="password"

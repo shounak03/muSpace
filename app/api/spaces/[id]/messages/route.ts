@@ -128,6 +128,7 @@ export async function POST(
         // Get user ID from session
         const userId = user.id;
 
+
         // Create the message
         const message = await prisma.message.create({
             data: {
@@ -141,7 +142,6 @@ export async function POST(
                         id: true,
                         name: true,
                         email: true,
-                        image: true,
                     },
                 },
             },

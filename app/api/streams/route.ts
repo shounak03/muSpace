@@ -162,8 +162,20 @@ export async function GET(req: NextRequest) {
         include: {
           song: true
         }
-      })
+      }),
+      
     ]);
+
+    const spaceRunning = await prisma.song.findFirst({
+      where: {
+        id: spaceId
+      },
+      select: {
+        spaceRunning: true
+      }
+    })
+    console.log(spaceRunning);
+    
 
     const hostId = space?.hostId;
     const isCreator = user?.id === hostId
@@ -173,12 +185,14 @@ export async function GET(req: NextRequest) {
         ...rest,
         upvotes: _count.votes,
         haveUpvoted: rest.votes.length ? true : false
+
       })),
       activeStream,
       hostId,
       isCreator,
       spaceName: space?.name,
-      spaceDesc: space?.description
+      spaceDesc: space?.description,
+      spaceRunning 
     });
   } catch (error) {
     console.log(error);
@@ -229,6 +243,13 @@ export async function DELETE(req: NextRequest) {
             where: {
                 id: spaceId
             }
+        })
+        await prisma.song.update({
+          where:{
+            id:spaceId
+          },data:{
+            spaceRunning:false
+          }
         })
 
         return NextResponse.json({

@@ -190,28 +190,29 @@ model Account {
 }
 
 model Space {
-  id          String       @id @default(cuid())
+  id          String @id @default(cuid())
   name        String
   description String
-  url         String       @unique @default("")
+  url         String @unique @default("")
   hostId      String
-  host        User         @relation("hostedBy", fields: [hostId], references: [id])
+  host        User   @relation("hostedBy", fields: [hostId], references: [id])
   songs       Song[]
+  chatDisabled Boolean  @default(true)
   currentSong CurrentSong?
-  messages    Message[]    // Added messages relation
+  messages    Message[] 
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
 
 model Message {
-  id        String   @id @default(cuid())
-  content   String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  spaceId   String
-  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  content      String
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spaceId      String
+  space        Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Session {
@@ -233,6 +234,7 @@ model Song {
   smallImg      String?
   artist        String?
   duration      Int?
+  spaceRunning  Boolean      @default(true)
   active        Boolean      @default(false)
   currentStream CurrentSong?
   played        Boolean      @default(false)
