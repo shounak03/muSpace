@@ -5,7 +5,9 @@ import { useState, useEffect, useRef } from 'react';
 import { chatService } from '@/lib/chat-service';
 import { Message } from '../types/index';
 import { getMail } from '@/app/action';
-import { Switch } from './ui/switch';
+import { Button } from './ui/button';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface ChatProps {
   spaceId: string;
@@ -21,6 +23,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const isAtBottom = useRef(true);
+  const router = useRouter()
 
   async function fetchMail() {
     const mail = await getMail()
@@ -43,6 +46,42 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
       isAtBottom.current = Math.abs(scrollHeight - scrollTop - clientHeight) < 10;
     }
   };
+
+  useEffect(() => {
+    chatfn()
+    console.log(disableChat)
+  },[spaceId])
+
+  const  chatfn = async()=>{
+    const res = await fetch(`/api/spaces/${spaceId}/messages/disableChat`)
+    const data = await res.json()
+    setDisableChat(data?.chatDisabled);
+  }
+
+  const  setchat = async()=>{
+    try {
+      const res = await fetch(`/api/spaces/${spaceId}/messages/disableChat`,{
+        method:"POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ disableChat })
+      })
+      const data = await res.json()
+      console.log(data);
+      
+      setDisableChat(data?.chatDisabled);
+    } catch (error) {
+        console.log(error);
+        
+    }finally{
+      if(disableChat === true)
+        toast.success("Chat enabled successfully")
+      else
+        toast.success("Chat disabled successfully")
+      window.location.reload()
+    }
+  }
+    
+    
 
 
   useEffect(() => {
@@ -168,10 +207,17 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
         <h3 className="text-lg font-medium text-white">Chat</h3>
         <div>
 
-        {isCreator === true && <Switch
-          checked={disableChat}
-          onCheckedChange={(checked) => setDisableChat(checked)}
-          />}
+
+        {isCreator === true && disableChat === false?
+        
+          (<Button className='bg-red-900' onClick={setchat}>
+            disable
+          </Button>):(
+            <Button className='bg-green-800' onClick={setchat}>
+            enable
+          </Button>
+          )
+          }
        
           </div>
       </div>
