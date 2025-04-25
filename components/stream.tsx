@@ -15,6 +15,9 @@ import YouTubePlayer from "youtube-player";
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Chat from './chat';
+import BidSolana from './BidSolana';
+
+
 
 
 
@@ -450,9 +453,9 @@ export default function Stream({
                       title=""
                       id={url.split("?v=")[1]}
                       />
-                      <div className="aspect-video bg-gray-700 flex items-center justify-center">
+
                         <p>YouTube Preview</p>
-                      </div>
+
                     </div>
                   )}
                 </CardContent>
@@ -527,7 +530,7 @@ export default function Stream({
                         </div>
                       </CardContent>
                     </div>
-                    <div className="flex items-center space-x-1 ml-8">
+                    <div className="flex items-center  ml-8">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -541,6 +544,8 @@ export default function Stream({
                       )}
                     </Button>
                     <span>{song.upvotes}</span>
+                    {/* <Bitcoin className='ml-4'/> */}
+                    <BidSolana/>
                   </div>
                 </div>
               )))}

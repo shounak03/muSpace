@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AudioWaveform } from "lucide-react"
 import { auth, signOut } from '@/auth'
+import WalletIcon from './wallet-icon'
 
 
 
@@ -42,9 +43,10 @@ export async function Appbar() {
           )}
           {session?.user && (
             <div className='flex space-x-4'>
-                <Link href="/about" className="text-white hover:text-purple-400 transition-colors mt-1">
+                {/* <Link href="/about" className="text-white hover:text-purple-400 transition-colors mt-1">
                     About
-                </Link>
+                </Link> */}
+                <WalletIcon/>
               <Link href={'/dashboard'}>
                   <Button
                     variant="outline"

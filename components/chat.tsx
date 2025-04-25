@@ -19,7 +19,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const [disableChat, setDisableChat] = useState(true);
+  const [disableChat, setDisableChat] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const isAtBottom = useRef(true);
@@ -49,7 +49,6 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
 
   useEffect(() => {
     chatfn()
-    console.log(disableChat)
   },[spaceId])
 
   const  chatfn = async()=>{
@@ -85,6 +84,8 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
 
 
   useEffect(() => {
+    console.log(disableChat);
+    
     if (disableChat === true)
       return
     const loadInitialMessages = async () => {
@@ -241,7 +242,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {messages.map((message) => {
+            {!disableChat && messages.map((message) => {
               const isCurrentUser = message.user.email === email
 
               return (

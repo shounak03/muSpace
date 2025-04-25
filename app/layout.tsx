@@ -4,6 +4,8 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { Appbar } from "@/components/Appbar";
 import Footer from "@/components/Footer";
+import AppWalletProvider from "@/components/AppWalletProvider";
+
 
 type ToasterProps = React.ComponentProps<typeof Toaster>;
 const toastOptions: ToasterProps = {
@@ -38,12 +40,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased w-full`}
       >
+        <AppWalletProvider>
 
-        <Toaster {...toastOptions} />
-        <Appbar/>
+          <Toaster {...toastOptions} />
+          <Appbar />
 
-        {children}
-        <Footer/>
+          {children}
+          <Footer />
+        </AppWalletProvider>
       </body>
     </html>
   );
