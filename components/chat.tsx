@@ -15,6 +15,8 @@ interface ChatProps {
 }
 
 export default function Chat({ spaceId, isCreator }: ChatProps) {
+  console.log(isCreator);
+  
   const [email, setEmail] = useState('')
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -47,9 +49,13 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
     }
   };
 
-  useEffect(() => {
-    chatfn()
-  },[spaceId])
+  
+    useEffect(() => {
+      chatfn();
+      const interval = setInterval(chatfn, 3*1000);
+      return () => clearInterval(interval);
+    }, [spaceId]);
+    
 
   const  chatfn = async()=>{
     const res = await fetch(`/api/spaces/${spaceId}/messages/disableChat`)
@@ -76,7 +82,8 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
         toast.success("Chat enabled successfully")
       else
         toast.success("Chat disabled successfully")
-      window.location.reload()
+      // window.location.reload()
+      // return chatfn()
     }
   }
     
@@ -112,37 +119,33 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
     let isMounted = true;
 
     const pollMessages = async () => {
-      while (isMounted) {
-        const newMessages = await chatService.fetchMessages(spaceId);
-        console.log(newMessages);
-
-        if (isMounted && newMessages.length > 0) {
-          //   setMessages(prevMessages => {
-
-          //     const existingIds = new Set(prevMessages.map(msg => msg.id));
-          //     const uniqueNewMessages = newMessages.filter(msg => !existingIds.has(msg.id));
-
-          //     if (uniqueNewMessages.length === 0) return prevMessages;
-
-          //     return [...prevMessages, ...uniqueNewMessages];
-          //   });
-          setMessages(prevMessages => {
-            const filtered = prevMessages.filter(msg =>
-              !(msg.id.startsWith('temp-') && newMessages.some(newMsg =>
-                newMsg.content === msg.content &&
-                newMsg.user.email === msg.user.email
-              ))
-            );
-
-            const existingIds = new Set(filtered.map(msg => msg.id));
-            const uniqueNewMessages = newMessages.filter(msg => !existingIds.has(msg.id));
-
-            return [...filtered, ...uniqueNewMessages];
-          });
-
+      try {
+        while (isMounted) {
+          const newMessages = await chatService.fetchMessages(spaceId);
+          console.log(newMessages);
+  
+          if (isMounted && newMessages.length > 0) {
+            setMessages(prevMessages => {
+              const filtered = prevMessages.filter(msg =>
+                !(msg.id.startsWith('temp-') && newMessages.some(newMsg =>
+                  newMsg.content === msg.content &&
+                  newMsg.user.email === msg.user.email
+                ))
+              );
+  
+              const existingIds = new Set(filtered.map(msg => msg.id));
+              const uniqueNewMessages = newMessages.filter(msg => !existingIds.has(msg.id));
+  
+              return [...filtered, ...uniqueNewMessages];
+            });
+  
+          }
+  
+  
         }
-
-
+      } catch (error) {
+          console.log(error);
+          
       }
     };
 
@@ -209,7 +212,9 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
         <div>
 
 
-        {isCreator === true && disableChat === false?
+        {isCreator === true ?
+        
+        (disableChat === false?
         
           (<Button className='bg-red-900' onClick={setchat}>
             disable
@@ -217,7 +222,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
             <Button className='bg-green-800' onClick={setchat}>
             enable
           </Button>
-          )
+          )):(<div/>)
           }
        
           </div>
@@ -228,7 +233,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
 
 
           <div className="flex justify-center items-center h-full text-gray-400">
-            Chat is disabled, Contact the space owner.
+            Chat disabled, Please refresh in case a mistake.
           </div>
 
         }

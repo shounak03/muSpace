@@ -1,4 +1,3 @@
-// app/api/spaces/[spaceId]/messages/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 
@@ -6,6 +5,7 @@ import { auth } from '@/auth';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
+
 export async function GET(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -19,6 +19,14 @@ export async function GET(
 
         const { id } = await params;
 
+        const data = await prisma.space.findFirst({
+            where:{id},
+            select:{chatDisabled:true}
+        })
+        
+        if(data?.chatDisabled === true){
+            return NextResponse.json({message:"chat disabled"},{status:200})
+        }
 
         const space = await prisma.space.findUnique({
             where: { id },
@@ -44,7 +52,7 @@ export async function GET(
             }
             : { spaceId :id };
 
-        const waitTime = 30000; // 30 seconds
+        const waitTime = 30000;
         const startTime = Date.now();
 
         let messages = [];
@@ -72,12 +80,10 @@ export async function GET(
 
             // console.log("message -", messages);
 
-            // If messages found or timeout reached, break the loop
             if (messages.length > 0 || Date.now() - startTime > waitTime) {
                 break;
             }
 
-            // Small delay before trying again
             await new Promise((resolve) => setTimeout(resolve, 1000));
         } while (true);
 
@@ -110,6 +116,15 @@ export async function POST(
 
         const { id } = await params;
         const { content } = await req.json();
+
+        const data = await prisma.space.findFirst({
+            where:{id},
+            select:{chatDisabled:true}
+        })
+
+        if(data?.chatDisabled === true){
+            return NextResponse.json({message:"chat disabled"},{status:200})
+        }
 
         // Validate request body
         if (!content || typeof content !== 'string') {
