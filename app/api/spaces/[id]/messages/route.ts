@@ -19,14 +19,14 @@ export async function GET(
 
         const { id } = await params;
 
-        const data = await prisma.space.findFirst({
-            where:{id},
-            select:{chatDisabled:true}
-        })
+        // const data = await prisma.space.findFirst({
+        //     where:{id},
+        //     select:{chatDisabled:true}
+        // })
         
-        if(data?.chatDisabled === true){
-            return NextResponse.json({message:"chat disabled"},{status:200})
-        }
+        // if(data?.chatDisabled === true){
+        //     return NextResponse.json({message:"chat disabled"},{status:200})
+        // }
 
         const space = await prisma.space.findUnique({
             where: { id },

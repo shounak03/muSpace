@@ -15,7 +15,7 @@ interface ChatProps {
 }
 
 export default function Chat({ spaceId, isCreator }: ChatProps) {
-  console.log(isCreator);
+
   
   const [email, setEmail] = useState('')
   const [messages, setMessages] = useState<Message[]>([]);
@@ -52,9 +52,9 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
   
     useEffect(() => {
       chatfn();
-      const interval = setInterval(chatfn, 3*1000);
+      const interval = setInterval(chatfn, 10*1000);
       return () => clearInterval(interval);
-    }, [spaceId]);
+    }, []);
     
 
   const  chatfn = async()=>{
@@ -71,11 +71,11 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
         body: JSON.stringify({ disableChat })
       })
       const data = await res.json()
-      console.log(data);
+      // console.log(data);
       
       setDisableChat(data?.chatDisabled);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         
     }finally{
       if(disableChat === true)
@@ -91,7 +91,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
 
 
   useEffect(() => {
-    console.log(disableChat);
+    // console.log(disableChat);
     
     if (disableChat === true)
       return
@@ -99,7 +99,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
       setLoading(true);
       chatService.reset();
       const initialMessages = await chatService.fetchMessages(spaceId);
-      console.log("ini msgs = ", initialMessages);
+      // console.log("ini msgs = ", initialMessages);
 
       setMessages(initialMessages);
       setLoading(false);
@@ -122,7 +122,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
       try {
         while (isMounted) {
           const newMessages = await chatService.fetchMessages(spaceId);
-          console.log(newMessages);
+          // console.log(newMessages);
   
           if (isMounted && newMessages.length > 0) {
             setMessages(prevMessages => {
@@ -144,7 +144,8 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
   
         }
       } catch (error) {
-          console.log(error);
+        // throw new 
+          // console.log(error);
           
       }
     };

@@ -165,7 +165,8 @@ model User {
   sessions      Session[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  messages      Message[] // Added messages relation
+  messages      Message[] 
+  bid           Bid[]
 }
 
 model Account {
@@ -248,6 +249,7 @@ model Song {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   votes         Vote[]
+  bidAmount     Bid[]          
 }
 
 model CurrentSong {
@@ -263,6 +265,16 @@ model Vote {
   id     String @id @default(cuid())
   userId String
   songId String
+  user   User   @relation(fields: [userId], references: [id])
+  song   Song   @relation(fields: [songId], references: [id])
+
+  @@unique([userId, songId])
+}
+model Bid {
+  id     String @id @default(cuid())
+  userId String
+  songId String
+  amount  Int
   user   User   @relation(fields: [userId], references: [id])
   song   Song   @relation(fields: [songId], references: [id])
 

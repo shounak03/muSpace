@@ -17,14 +17,6 @@ const WalletIcon = () => {
         cursor: 'pointer',
         height:'33px'
       }}
-      // onMouseEnter={(e:MouseEvent) => {
-      //   e.currentTarget.style.backgroundColor = '#a855f7'; // hover:bg-purple-400
-      //   e.currentTarget.style.color = '#111827'; // hover:text-gray-900
-      // }}
-      // onMouseLeave={(e) => {
-      //   e.currentTarget.style.backgroundColor = 'black';
-      //   e.currentTarget.style.color = 'white';
-      // }}
     />
   )
 }

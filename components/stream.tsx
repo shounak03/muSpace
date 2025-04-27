@@ -102,7 +102,7 @@ export default function Stream({
       }
 
       setCurrentSong((prevSong) => {
-        if (data?.activeStream?.song && data.streams.length > 0) {
+        if (data?.activeStream?.song) {
           if (!prevSong || prevSong.id !== data.activeStream.song.id) {
             return data.activeStream.song;
           }
@@ -122,7 +122,8 @@ export default function Stream({
     return (
       <div className='flex flex-col min-h-screen items-center justify-center'>
           <h1 className='text-4xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400  to-red-500'>
-              Thanks for tuning in, The space has been ended</h1>
+              Thanks for tuning in, The space has been ended
+          </h1>
             <div className='flex justify-center items-center space-x-4 mt-4'>
               <Link href="/dashboard">
                   <Button type="submit" className="bg-purple-600 text-white hover:bg-purple-700">
@@ -210,7 +211,8 @@ export default function Stream({
   }
 
   async function handleUpvote(songId: string, isUpvote: boolean) {
-
+    console.log(songId);
+    
     
     setQueue(
       queue.map((song) => song.id === songId ? {
@@ -251,7 +253,7 @@ export default function Stream({
         host: 'https://www.youtube-nocookie.com',
         playerVars: {
           autoplay:1,
-          controls: 0,
+          controls: 1,
           disablekb: 0,
           enablejsapi: 0,
           fs: 0,
@@ -278,7 +280,7 @@ export default function Stream({
 
 
  
-  //   <>
+ 
   //     <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
   //       <div className="max-w-4xl mx-auto space-y-8">
   //         <SpaceHeader data={{ spaceName: data?.spaceName, spaceDesc: data?.spaceDesc, isCreator: data?.isCreator ?? false, spaceId: spaceId }} />
@@ -472,7 +474,7 @@ export default function Stream({
                     <div
                       ref={videoPlayer}
                       className="w-full aspect-video"
-                      style={{ pointerEvents: 'none' }}
+                      // style={{ pointerEvents: 'none' }}
                     />
                   ) : (
                     <>
@@ -545,7 +547,7 @@ export default function Stream({
                     </Button>
                     <span>{song.upvotes}</span>
                     {/* <Bitcoin className='ml-4'/> */}
-                    <BidSolana/>
+                    {/* <BidSolana songId={song.id as string} amount={0.01 as number}/> */}
                   </div>
                 </div>
               )))}
