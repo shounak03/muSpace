@@ -547,7 +547,7 @@ export default function Stream({
                     </Button>
                     <span>{song.upvotes}</span>
                     {/* <Bitcoin className='ml-4'/> */}
-                    {/* <BidSolana songId={song.id as string} amount={0.01 as number}/> */}
+                    <BidSolana songId={song.id as string} amount={0.01 as number}/>
                   </div>
                 </div>
               )))}

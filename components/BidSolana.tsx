@@ -7,25 +7,68 @@ import { toast } from 'sonner';
 
 export default function BidSolana({ songId, amount }: { songId: string, amount: number }) {
 
-  // const {Connection} = useConnection()
-  const { publicKey, wallet } = useWallet()
+
+  const { publicKey, wallet,sendTransaction } = useWallet()
   const connection = new Connection('https://api.devnet.solana.com');
   const GOVERNANCE_ADDRESS = new PublicKey('BdZMeRCC7zrXuZBj5XpPJFjqcWHKR62kPrgGk551mcNM');
 
 
 
-  async function bidSol() {
-    console.log(publicKey);
+  // async function bidSol() {
+  //   console.log(publicKey);
 
-    if (!wallet) {
+  //   if (!wallet) {
+  //     return toast.error("Please connect your wallet");
+  //   }
+
+
+  //   if (!publicKey) {
+  //     return toast.error("Wallet has no public key");
+  //   }
+
+  //   try {
+  //     const transaction = new Transaction().add(
+  //       SystemProgram.transfer({
+  //         fromPubkey: publicKey,
+  //         toPubkey: GOVERNANCE_ADDRESS,
+  //         lamports: 0.001 * LAMPORTS_PER_SOL,
+  //       }),
+  //     );
+
+  //     const { blockhash } = await connection.getLatestBlockhash();
+  //     transaction.recentBlockhash = blockhash;
+  //     transaction.feePayer = publicKey;
+
+  //     const signedTransaction = await wallet?.adapter?.signTransaction(transaction);
+  //     const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+
+  //     const status = await connection.getSignatureStatus(signature);
+  //     if (!signature) {
+  //       return toast.error('Transaction failed');
+  //     }
+  //     if (status.value?.err) {
+
+  //       console.log(status.value.err);
+  //       return toast.error('Transaction failed');
+  //     }
+
+
+  //     toast.success('Transaction sent successfully!');
+  //     console.log('Transaction successful with signature:', signature);
+
+  //   } catch (error) {
+  //     console.error('Transaction failed:', error);
+  //     toast.error('Transaction failed');
+  //   } finally {
+  //     submit()
+  //   }
+  // }
+
+  async function bidSol() {
+    if (!wallet || !publicKey) {
       return toast.error("Please connect your wallet");
     }
-
-
-    if (!publicKey) {
-      return toast.error("Wallet has no public key");
-    }
-
+  
     try {
       const transaction = new Transaction().add(
         SystemProgram.transfer({
@@ -34,33 +77,22 @@ export default function BidSolana({ songId, amount }: { songId: string, amount: 
           lamports: 0.001 * LAMPORTS_PER_SOL,
         }),
       );
-
+  
       const { blockhash } = await connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
-
-      const signedTransaction = await wallet?.adapter?.signTransaction(transaction);
-      const signature = await connection.sendRawTransaction(signedTransaction.serialize());
-
+  
+      const signature = await sendTransaction(transaction, connection); 
+  
       const status = await connection.getSignatureStatus(signature);
-      if (!signature) {
-        return toast.error('Transaction failed');
-      }
-      if (status.value?.err) {
-
-        console.log(status.value.err);
-        return toast.error('Transaction failed');
-      }
-
-
+  
       toast.success('Transaction sent successfully!');
       console.log('Transaction successful with signature:', signature);
-
     } catch (error) {
       console.error('Transaction failed:', error);
       toast.error('Transaction failed');
     } finally {
-      submit()
+      submit();
     }
   }
 

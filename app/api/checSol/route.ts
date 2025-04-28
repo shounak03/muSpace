@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
             data: {
                 userId: user?.id,
                 songId: songId,
+                amount:0.01
             },
         });
         return NextResponse.json({
