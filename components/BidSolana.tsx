@@ -2,7 +2,6 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Connection, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import Image from 'next/image'
-import React from 'react'
 import { toast } from 'sonner';
 
 export default function BidSolana({ songId, amount }: { songId: string, amount: number }) {
@@ -14,55 +13,6 @@ export default function BidSolana({ songId, amount }: { songId: string, amount: 
 
 
 
-  // async function bidSol() {
-  //   console.log(publicKey);
-
-  //   if (!wallet) {
-  //     return toast.error("Please connect your wallet");
-  //   }
-
-
-  //   if (!publicKey) {
-  //     return toast.error("Wallet has no public key");
-  //   }
-
-  //   try {
-  //     const transaction = new Transaction().add(
-  //       SystemProgram.transfer({
-  //         fromPubkey: publicKey,
-  //         toPubkey: GOVERNANCE_ADDRESS,
-  //         lamports: 0.001 * LAMPORTS_PER_SOL,
-  //       }),
-  //     );
-
-  //     const { blockhash } = await connection.getLatestBlockhash();
-  //     transaction.recentBlockhash = blockhash;
-  //     transaction.feePayer = publicKey;
-
-  //     const signedTransaction = await wallet?.adapter?.signTransaction(transaction);
-  //     const signature = await connection.sendRawTransaction(signedTransaction.serialize());
-
-  //     const status = await connection.getSignatureStatus(signature);
-  //     if (!signature) {
-  //       return toast.error('Transaction failed');
-  //     }
-  //     if (status.value?.err) {
-
-  //       console.log(status.value.err);
-  //       return toast.error('Transaction failed');
-  //     }
-
-
-  //     toast.success('Transaction sent successfully!');
-  //     console.log('Transaction successful with signature:', signature);
-
-  //   } catch (error) {
-  //     console.error('Transaction failed:', error);
-  //     toast.error('Transaction failed');
-  //   } finally {
-  //     submit()
-  //   }
-  // }
 
   async function bidSol() {
     if (!wallet || !publicKey) {
@@ -70,11 +20,13 @@ export default function BidSolana({ songId, amount }: { songId: string, amount: 
     }
   
     try {
+
+      
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: GOVERNANCE_ADDRESS,
-          lamports: 0.001 * LAMPORTS_PER_SOL,
+          lamports: 0.01*LAMPORTS_PER_SOL
         }),
       );
   
@@ -85,43 +37,58 @@ export default function BidSolana({ songId, amount }: { songId: string, amount: 
       const signature = await sendTransaction(transaction, connection); 
   
       const status = await connection.getSignatureStatus(signature);
-  
+      console.log(status);
+      
+
+      if(status?.value?.err)
+      {
+          throw new Error;
+      }
       toast.success('Transaction sent successfully!');
-      console.log('Transaction successful with signature:', signature);
+      
+      await submit()
+      // console.log('Transaction successful with signature:', signature);
     } catch (error) {
       console.error('Transaction failed:', error);
       toast.error('Transaction failed');
-    } finally {
-      submit();
-    }
+    } 
   }
 
   async function submit() {
     console.log(songId);
+    console.log(amount);
 
 
-    const res = await fetch(`/api/checkSol`, {
+    const res = await fetch(`/api/solana`, {
       method: "POST",
       headers: { 'content-type': "application/json" },
       body: JSON.stringify({ songId, amount })
     })
-
     const data = await res.json()
     if (!res.ok) {
-      console.log();
+      console.log(data);
 
     }
+    
+    
     console.log(data);
 
   }
 
+
+  async function getBid(){
+    const res = await fetch(`/api/solana?songId=cm9zeads1000hytj86fc6a4me`)
+    const data = await res.json()
+    console.log(data);
+    
+  }
 
 
 
 
   return (
     // <Image src={'/solana.png'} alt={"bid"} width={35} height={35} className='ml-8 mr-6 cursor-pointer' onClick={bidSol} />
-    <div className="relative group ml-8 mr-6 cursor-pointer" onClick={bidSol}>
+    <div className="relative group ml-8 mr-6 cursor-pointer" onClick={submit}>
       <Image
         src="/solana.png"
         alt="bid"

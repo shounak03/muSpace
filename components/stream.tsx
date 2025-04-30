@@ -12,14 +12,10 @@ import { Card, CardContent } from './ui/card';
 import Image from 'next/image';
 import { SpaceHeader } from './space-header';
 import YouTubePlayer from "youtube-player";
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Chat from './chat';
 import BidSolana from './BidSolana';
-
-
-
-
+// import BidSolana from './BidSolana';
 
 interface SpaceData {
   activeStream:{
@@ -68,7 +64,7 @@ export default function Stream({
   const [nextSong, setNextSong] = useState(false);
   const [loading, setLoading] = useState(false);
   const videoPlayer = useRef<HTMLDivElement>(null);
-  const router = useRouter()
+
 
   async function removeCurrentSongFromDB() {
     try {
@@ -211,9 +207,6 @@ export default function Stream({
   }
 
   async function handleUpvote(songId: string, isUpvote: boolean) {
-    console.log(songId);
-    
-    
     setQueue(
       queue.map((song) => song.id === songId ? {
         ...song,
@@ -278,137 +271,6 @@ export default function Stream({
     };
   }, [currentSong, videoPlayer]);
 
-
- 
- 
-  //     <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
-  //       <div className="max-w-4xl mx-auto space-y-8">
-  //         <SpaceHeader data={{ spaceName: data?.spaceName, spaceDesc: data?.spaceDesc, isCreator: data?.isCreator ?? false, spaceId: spaceId }} />
-
-  //         <div className="space-y-4">
-  //           <div className="space-y-2">
-  //             <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
-  //               Song URL
-  //             </label>
-  //             <form className="space-y-3" onSubmit={handleSubmit} >
-  //               <Input
-  //                 id="song-url"
-  //                 placeholder="Enter song URL here"
-  //                 className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 flex-grow"
-  //                 type="text"
-  //                 value={url}
-  //                 onChange={(e) => setUrl(e.target.value)}
-  //               />
-
-  //               <Button
-  //                 disabled={loading}
-  //                 type='submit'
-  //                 className="bg-purple-600 text-white hover:bg-purple-700" >
-  //                 {loading ? "adding..." : "Add to Queue"}
-  //               </Button>
-  //             </form>
-  //             <CardContent>
-  //               {url && url.match(YT_REGEX) && !loading && (
-  //                 <div className="mt-4">
-  //                   <LiteYouTubeEmbed
-  //                     title=""
-  //                     id={url.split("?v=")[1]}
-  //                   />
-  //                 </div>
-  //               )}
-  //             </CardContent>
-  //           </div>
-  //         </div>
-
-  //         <Card className="bg-gray-800 border-gray-700 shadow-lg">
-  //           <CardContent className="p-6 space-y-4">
-  //             <h2 className="text-2xl font-bold text-white">Now Playing</h2>
-  //             {currentSong ? (
-  //               <div>
-  //                 {playVideo ? (
-  //                   <div
-  //                     ref={videoPlayer}
-  //                     className="w-full aspect-video"
-  //                     // style={{ pointerEvents: 'none' }}
-  //                   />
-  //                 ) : (
-  //                   <>
-  //                     <Image
-  //                       src={currentSong.bigImg}
-  //                       className="w-full aspect-video object-cover rounded-md"
-  //                       alt={currentSong.title}
-  //                       width={1920}
-  //                       height={1080}
-  //                     />
-  //                     <p className="mt-2 text-center font-semibold text-white">
-  //                       {currentSong.title}
-  //                     </p>
-  //                     <p className="mt-2 text-center font-semibold text-white">
-  //                       {currentSong.artist}
-  //                     </p>
-  //                   </>
-  //                 )}
-  //               </div>
-  //             ) : (
-  //               <p className="text-center text-gray-400">
-  //                 No song playing, Add a song in the queue
-  //               </p>
-  //             )}
-  //           </CardContent>
-  //         </Card>
-
-  //         <div className="space-y-4">
-  //           <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
-  //           {queue.length === 0 ? (
-  //             <Card className="bg-gray-800 border-gray-700 shadow-lg">
-  //               <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
-  //                 <p className="text-center py-8 text-gray-400">
-  //                   No Songs in queue
-  //                 </p>
-  //               </CardContent>
-  //             </Card>
-  //           ) : (
-  //             queue.map((song) => (
-  //               <div key={song.id} className="bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
-  //                 <div className="flex items-center space-x-4">
-  //                   <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
-  //                     <Image
-  //                       width={60}
-  //                       height={60}
-  //                       alt='thumbnail'
-  //                       src={song.smallImg}
-  //                       className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" 
-  //                     />
-  //                     <div>
-  //                       <p className="font-medium">{song.title}</p>
-  //                       <p className="text-sm text-gray-400">{song.artist}</p>
-  //                     </div>
-  //                   </CardContent>
-  //                 </div>
-  //                 <div className="flex items-center space-x-1 ml-8">
-  //                   <Button
-  //                     variant="ghost"
-  //                     size="icon"
-  //                     className={`hover:bg-gray-700 ${!song.haveUpvoted ? 'text-green-400' : 'text-red-400'}`}
-  //                     onClick={() => handleUpvote(song.id, song.haveUpvoted ? false : true)}
-  //                   >
-  //                     {!song.haveUpvoted ? (
-  //                       <PiArrowFatUpLight className="h-8 w-8" />
-  //                     ) : (
-  //                       <PiArrowFatDownThin className="h-8 w-8" />
-  //                     )}
-  //                   </Button>
-  //                   <span>{song.upvotes}</span>
-  //                 </div>
-  //               </div>
-  //             ))
-  //           )}
-  //         </div>
-
-  //       </div>
-  //     </div>
-  //   </>
-  // );
 
   return (
     <div className="py-6">
