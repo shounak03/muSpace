@@ -15,12 +15,13 @@ import YouTubePlayer from "youtube-player";
 import Link from 'next/link';
 import Chat from './chat';
 import BidSolana from './BidSolana';
-// import BidSolana from './BidSolana';
+import { ScrollArea, ScrollBar } from './ui/scroll-area';
+
 
 interface SpaceData {
-  activeStream:{
-    song:{
-      id:string
+  activeStream: {
+    song: {
+      id: string
     }
   }
   spaceName?: string;
@@ -66,31 +67,29 @@ export default function Stream({
   const videoPlayer = useRef<HTMLDivElement>(null);
 
 
-  async function removeCurrentSongFromDB() {
+  const  removeCurrentSongFromDB = async()=> {
     try {
       await fetch(`/api/streams/remove`, {
         method: "DELETE",
-        body: JSON.stringify({ spaceId:spaceId,songId:data?.activeStream?.song.id })
+        body: JSON.stringify({ spaceId: spaceId, songId: data?.activeStream?.song.id })
       });
     } catch (error) {
       console.error("Error removing current song:", error);
     }
-  }
+  };
 
-  async function refresh() {
+  const refresh = async()=> {
     try {
 
       const res = await fetch(`/api/streams/?spaceId=${spaceId}`)
       const data = await res.json()
-      
+
       setData(data)
-      // console.log("data",data)
-      
-      
+
       if (data.streams && Array.isArray(data.streams)) {
         const sortedStreams = data.streams
           .sort((a: any, b: any) => b.upvotes - a.upvotes);
-        
+
         setQueue(sortedStreams);
       }
       else {
@@ -112,27 +111,27 @@ export default function Stream({
     } finally {
       setLoading(false)
     }
-  }
+  };
 
-  if(data?.spaceRunning === false ){
+  if (data?.spaceRunning === false) {
     return (
       <div className='flex flex-col min-h-screen items-center justify-center'>
-          <h1 className='text-4xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400  to-red-500'>
-              Thanks for tuning in, The space has been ended
-          </h1>
-            <div className='flex justify-center items-center space-x-4 mt-4'>
-              <Link href="/dashboard">
-                  <Button type="submit" className="bg-purple-600 text-white hover:bg-purple-700">
-                      Dashboard
-                  </Button>
-              </Link>
-          </div>
+        <h1 className='text-4xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400  to-red-500'>
+          Thanks for tuning in, The space has been ended
+        </h1>
+        <div className='flex justify-center items-center space-x-4 mt-4'>
+          <Link href="/dashboard">
+            <Button type="submit" className="bg-purple-600 text-white hover:bg-purple-700">
+              Dashboard
+            </Button>
+          </Link>
+        </div>
       </div>
-  );
-  }
+    );
+  };
 
   const playNext = async () => {
-    
+
     if (currentSong) {
       await removeCurrentSongFromDB();
     }
@@ -140,12 +139,12 @@ export default function Stream({
     if (queue.length > 0) {
       try {
         setNextSong(true);
-        
+
         const data = await fetch(`/api/streams/next?spaceId=${spaceId}`, {
           method: "GET",
         });
         const json = await data.json();
-        
+
         // Ensure we're not replaying the same song
         if (json.stream) {
           setCurrentSong(json.stream);
@@ -188,7 +187,7 @@ export default function Stream({
       })
       const data = await response.json();
       console.log(data);
-      
+
       if (!response.ok)
         throw new Error(data.message || "An error occured")
 
@@ -204,9 +203,10 @@ export default function Stream({
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  async function handleUpvote(songId: string, isUpvote: boolean) {
+  const handleUpvote = async (songId: string, isUpvote: boolean) =>{
+
     setQueue(
       queue.map((song) => song.id === songId ? {
         ...song,
@@ -214,11 +214,13 @@ export default function Stream({
         haveUpvoted: !song.haveUpvoted
       } : song).sort((a, b) => b.upvotes - a.upvotes)
     )
+
     await fetch(`/api/streams/upvote`, {
       method: isUpvote ? "POST" : "DELETE",
       body: JSON.stringify({ songId })
     })
-  }
+    
+  };
 
 
 
@@ -234,7 +236,7 @@ export default function Stream({
     const interval = setInterval(refresh, REFRESH_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [spaceId]);
-  
+
 
   useEffect(() => {
     if (!currentSong || !videoPlayer.current)
@@ -245,12 +247,12 @@ export default function Stream({
         videoId: currentSong.extractedId,
         host: 'https://www.youtube-nocookie.com',
         playerVars: {
-          autoplay:1,
+          autoplay: 1,
           controls: 1,
           disablekb: 0,
           enablejsapi: 0,
           fs: 0,
-          rel:0,
+          rel: 0,
           origin: window.location.origin,
           widget_referrer: window.location.origin,
         }
@@ -279,8 +281,8 @@ export default function Stream({
         <div className="mb-8">
           <SpaceHeader
             data={{
-              spaceName: data?.spaceName ,
-              spaceDesc: data?.spaceDesc ,
+              spaceName: data?.spaceName,
+              spaceDesc: data?.spaceDesc,
               isCreator: data?.isCreator ?? false,
               spaceId: spaceId,
             }}
@@ -288,7 +290,7 @@ export default function Stream({
         </div>
 
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column (Music Player & Queue) - Takes 2/3 of the space */}
+
           <div className="lg:col-span-2 space-y-8">
             {/* Song URL Input */}
             <div className="space-y-4">
@@ -314,11 +316,11 @@ export default function Stream({
                   {url && url.match(YT_REGEX) && !loading && (
                     <div className="mt-4">
                       <LiteYouTubeEmbed
-                      title=""
-                      id={url.split("?v=")[1]}
+                        title=""
+                        id={url.split("?v=")[1]}
                       />
 
-                        <p>YouTube Preview</p>
+                      <p>YouTube Preview</p>
 
                     </div>
                   )}
@@ -328,97 +330,111 @@ export default function Stream({
 
             {/* Now Playing */}
             <Card className="bg-gray-800 border-gray-700 shadow-lg">
-            <CardContent className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold text-white">Now Playing</h2>
-              {currentSong ? (
-                <div>
-                  {playVideo ? (
-                    <div
-                      ref={videoPlayer}
-                      className="w-full aspect-video"
+              <CardContent className="p-6 space-y-4">
+                <h2 className="text-2xl font-bold text-white">Now Playing</h2>
+                {currentSong ? (
+                  <div>
+                    {playVideo ? (
+                      <div
+                        ref={videoPlayer}
+                        className="w-full aspect-video"
                       // style={{ pointerEvents: 'none' }}
-                    />
-                  ) : (
-                    <>
-                      <Image
-                        src={currentSong.bigImg}
-                        className="w-full aspect-video object-cover rounded-md"
-                        alt={currentSong.title}
-                        width={1920}
-                        height={1080}
                       />
-                      <p className="mt-2 text-center font-semibold text-white">
-                        {currentSong.title}
-                      </p>
-                      <p className="mt-2 text-center font-semibold text-white">
-                        {currentSong.artist}
-                      </p>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <p className="text-center text-gray-400">
-                  No song playing, Add a song in the queue
-                </p>
-              )}
-            </CardContent>
-          </Card>
+                    ) : (
+                      <>
+                        <Image
+                          src={currentSong.bigImg}
+                          className="w-full aspect-video object-cover rounded-md"
+                          alt={currentSong.title}
+                          width={1920}
+                          height={1080}
+                        />
+                        <p className="mt-2 text-center font-semibold text-white">
+                          {currentSong.title}
+                        </p>
+                        <p className="mt-2 text-center font-semibold text-white">
+                          {currentSong.artist}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-400">
+                    No song playing, Add a song in the queue
+                  </p>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Queue */}
-            <div className="space-y-4">
-              <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
-              {queue.length === 0 ? (
-                <Card className="bg-gray-800 border-gray-700 shadow-lg">
-                  <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
-                    <p className="text-center py-8 text-gray-400">
-                      No Songs in queue
-                    </p>
-                  </CardContent>
-                </Card>
-              ):(
+            <div className="w-full">
+              <div className="space-y-4">
+                <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
+                {queue.length === 0 ? (
+                  <Card className="bg-gray-800 border-gray-700 shadow-lg">
+                    <CardContent className="p-4 flex flex-col items-center justify-center">
+                      <p className="text-center py-8 text-gray-400">
+                        No Songs in queue
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <ScrollArea className="w-full pb-4 whitespace-nowrap rounded-md no-scrollbar" type='always'>
+                    <div className="flex space-x-4 pb-2 pt-1">
+                      {queue.map((song) => (
+                        <div
+                          key={song.id}
+                           className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:bg-gray-750 transition-colors duration-200 flex-shrink-0 w-64"
+                        >
+                          <div className="p-4 flex flex-col">
+                            <img
+                              width={60}
+                              height={60}
+                              alt={`${song.title} thumbnail`}
+                              src={song.smallImg}
+                              className="w-full h-40 object-cover rounded-md mb-3"
+                            />
+                            <div className="mb-3">
+                              <p className="font-medium text-lg truncate">{song.title}</p>
+                              <p className="text-sm text-gray-400 truncate">{song.artist}</p>
+                            </div>
 
-                queue.map((song) => (
-                  <div key={song.id} className="bg-gray-800 p-4 rounded-lg shadow flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <CardContent className="p-4 flex flex-col md:flex-row md:space-x-3">
-                        <Image
-                          width={60}
-                          height={60}
-                          alt='thumbnail'
-                          src={song.smallImg}
-                          className="md:w-40 mb-5 md:mb-0 object-cover rounded-md" 
-                        />
-                        <div>
-                          <p className="font-medium">{song.title}</p>
-                          <p className="text-sm text-gray-400">{song.artist}</p>
+                            <div className="flex items-center justify-between mt-auto">
+                              <div className="flex items-center">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className={`hover:bg-gray-700 ${song.haveUpvoted ? 'text-green-400' : 'text-gray-400'}`}
+                                  onClick={() => handleUpvote(song.id, !song.haveUpvoted)}
+                                >
+                                  {song.haveUpvoted ? (
+                                    <PiArrowFatUpLight className="h-8 w-8" />
+                                  ) : (
+                                    <PiArrowFatDownThin className="h-8 w-8" />
+                                  )}
+                                </Button>
+                                <span className="text-sm font-medium">{song.upvotes}</span>
+                              </div>
+
+                              <div className="flex items-center">
+
+                                <BidSolana songId={song.id} amount={0.01} />
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </CardContent>
+                      ))}
                     </div>
-                    <div className="flex items-center  ml-8">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className={`hover:bg-gray-700 ${!song.haveUpvoted ? 'text-green-400' : 'text-red-400'}`}
-                        onClick={() => handleUpvote(song.id, song.haveUpvoted ? false : true)}
-                      >
-                        {!song.haveUpvoted ? (
-                          <PiArrowFatUpLight className="h-8 w-8" />
-                        ):(
-                          <PiArrowFatDownThin className="h-8 w-8" />
-                      )}
-                    </Button>
-                    <span>{song.upvotes}</span>
-                    {/* <Bitcoin className='ml-4'/> */}
-                    <BidSolana songId={song.id as string} amount={0.01 as number}/>
-                  </div>
-                </div>
-              )))}
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
+                )}
+              </div>
             </div>
           </div>
 
-              
+          {/* Chat */}
           <div className="h-[calc(100vh-10rem)]">
-            <Chat spaceId={spaceId} isCreator= {data?.isCreator as boolean} />
+            <Chat spaceId={spaceId} isCreator={data?.isCreator as boolean} />
           </div>
         </div>
       </div>

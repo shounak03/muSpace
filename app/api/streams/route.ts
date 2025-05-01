@@ -4,14 +4,14 @@ import { streamSchema } from "@/schema";
 import { PrismaClient } from '@prisma/client';
 import { NextResponse, NextRequest } from 'next/server';
 import axios from 'axios';
+
 const prisma = new PrismaClient();
 
 
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  const defaultThumbnail = "/song-static.jpg"; // Default thumbnail URL
-
+  const defaultThumbnail = "/song-static.jpg"; 
   try {
     const host = await prisma.user.findUnique({
       where: { email: session?.user?.email || "" },
@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
       );
     }
     console.log("trying to fetch video details");
-    
-    
-    
+
+
+
     const response = await axios.get(
       `https://www.googleapis.com/youtube/v3/videos`,
       {
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     );
 
     const video = response.data.items[0]?.snippet;
-    console.log("video data = ",video);
+
 
     const newSong = await prisma.song.create({
       data: {
@@ -83,6 +83,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+
 export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -102,15 +103,15 @@ export async function GET(req: NextRequest) {
       })
     }
 
-    const user= await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
-          email: session?.user?.email || "",
+        email: session?.user?.email || "",
       },
       select: {
         id: true,
       },
     });
-    if(!user) {
+    if (!user) {
       return NextResponse.json(
         {
           message: "User not found",
@@ -163,7 +164,7 @@ export async function GET(req: NextRequest) {
           song: true
         }
       }),
-      
+
     ]);
 
     const spaceRunning = await prisma.song.findFirst({
@@ -175,7 +176,7 @@ export async function GET(req: NextRequest) {
       }
     })
     console.log(spaceRunning);
-    
+
 
     const hostId = space?.hostId;
     const isCreator = user?.id === hostId
@@ -192,7 +193,7 @@ export async function GET(req: NextRequest) {
       isCreator,
       spaceName: space?.name,
       spaceDesc: space?.description,
-      spaceRunning 
+      spaceRunning
     });
   } catch (error) {
     console.log(error);
@@ -203,66 +204,66 @@ export async function GET(req: NextRequest) {
 
 
 export async function DELETE(req: NextRequest) {
-    const body = await req.json()
-    const { spaceId } = body
-    console.log(spaceId);
-    
-    if (!spaceId) {
-        return NextResponse.json({
-            success: false, 
-            message: "Space ID is required"
-        }, { status: 400 })
-    }
+  const body = await req.json()
+  const { spaceId } = body
+  console.log(spaceId);
 
-    try {
-        // Delete related votes first
-        await prisma.vote.deleteMany({
-            where: {
-                song: {
-                    spaceId: spaceId
-                }
-            }
-        })
+  if (!spaceId) {
+    return NextResponse.json({
+      success: false,
+      message: "Space ID is required"
+    }, { status: 400 })
+  }
 
-        // Delete current song reference
-        await prisma.currentSong.deleteMany({
-            where: {
-                spaceId: spaceId
-            }
-        })
+  try {
+    // Delete related votes first
+    await prisma.vote.deleteMany({
+      where: {
+        song: {
+          spaceId: spaceId
+        }
+      }
+    })
 
-        // Delete songs associated with the space
-        await prisma.song.deleteMany({
-            where: {
-                spaceId: spaceId
-            }
-        })
+    // Delete current song reference
+    await prisma.currentSong.deleteMany({
+      where: {
+        spaceId: spaceId
+      }
+    })
 
-        // Finally, delete the space
-        await prisma.space.delete({
-            where: {
-                id: spaceId
-            }
-        })
-        await prisma.song.update({
-          where:{
-            id:spaceId
-          },data:{
-            spaceRunning:false
-          }
-        })
+    // Delete songs associated with the space
+    await prisma.song.deleteMany({
+      where: {
+        spaceId: spaceId
+      }
+    })
 
-        return NextResponse.json({
-            success: true, 
-            message: "Space and all associated data deleted successfully"
-        }, { status: 200 })
-    } catch(error) {
-        console.error("Error deleting space:", error)
+    // Finally, delete the space
+    await prisma.space.delete({
+      where: {
+        id: spaceId
+      }
+    })
+    await prisma.song.update({
+      where: {
+        id: spaceId
+      }, data: {
+        spaceRunning: false
+      }
+    })
 
-        return NextResponse.json({
-            success: false, 
-            message: "Something went wrong while deleting the space",
-            error: error instanceof Error ? error.message : "Unknown error"
-        }, { status: 500 })
-    }
+    return NextResponse.json({
+      success: true,
+      message: "Space and all associated data deleted successfully"
+    }, { status: 200 })
+  } catch (error) {
+    console.error("Error deleting space:", error)
+
+    return NextResponse.json({
+      success: false,
+      message: "Something went wrong while deleting the space",
+      error: error instanceof Error ? error.message : "Unknown error"
+    }, { status: 500 })
+  }
 }

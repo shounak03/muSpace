@@ -1,44 +1,32 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-
-  directUrl = env("DATABASE_URL_UNPOOLED")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-enum UserRole {
-  ADMIN
-  USER
-}
-
-enum Provider {
-  Google
-  Credentials
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
   email         String?   @unique
-  emailVerified DateTime?
-  role          UserRole  @default(USER)
   password      String?
   image         String?
   provider      Provider?
-  googleId      String?
-  accounts      Account[]
-  hostedSpaces  Space[]   @relation("hostedBy")
-  votes         Vote[]
-  song          Song[]    @relation("user")
-  addedSongs    Song[]    @relation("addedBy")
-  sessions      Session[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  googleId      String?
+  name          String?
+  emailVerified DateTime?
+  role          UserRole  @default(USER)
+  accounts      Account[]
   messages      Message[]
-  bid           Bid[]
+  addedSongs    Song[]    @relation("addedBy")
+  song          Song[]    @relation("user")
+  hostedSpaces  Space[]   @relation("hostedBy")
+  votes         Vote[]
+  sessions      Session[]
 }
 
 model Account {
@@ -53,11 +41,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
 }
@@ -68,24 +54,24 @@ model Space {
   description  String
   url          String       @unique @default("")
   hostId       String
-  host         User         @relation("hostedBy", fields: [hostId], references: [id])
-  songs        Song[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
   chatDisabled Boolean      @default(true)
   currentSong  CurrentSong?
   messages     Message[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  songs        Song[]
+  host         User         @relation("hostedBy", fields: [hostId], references: [id])
 }
 
 model Message {
   id        String   @id @default(cuid())
   content   String
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   spaceId   String
-  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Session {
@@ -103,34 +89,33 @@ model Song {
   url           String
   extractedId   String
   title         String?
-  bigImg        String?
-  smallImg      String?
   artist        String?
   duration      Int?
-  spaceRunning  Boolean      @default(true)
   active        Boolean      @default(false)
-  currentStream CurrentSong?
   played        Boolean      @default(false)
   playedTs      DateTime?
   spaceId       String
-  space         Space        @relation(fields: [spaceId], references: [id])
   userId        String
   addedBy       String
-  addedByUser   User         @relation("addedBy", fields: [addedBy], references: [id])
-  user          User         @relation(fields: [userId], references: [id], name: "user")
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  bigImg        String?
+  smallImg      String?
+  spaceRunning  Boolean      @default(true)
+  bidAmount     Decimal?     @default(0) @db.Decimal(7, 5)
+  currentStream CurrentSong?
+  addedByUser   User         @relation("addedBy", fields: [addedBy], references: [id])
+  space         Space        @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  user          User         @relation("user", fields: [userId], references: [id])
   votes         Vote[]
-  bidAmount     Bid[]
-  highestBid    Float?      @default(0)
 }
 
 model CurrentSong {
   id      String  @id @default(uuid())
   userId  String
+  spaceId String? @unique
   songId  String? @unique
   song    Song?   @relation(fields: [songId], references: [id])
-  spaceId String? @unique
   space   Space?  @relation(fields: [spaceId], references: [id], onDelete: Cascade)
 }
 
@@ -138,19 +123,18 @@ model Vote {
   id     String @id @default(cuid())
   userId String
   songId String
-  user   User   @relation(fields: [userId], references: [id])
-  song   Song   @relation(fields: [songId], references: [id])
+  song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, songId])
 }
 
-model Bid {
-  id        String @id @default(cuid())
-  userId    String
-  songId    String
-  amount    Float  @db.DoublePrecision
-  user      User   @relation(fields: [userId], references: [id])
-  song      Song   @relation(fields: [songId], references: [id])
+enum UserRole {
+  ADMIN
+  USER
+}
 
-  @@unique([userId, songId])
+enum Provider {
+  Google
+  Credentials
 }

@@ -77,7 +77,7 @@ export default function BidSolana({ songId, amount }: { songId: string, amount: 
 
 
   async function getBid(){
-    const res = await fetch(`/api/solana?songId=cm9zeads1000hytj86fc6a4me`)
+    const res = await fetch(`/api/solana?spaceId=cma4y7dva0001yt18m8bv8em3`)
     const data = await res.json()
     console.log(data);
     
@@ -88,7 +88,7 @@ export default function BidSolana({ songId, amount }: { songId: string, amount: 
 
   return (
     // <Image src={'/solana.png'} alt={"bid"} width={35} height={35} className='ml-8 mr-6 cursor-pointer' onClick={bidSol} />
-    <div className="relative group ml-8 mr-6 cursor-pointer" onClick={submit}>
+    <div className="relative group cursor-pointer" onClick={getBid}>
       <Image
         src="/solana.png"
         alt="bid"

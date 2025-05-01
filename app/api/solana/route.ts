@@ -24,22 +24,16 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: 'Invalid amount' }, { status: 400 });
     }
 
-    console.log('Processing bid:', bidAmount, user.id, songId);
+    console.log('Processing bid:', bidAmount, songId);
 
 
     try {
-        await prisma.bid.create({
+        await prisma.song.update({
+            where:{id:songId},
             data: {
-                userId: user?.id,
-                songId,
-                amount:bidAmount
+                bidAmount
             },
         });
-        // const newBid = await prisma.song.update({
-        //     where: { id: songId },
-        //     data: { highestBid: amount },
-        //     select:{highestBid:true}
-        // })
         return NextResponse.json("done");
 
     } catch (e: any) {
@@ -57,47 +51,35 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-    // const session = await auth()
-    // if (!session?.user?.id) {
-    //     return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 });
-    // }
-    // const user = await prisma.user.findUnique({
-    //     where: { email: session?.user?.email ?? "" },
-    // });
-
-    // if (!user) {
-    //     return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
-    // }
-    const { searchParams } = new URL(req.url);
-    const songId = searchParams.get('songId');
-    if (!songId) {
-        return NextResponse.json({ success: false, error: 'songId not found' }, { status: 404 });
+    const session = await auth()
+    if (!session?.user?.id) {
+        return NextResponse.json({ success: false, error: 'User not authenticated' }, { status: 401 });
     }
-    const highestBid = await prisma.bid.findFirst({
-        where: { songId },
-        orderBy: { amount: 'desc' },
-        select: { amount: true },
+    const user = await prisma.user.findUnique({
+        where: { email: session?.user?.email ?? "" },
     });
 
-    // if(!highestBid?.amount){
-    //     return NextResponse.json({ success: false, error: 'songId not found' }, { status: 404 });
-    // }
+    if (!user) {
+        return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
+    }
+    const spaceId = req.nextUrl.searchParams.get("spaceId");
+    if(!spaceId){
+        return NextResponse.json({ success: false, error: 'spaceId not found' }, { status: 404 });
+    }
+    const mostBiddedSong = await prisma.song.findFirst({
+        where: {
+          spaceId: spaceId,
+          played: false,
+          userId: user?.id
+        },
+        orderBy: {
+          bidAmount: 'desc'
+        }
+    })
+    console.log(mostBiddedSong);
 
 
-    // const newBid = (highestBid?.amount * 0.2) + 0.01 
-
-    // const setnewBid = await prisma.song.update({
-    //     where: { id:songId },
-    //     data:{
-    //         highestBid:newBid
-    //     },
-    //     select:{highestBid:true}
-    // })
-
-    // console.log(setnewBid);
-
-
-    return NextResponse.json(highestBid);
+    return NextResponse.json(mostBiddedSong);
 
 
 

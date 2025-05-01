@@ -73,23 +73,41 @@ export async function DELETE(req: NextRequest){
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(
-      {
-        message: "Unauthenticated",
-      },
-      {
-        status: 403,
-      },
+      { success: false, message: "You must be logged in to retrieve space information" },
+      { status: 401 }
     );
   }
+  const username = session.user.name
+        const user= await prisma.user.findUnique({
+          where: {
+              email: session?.user?.email || "",
+          },
+          select: {
+            id: true,
+          },
+        });
+        if(!user) {
+          return NextResponse.json(
+            {
+              message: "User not found",
+            },
+            {
+              status: 404,
+            },
+          );
+        }
+
 
   const body = upvoteSchema.parse(await req.json());
   const { songId} = body;
+  console.log(user.id);
+  
 
   try {
     await prisma.vote.delete({
       where:{
         userId_songId: {
-          userId: session.user.id,
+          userId: user.id,
           songId: songId
         },
       },
