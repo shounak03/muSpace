@@ -82,8 +82,6 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
         toast.success("Chat enabled successfully")
       else
         toast.success("Chat disabled successfully")
-      // window.location.reload()
-      // return chatfn()
     }
   }
     
@@ -91,7 +89,6 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
 
 
   useEffect(() => {
-    // console.log(disableChat);
     
     if (disableChat === true)
       return
@@ -100,9 +97,14 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
       chatService.reset();
       const initialMessages = await chatService.fetchMessages(spaceId);
       // console.log("ini msgs = ", initialMessages);
+      if(initialMessages == null){
 
-      setMessages(initialMessages);
-      setLoading(false);
+        setLoading(false);
+      }else{
+
+        setMessages(initialMessages);
+        setLoading(false);
+      }
     };
 
     loadInitialMessages();
@@ -175,10 +177,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
     const optimisticMessage: Message = {
       id: `temp-${Date.now()}`,
       content: newMessage,
-      //   userId: session.user.id as string,
       user: {
-        //     id: session.user.id as string,
-        // name: session.user.name,
         email: email,
       },
       spaceId,
@@ -189,18 +188,16 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
     setMessages(prev => [...prev]);
     setNewMessage('');
 
-    // Send to server
+
     await chatService.sendMessage({
       content: newMessage,
       spaceId,
     });
 
-    // Force scroll to bottom
-    isAtBottom.current = true;
-    scrollToBottom();
+    // isAtBottom.current = true;
+    // scrollToBottom();
   };
 
-  // Format timestamp
   const formatTime = (date: Date) => {
     const messageDate = new Date(date);
     return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

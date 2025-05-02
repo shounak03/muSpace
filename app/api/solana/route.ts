@@ -18,7 +18,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
 
-    const { songId, amount } = await req.json()
+    const { songId, newAmount:amount } = await req.json()
+    console.log(amount);
+    
     const bidAmount = Number(amount);
     if (isNaN(bidAmount)) {
         return NextResponse.json({ success: false, error: 'Invalid amount' }, { status: 400 });
@@ -76,10 +78,10 @@ export async function GET(req: NextRequest) {
           bidAmount: 'desc'
         }
     })
-    console.log(mostBiddedSong);
+    console.log(mostBiddedSong?.bidAmount);
 
 
-    return NextResponse.json(mostBiddedSong);
+    return NextResponse.json(mostBiddedSong?.bidAmount);
 
 
 

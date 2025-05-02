@@ -42,6 +42,7 @@ interface Video {
   active: boolean;
   userId: string;
   upvotes: number;
+  bidAmount: number;
   haveUpvoted: boolean;
   spaceId: string;
   artist: string;
@@ -67,7 +68,7 @@ export default function Stream({
   const videoPlayer = useRef<HTMLDivElement>(null);
 
 
-  const  removeCurrentSongFromDB = async()=> {
+  const removeCurrentSongFromDB = async () => {
     try {
       await fetch(`/api/streams/remove`, {
         method: "DELETE",
@@ -78,17 +79,30 @@ export default function Stream({
     }
   };
 
-  const refresh = async()=> {
+  const refresh = async () => {
     try {
 
       const res = await fetch(`/api/streams/?spaceId=${spaceId}`)
       const data = await res.json()
+      // console.log(data);
 
       setData(data)
 
+      // if (data.streams && Array.isArray(data.streams)) {
+      //   const sortedStreams = data.streams
+      //     .sort((a: any, b: any) => b.upvotes - a.upvotes);
+
+      //   setQueue(sortedStreams);
+      // }
       if (data.streams && Array.isArray(data.streams)) {
-        const sortedStreams = data.streams
-          .sort((a: any, b: any) => b.upvotes - a.upvotes);
+        const sortedStreams = data.streams.sort((a: any, b: any) => {
+          // First sort by bidAmount (highest bid first)
+          if (a.bidAmount !== b.bidAmount) {
+            return (b.bidAmount || 0) - (a.bidAmount || 0);
+          }
+          // If bids are equal or both zero, sort by upvotes (highest votes first)
+          return b.upvotes - a.upvotes;
+        });
 
         setQueue(sortedStreams);
       }
@@ -205,21 +219,22 @@ export default function Stream({
     }
   };
 
-  const handleUpvote = async (songId: string, isUpvote: boolean) =>{
+  const handleUpvote = async (songId: string, isUpvote: boolean) => {
 
-    setQueue(
-      queue.map((song) => song.id === songId ? {
-        ...song,
-        upvotes: isUpvote ? song.upvotes + 1 : song.upvotes - 1,
-        haveUpvoted: !song.haveUpvoted
-      } : song).sort((a, b) => b.upvotes - a.upvotes)
-    )
+    // setQueue(
+    //   queue.map((song) => song.id === songId ? {
+    //     ...song,
+    //     upvotes: isUpvote ? song.upvotes + 1 : song.upvotes - 1,
+    //     haveUpvoted: !song.haveUpvoted
+    //   } : song).sort((a, b) => b.upvotes - a.upvotes)
+    // )
 
     await fetch(`/api/streams/upvote`, {
       method: isUpvote ? "POST" : "DELETE",
       body: JSON.stringify({ songId })
     })
-    
+    refresh()
+
   };
 
 
@@ -366,7 +381,8 @@ export default function Stream({
               </CardContent>
             </Card>
 
-            {/* Queue */}
+                {/* <Queue queue={queue}/> */}
+            {/* Queue */} 
             <div className="w-full">
               <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
@@ -384,10 +400,10 @@ export default function Stream({
                       {queue.map((song) => (
                         <div
                           key={song.id}
-                           className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:bg-gray-750 transition-colors duration-200 flex-shrink-0 w-64"
+                          className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:bg-gray-750 transition-colors duration-200 flex-shrink-0 w-64"
                         >
                           <div className="p-4 flex flex-col">
-                            <img
+                            <Image
                               width={60}
                               height={60}
                               alt={`${song.title} thumbnail`}
@@ -415,13 +431,16 @@ export default function Stream({
                                 </Button>
                                 <span className="text-sm font-medium">{song.upvotes}</span>
                               </div>
-
+                                
                               <div className="flex items-center">
 
-                                <BidSolana songId={song.id} amount={0.01} />
+                              <span>current bid: {" "} </span>
+                                <span >{song.bidAmount}</span>
                               </div>
+
                             </div>
                           </div>
+                          <BidSolana songId={song.id} spaceId={spaceId} refresh={refresh} />
                         </div>
                       ))}
                     </div>
@@ -435,7 +454,17 @@ export default function Stream({
           {/* Chat */}
           <div className="h-[calc(100vh-10rem)]">
             <Chat spaceId={spaceId} isCreator={data?.isCreator as boolean} />
+
+            {/* <div className='mt-10'>
+              <Card>
+                <CardHeader className='text-2xl'>Bidddings History</CardHeader>
+                <CardContent>1st {}</CardContent>
+                <CardContent>2nd</CardContent>
+                <CardContent>3rd</CardContent>
+              </Card>
+            </div> */}
           </div>
+
         </div>
       </div>
     </div>
