@@ -381,8 +381,8 @@ export default function Stream({
               </CardContent>
             </Card>
 
-                {/* <Queue queue={queue}/> */}
-            {/* Queue */} 
+            {/* <Queue queue={queue}/> */}
+            {/* Queue */}
             <div className="w-full">
               <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
@@ -431,11 +431,27 @@ export default function Stream({
                                 </Button>
                                 <span className="text-sm font-medium">{song.upvotes}</span>
                               </div>
-                                
+
                               <div className="flex items-center">
 
-                              <span>current bid: {" "} </span>
-                                <span >{song.bidAmount}</span>
+                                {/* <span>current bid: {" "} </span> */}
+                                {/* <Button variant="outline" size="sm" className="bg-transparent text-amber-400 border border-amber-500/50">
+                   
+                                {song.bidAmount}
+                              </Button> */}
+                                <div className="relative group inline-block">
+                                  <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                    Current bid on this song
+                                  </div>
+
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="bg-transparent text-amber-400 border border-amber-500/50 hover:bg-transparent hover:text-white"
+                                  >
+                                    {song.bidAmount}
+                                  </Button>
+                                </div>
                               </div>
 
                             </div>

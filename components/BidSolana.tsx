@@ -4,7 +4,7 @@ import { Connection, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } f
 import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { useEffect, useState } from 'react';
-import { number } from 'zod';
+
 
 export default function BidSolana({ songId, spaceId,refresh }: { songId: string, spaceId: string,refresh: () => Promise<void> }) {
 
@@ -110,7 +110,7 @@ export default function BidSolana({ songId, spaceId,refresh }: { songId: string,
 
   return (
     <div className="flex gap-2 relative group cursor-pointer">
-      <Button className='w-full mx-2 my-2' onClick={getHighestBid}> bid: {newAmount} sol</Button>
+      <Button className='w-full mx-2 my-2' onClick={bidSol}> bid: {newAmount} sol</Button>
 
       <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-all duration-200 text-sm text-white bg-gray-800 px-2 py-1 rounded shadow-lg z-50 whitespace-nowrap">
         bid: {newAmount} SOL
