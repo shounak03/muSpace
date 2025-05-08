@@ -27,7 +27,7 @@ export default function BidSolana({ songId, spaceId,refresh }: { songId: string,
 
   useEffect(() => {
     getHighestBid()
-  }, [spaceId])
+  }, [])
 
 
 
@@ -38,7 +38,7 @@ export default function BidSolana({ songId, spaceId,refresh }: { songId: string,
 
     try {
       if (!newAmount) {
-        return toast.error("bid not found")
+        return toast.error("Bid not found")
       }
 
       const transaction = new Transaction().add(
@@ -65,7 +65,6 @@ export default function BidSolana({ songId, spaceId,refresh }: { songId: string,
       toast.success('Transaction sent successfully!');
 
       await submit()
-      // console.log('Transaction successful with signature:', signature);
     } catch (error) {
       console.error('Transaction failed:', error);
       toast.error('Transaction failed');
@@ -89,13 +88,17 @@ export default function BidSolana({ songId, spaceId,refresh }: { songId: string,
       console.log(data);
 
     }
+
     await getHighestBid()
     await refresh();
 
   }
 
   async function getHighestBid() {
+
     const res = await fetch(`/api/solana?spaceId=${spaceId}`)
+    console.log(res);
+    
     const data = await res.json()
     console.log(typeof(data),data);
     

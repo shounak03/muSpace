@@ -65,20 +65,23 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
     const spaceId = req.nextUrl.searchParams.get("spaceId");
+    console.log(spaceId);
+    
     if(!spaceId){
         return NextResponse.json({ success: false, error: 'spaceId not found' }, { status: 404 });
     }
+
     const mostBiddedSong = await prisma.song.findFirst({
         where: {
           spaceId: spaceId,
           played: false,
-          userId: user?.id
+        //   userId: user?.id
         },
         orderBy: {
           bidAmount: 'desc'
         }
     })
-    console.log(mostBiddedSong?.bidAmount);
+    console.log(mostBiddedSong);
 
 
     return NextResponse.json(mostBiddedSong?.bidAmount);
