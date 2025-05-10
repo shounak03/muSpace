@@ -117,7 +117,7 @@ export default function Dashboard() {
         );
     }
     return (
-        <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100 mt-24">
+        <div className="flex flex-col min-h-screen bg-dark text-gray-100 mt-24">
             <div className="flex-1 flex flex-col items-center p-4 md:p-6">
                 {!space && !spacedata && <main className="w-full max-w-4xl space-y-6">
                     <h1 className="text-3xl font-bold capitalize text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">

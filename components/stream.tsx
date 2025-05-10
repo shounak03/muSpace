@@ -88,12 +88,7 @@ export default function Stream({
 
       setData(data)
 
-      // if (data.streams && Array.isArray(data.streams)) {
-      //   const sortedStreams = data.streams
-      //     .sort((a: any, b: any) => b.upvotes - a.upvotes);
 
-      //   setQueue(sortedStreams);
-      // }
       if (data.streams && Array.isArray(data.streams)) {
         const sortedStreams = data.streams.sort((a: any, b: any) => {
           // First sort by bidAmount (highest bid first)

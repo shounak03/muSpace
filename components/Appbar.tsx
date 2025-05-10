@@ -61,7 +61,7 @@ export async function Appbar() {
               <form action={async()=>{
                 'use server'
                 await signOut({redirect: true})
-              }}> 
+              }}>
                 
                 <Button
                   variant="outline"

@@ -46,7 +46,7 @@ const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
           </div>
     }
     return (
-        <div className="min-h-screen bg-gray-900 text-gray-100">
+        <div className="min-h-screen bg-dark text-gray-100">
           <div className="container mx-auto px-4">
             <Stream hostId={hostId as string} playVideo={true} spaceId={spaceId} />
           </div>

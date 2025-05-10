@@ -90,6 +90,7 @@ export default function BidSolana({ songId, spaceId,refresh }: { songId: string,
     }
 
     await getHighestBid()
+    
     await refresh();
 
   }
