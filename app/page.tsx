@@ -10,11 +10,11 @@ import Link from "next/link";
 
 const Index = () => {
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full ">
       <FloatingNavbar />
       
       {/* Hero Section */}
-      <section className="relative py-32 overflow-hidden">
+      <section className="relative py-32 overflow-hidden bg-dark">
         {/* Background effects */}
         <div className="absolute inset-0 bg-hero-pattern opacity-10 bg-cover bg-center"></div>
         <div className="absolute inset-0 bg-gradient-radial from-light-purple/10 via-transparent to-transparent"></div>

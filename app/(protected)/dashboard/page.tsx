@@ -2,9 +2,10 @@
 import { CreateSpace } from "@/components/create-space-component";
 import { JoinSpace } from "@/components/join-space";
 import { BackgroundBeams } from "@/components/ui/background-beams";
+import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HashLoader } from 'react-spinners';
 import { toast } from "sonner";
@@ -34,10 +35,10 @@ export default function Dashboard() {
         try {
             const id = spaceId?.spaceId
             console.log(id);
-            
+
             const res = await fetch(`/api/streams`, {
                 method: "DELETE",
-                body: JSON.stringify({ spaceId:id }),
+                body: JSON.stringify({ spaceId: id }),
             });
 
             if (res.ok) {
@@ -50,11 +51,11 @@ export default function Dashboard() {
         } catch (error) {
             console.error("Error ending stream:", error);
             toast.error("Failed to end stream");
-        }finally{
+        } finally {
             router.refresh()
         }
     }
-    
+
     const fetchSpace = async () => {
         setLoading(true)  // Start loading when we begin fetching
         try {
@@ -66,43 +67,43 @@ export default function Dashboard() {
 
             } else {
 
-                setLoading(false)  
+                setLoading(false)
             }
         } catch (error) {
             console.error("Error fetching space:", error)
-            setLoading(false)  
+            setLoading(false)
         }
     }
-    
+
     const fetchSpaceData = async () => {
-        if (!spaceId) return;  
-        
+        if (!spaceId) return;
+
         setLoading(true)
         try {
             const res = await fetch(`/api/spaces/?spaceId=${spaceId.spaceId}`)
             const data = await res.json()
             // console.log(data);
-    
+
             if (data.success === true) {
                 setSpacedata(data)
             }
         } catch (error) {
             console.error("Error fetching space data:", error)
         } finally {
-            setLoading(false)  
+            setLoading(false)
         }
     }
-    
+
     useEffect(() => {
         fetchSpace()
     }, [])
-    
+
     useEffect(() => {
 
         if (space) {
             fetchSpaceData()
         }
-    }, [space, spaceId])  
+    }, [space, spaceId])
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -128,20 +129,49 @@ export default function Dashboard() {
                         <JoinSpace />
                     </section>
                 </main>}
-                {space && spacedata && 
-                    <div className="mt-8 justify-center items-center relative z-10">
+                {space && spacedata &&
+                    // <div className="mt-8 justify-center items-center relative z-10">
+                        
+
+                    //     <div className="flex items-center justify-center w-[100%]">
+                    //         <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 mt-12 justify-center">
+                    //             <CardHeader className="items-center">
+                    //                 <CardTitle className="text-purple-400 text-2xl font-bold">{spacedata?.space?.name}</CardTitle>
+                    //                 <CardDescription className="text-gray-400 text-xl">{spacedata?.space?.description}</CardDescription>
+                    //             </CardHeader>
+                    //             <CardContent>
+                                    
+                    //             </CardContent>
+                    //         </Card>
+                    //     </div>
+                    // </div>
+                    
+                    <div>
+
+
                         <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
                             You've an ongoing muSpace
                         </h1>
 
-                        <div className="flex items-center justify-center w-[100%]">
-                            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 mt-12 justify-center">
-                                <CardHeader className="items-center">
-                                    <CardTitle className="text-purple-400 text-2xl font-bold">{spacedata?.space?.name}</CardTitle>
-                                    <CardDescription className="text-gray-400 text-xl">{spacedata?.space?.description}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="flex gap-4"> 
+                        <div className="mt-10">
+
+                        
+                        <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-10 bg-dark dark:bg-zinc-900">
+                            <img
+                                src={`/music_space.webp`}
+                                alt="jordans"
+                                height="400"
+                                width="400"
+                                className="object-contain"
+                            />
+                            <h2 className="text-3xl text-purple-400 mt-4 mb-2 dark:text-neutral-200">
+                            {spacedata?.space?.name}
+                            </h2>
+
+                            <p className="text-2xl text-white dark:text-neutral-400">
+                            {spacedata?.space?.description}
+                            </p>
+                            <div className="flex gap-4 mt-4"> 
                                         <Button onClick={()=>{
                                             router.push(`/spaces/${spaceId?.spaceId}`)
                                         }} className="w-full bg-purple-600 text-white hover:bg-purple-700">
@@ -152,8 +182,7 @@ export default function Dashboard() {
                                             End Space
                                         </Button>
                                     </div>
-                                </CardContent>
-                            </Card>
+                        </BackgroundGradient>
                         </div>
                     </div>
                 }

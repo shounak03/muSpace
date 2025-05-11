@@ -47,15 +47,17 @@ const FloatingNavbar = () => {
     <div 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mx-4 mt-4 ${
         isScrolled 
-          ? "py-3 backdrop-blur-lg shadow-md rounded-3xl" 
-          : "py-4 rounded-2xl"
+          ? "backdrop-blur-lg  shadow-md rounded-3xl" 
+          : "rounded-2xl"
       }`}
     >
       <div className="container flex items-center justify-between px-4">
+        <Link href={"/"}>
         <div className="flex items-center space-x-2">
           <AudioWaveform className="h-6 w-6 text-purple-500" />
           <span className="text-xl font-bold text-white">muSpace</span>
         </div>
+        </Link>
         <div className="hidden md:flex items-center justify-center gap-3 ml-20 space-x-6">
           <a href="#features" className="text-gray-300 hover:text-white transition-colors">Features</a>
           <a href="#how-it-works" className="text-gray-300 hover:text-white transition-colors">How it works</a>
