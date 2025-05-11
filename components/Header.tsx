@@ -1,12 +1,21 @@
 // components/RouteAwareHeader.tsx
-'use client'
-import { usePathname } from 'next/navigation'
-import { Appbar } from "./Appbar"
-import FloatingNavbar from "./FloatingNavbar"
+'use server'
+import { headers } from "next/headers";
+import FloatingNavbar from "./FloatingNavbar";
+import { SpaceHeader } from "./space-header";
 
-export default function RouteAwareHeader() {
-  const pathname = usePathname()
-  const isSpaceDetailPage = pathname?.startsWith('/spaces/')
+async function RouteAwareHeader() {
+  const headerList = headers();
   
-  return isSpaceDetailPage ? <FloatingNavbar /> : <Appbar />
+  const pathname = headerList.get("x-current-path");
+  console.log("pathname", pathname);
+  const isSpaceDetailPage = pathname?.startsWith('/spaces/');
+
+  if (isSpaceDetailPage) {
+    return null;
+  }
+
+  return <FloatingNavbar />;
 }
+
+export default RouteAwareHeader;

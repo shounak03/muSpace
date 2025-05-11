@@ -38,7 +38,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full bg-black`}
       >
         <AppWalletProvider>
           <Toaster {...toastOptions} />

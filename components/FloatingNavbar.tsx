@@ -47,8 +47,8 @@ const FloatingNavbar = () => {
     <div 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mx-4 mt-4 ${
         isScrolled 
-          ? "py-3 bg-dark-purple/50 backdrop-blur-lg shadow-md rounded-3xl" 
-          : "py-4 bg-transparent rounded-2xl"
+          ? "py-3 backdrop-blur-lg shadow-md rounded-3xl" 
+          : "py-4 rounded-2xl"
       }`}
     >
       <div className="container flex items-center justify-between px-4">
@@ -82,7 +82,7 @@ const FloatingNavbar = () => {
               <WalletIcon />
               <Link href="/dashboard">
                 <Button variant="outline" className="border-light-purple text-light-purple hover:bg-light-purple/20">
-                  Dashboard
+                  Spaces
                 </Button>
               </Link>
               <Logout />

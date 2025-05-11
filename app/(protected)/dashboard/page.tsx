@@ -1,7 +1,7 @@
-
 'use client'
 import { CreateSpace } from "@/components/create-space-component";
 import { JoinSpace } from "@/components/join-space";
+import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter} from "next/navigation";
@@ -117,8 +117,8 @@ export default function Dashboard() {
         );
     }
     return (
-        <div className="flex flex-col min-h-screen bg-dark text-gray-100 mt-24">
-            <div className="flex-1 flex flex-col items-center p-4 md:p-6">
+        <div className="flex flex-col min-h-screen bg-black text-gray-100 mt-24">
+            <div className="flex-1 flex flex-col items-center p-4 md:p-6 relative">
                 {!space && !spacedata && <main className="w-full max-w-4xl space-y-6">
                     <h1 className="text-3xl font-bold capitalize text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
                         Welcome back
@@ -129,17 +129,16 @@ export default function Dashboard() {
                     </section>
                 </main>}
                 {space && spacedata && 
-                    <div className="mt-8 justify-center items-center">
+                    <div className="mt-8 justify-center items-center relative z-10">
                         <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
                             You've an ongoing muSpace
                         </h1>
 
                         <div className="flex items-center justify-center w-[100%]">
-                            <Card className="bg-gray-800 border-gray-700 mt-12 justify-center">
+                            <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 mt-12 justify-center">
                                 <CardHeader className="items-center">
                                     <CardTitle className="text-purple-400 text-2xl font-bold">{spacedata?.space?.name}</CardTitle>
                                     <CardDescription className="text-gray-400 text-xl">{spacedata?.space?.description}</CardDescription>
-
                                 </CardHeader>
                                 <CardContent>
                                     <div className="flex gap-4"> 
@@ -155,15 +154,12 @@ export default function Dashboard() {
                                     </div>
                                 </CardContent>
                             </Card>
-
                         </div>
-
                     </div>
                 }
             </div>
-
-
-        </div >
+            <BackgroundBeams />
+        </div>
     )
 }
 
