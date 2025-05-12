@@ -17,21 +17,21 @@ interface User {
 }
 
 const FloatingNavbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  // const [isScrolled, setIsScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (window.scrollY > 10) {
+  //       setIsScrolled(true);
+  //     } else {
+  //       setIsScrolled(false);
+  //     }
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
 
   useEffect(() => {
     const getSession = async () => {
@@ -45,11 +45,13 @@ const FloatingNavbar = () => {
 
   return (
     <div 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mx-4 mt-4 ${
-        isScrolled 
-          ? "backdrop-blur-lg  shadow-md rounded-3xl" 
-          : "rounded-2xl"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mx-4 mt-4` 
+        // ${
+      //   isScrolled 
+      //     ? "rounded-3xl" 
+      //     : "rounded-2xl"
+      // }`
+      }
     >
       <div className="container flex items-center justify-between px-4">
         <Link href={"/"}>

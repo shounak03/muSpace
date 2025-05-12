@@ -67,14 +67,15 @@ export const SpaceHeader = ({ data }: { data?: SpaceData }) => {
   }
 
   return (
-    <div className="flex justify-between items-center">
-      <div className="space-y-2">
-        <h1 className="text-4xl md:text-6xl capitalize font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+    <div className="flex flex-col items-center space-y-6">
+      <div className="text-center space-y-2">
+        <h1 className="text-5xl text-glow md:text-6xl capitalize font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
           {data?.spaceName}
         </h1>
-        <p className="text-gray-400 text-xl md:text-3xl">{data?.spaceDesc}</p>
+        
+        <p className="text-gray-400 text-2xl md:text-3xl">{data?.spaceDesc}</p>
       </div>
-      <div className="flex items-center space-x-4 flex-col-2">
+      <div className="flex items-center justify-center space-x-4">
         <WalletIcon />
       
         <Button
@@ -89,7 +90,7 @@ export const SpaceHeader = ({ data }: { data?: SpaceData }) => {
           <Button
             onClick={handleEndSpaceClick}
             variant="outline"
-            className="text-red-400 border-red-400 hover:bg-red-400 hover:text-gray-900"
+            className="bg-red-900 text-white hover:bg-red-900/80 cursor-pointer"
           >
             <LogOut className="mr-2 h-4 w-4" />
             End Space
@@ -98,7 +99,7 @@ export const SpaceHeader = ({ data }: { data?: SpaceData }) => {
         {!data?.isCreator && (
           <Button
             variant="outline"
-            className="text-red-400 border-red-400 hover:bg-red-400 hover:text-gray-900"
+            className="bg-red-900 text-white"
             onClick={() => {
               router.push("/dashboard")
             }}

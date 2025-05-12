@@ -5,8 +5,13 @@ import { BackgroundBeams } from "@/components/ui/background-beams";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ShootingStars } from "@/components/ui/shooting-stars";
+import { Spotlight } from "@/components/ui/spotlight-new";
+import { StarsBackground } from "@/components/ui/stars-background";
+import { WavyBackground } from "@/components/ui/wavy-background";
+import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { HashLoader } from 'react-spinners';
 import { toast } from "sonner";
 
@@ -29,6 +34,7 @@ export default function Dashboard() {
     const [space, setSpace] = useState(false)
     const [spacedata, setSpacedata] = useState<SpaceData>()
     const [loading, setLoading] = useState(false)
+    const [isPending, startTransition] = useTransition();
     const router = useRouter()
 
     async function endSpace() {
@@ -119,75 +125,70 @@ export default function Dashboard() {
     }
     return (
         <div className="flex flex-col min-h-screen bg-black text-gray-100 mt-24">
+            
             <div className="flex-1 flex flex-col items-center p-4 md:p-6 relative">
-                {!space && !spacedata && <main className="w-full max-w-4xl space-y-6">
-                    <h1 className="text-3xl font-bold capitalize text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                        Welcome back
+            {/* <Spotlight/> */}
+                {!space && !spacedata && 
+                
+                <main className="w-full max-w-4xl space-y-6 flex flex-col items-center justify-center min-h-4">
+                    <h1 className="text-6xl font-bold capitalize text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+                        Welcome to muSpace
                     </h1>
-                    <section className="grid gap-4 lg:grid-cols-2 md:grid-cols-2">
+                    <section className="grid gap-4 lg:grid-cols-2 md:grid-cols-2 w-full mt-8 items-center justify-center">
                         <CreateSpace />
                         <JoinSpace />
                     </section>
-                </main>}
+                    <ShootingStars />
+                    <StarsBackground />
+                </main>
+                }
+                
                 {space && spacedata &&
-                    // <div className="mt-8 justify-center items-center relative z-10">
-                        
+                    <WavyBackground className="max-w-4xl mx-auto pb-40">
+                       
+                            <h1 className="text-3xl font-bold text-white">
+                                You've an ongoing muSpace
+                            </h1>
 
-                    //     <div className="flex items-center justify-center w-[100%]">
-                    //         <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700 mt-12 justify-center">
-                    //             <CardHeader className="items-center">
-                    //                 <CardTitle className="text-purple-400 text-2xl font-bold">{spacedata?.space?.name}</CardTitle>
-                    //                 <CardDescription className="text-gray-400 text-xl">{spacedata?.space?.description}</CardDescription>
-                    //             </CardHeader>
-                    //             <CardContent>
-                                    
-                    //             </CardContent>
-                    //         </Card>
-                    //     </div>
-                    // </div>
-                    
-                    <div>
+                            <div className="mt-10">
+                                <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-10 bg-dark dark:bg-zinc-900">
+                                    <img
+                                        src={`/music_space.webp`}
+                                        alt="jordans"
+                                        height="400"
+                                        width="400"
+                                        className="object-contain"
+                                    />
+                                    <h2 className="text-4xl text-purple-400 mt-8 dark:text-neutral-200">
+                                        {spacedata?.space?.name}
+                                    </h2>
 
-
-                        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                            You've an ongoing muSpace
-                        </h1>
-
-                        <div className="mt-10">
-
-                        
-                        <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-10 bg-dark dark:bg-zinc-900">
-                            <img
-                                src={`/music_space.webp`}
-                                alt="jordans"
-                                height="400"
-                                width="400"
-                                className="object-contain"
-                            />
-                            <h2 className="text-3xl text-purple-400 mt-4 mb-2 dark:text-neutral-200">
-                            {spacedata?.space?.name}
-                            </h2>
-
-                            <p className="text-2xl text-white dark:text-neutral-400">
-                            {spacedata?.space?.description}
-                            </p>
-                            <div className="flex gap-4 mt-4"> 
-                                        <Button onClick={()=>{
-                                            router.push(`/spaces/${spaceId?.spaceId}`)
+                                    <p className="text-2xl text-white dark:text-neutral-400">
+                                        {spacedata?.space?.description}
+                                    </p>
+                                    <div className="flex gap-4 mt-8">
+                                        {!isPending &&
+                                        <Button onClick={() => {
+                                            startTransition(() => {
+                                                router.push(`/spaces/${spaceId?.spaceId}`)
+                                            })
                                         }} className="w-full bg-purple-600 text-white hover:bg-purple-700">
                                             Join Space
-                                        </Button>
-
+                                        </Button>}
+                                        {!isPending &&
                                         <Button onClick={endSpace} className="w-full bg-red-700 text-white hover:bg-red-900">
                                             End Space
                                         </Button>
+                                        }
+                                        {isPending && <Button className="w-full bg-dark-purple animate:spin"><LoaderCircle color="white" /></Button>}
                                     </div>
-                        </BackgroundGradient>
-                        </div>
-                    </div>
+                                </BackgroundGradient>
+                            </div>
+
+                    </WavyBackground>
                 }
             </div>
-            <BackgroundBeams />
+            {/* <BackgroundBeams /> */}
         </div>
     )
 }

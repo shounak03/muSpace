@@ -16,6 +16,7 @@ import Link from 'next/link';
 import Chat from './chat';
 import BidSolana from './BidSolana';
 import { ScrollArea, ScrollBar } from './ui/scroll-area';
+import { BackgroundBeams } from './ui/background-beams';
 
 
 interface SpaceData {
@@ -288,7 +289,7 @@ export default function Stream({
     <div className="py-6">
       <div className="max-w-7xl mx-auto">
         {/* Header with more space */}
-        <div className="mb-8">
+        <div className="mb-8 rounded-lg p-4">
           <SpaceHeader
             data={{
               spaceName: data?.spaceName,
@@ -303,7 +304,7 @@ export default function Stream({
 
           <div className="lg:col-span-2 space-y-8">
             {/* Song URL Input */}
-            <div className="space-y-4">
+            <div className="space-y-4 rounded-lg p-4">
               <div className="space-y-2">
                 <label htmlFor="song-url" className="block text-sm font-medium text-gray-400">
                   Song URL
@@ -339,7 +340,7 @@ export default function Stream({
             </div>
 
             {/* Now Playing */}
-            <Card className="bg-gray-800 border-gray-700 shadow-lg">
+            <Card className="bg-gray-800  shadow-lg">
               <CardContent className="p-6 space-y-4">
                 <h2 className="text-2xl font-bold text-white">Now Playing</h2>
                 {currentSong ? (
@@ -378,7 +379,7 @@ export default function Stream({
 
             {/* <Queue queue={queue}/> */}
             {/* Queue */}
-            <div className="w-full">
+            <div className="w-full  rounded-lg p-4">
               <div className="space-y-4">
                 <h3 className="text-2xl font-semibold">Next Up in Queue</h3>
                 {queue.length === 0 ? (
@@ -463,20 +464,13 @@ export default function Stream({
           </div>
 
           {/* Chat */}
-          <div className="h-[calc(100vh-10rem)]">
+          <div className="h-[calc(100vh-10rem)]  rounded-lg p-4">
             <Chat spaceId={spaceId} isCreator={data?.isCreator as boolean} />
 
-            {/* <div className='mt-10'>
-              <Card>
-                <CardHeader className='text-2xl'>Bidddings History</CardHeader>
-                <CardContent>1st {}</CardContent>
-                <CardContent>2nd</CardContent>
-                <CardContent>3rd</CardContent>
-              </Card>
-            </div> */}
           </div>
 
         </div>
+        <BackgroundBeams/>
       </div>
     </div>
   )

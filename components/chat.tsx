@@ -204,7 +204,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-800 rounded-lg shadow overflow-hidden mt-7">
+    <div className="flex flex-col h-full border-2 border-purple-900 bg-black rounded-lg shadow overflow-hidden mt-7">
       <div className="px-4 py-3 bg-gray-700 border-b border-gray-600 flex justify-between">
         <h3 className="text-lg font-medium text-white">Chat</h3>
         <div>
@@ -286,7 +286,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:none"
             disabled={!newMessage.trim() || disableChat === true}
           >
             Send
