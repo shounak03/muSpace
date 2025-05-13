@@ -180,7 +180,7 @@ export default function Dashboard() {
                                             End Space
                                         </Button>
                                         }
-                                        {isPending && <Button className="w-full bg-dark-purple animate:spin"><LoaderCircle color="white" /></Button>}
+                                        {isPending && <Button className="w-full bg-purple-800"><LoaderCircle color="white" className="animate-spin" /></Button>}
                                     </div>
                                 </BackgroundGradient>
                             </div>

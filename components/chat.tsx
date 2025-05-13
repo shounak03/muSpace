@@ -204,8 +204,8 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
   };
 
   return (
-    <div className="flex flex-col h-full border-2 border-purple-900 bg-black rounded-lg shadow overflow-hidden mt-7">
-      <div className="px-4 py-3 bg-gray-700 border-b border-gray-600 flex justify-between">
+    <div className="flex flex-col h-full border-spacing-3 border-white bg-black rounded-lg shadow overflow-hidden">
+      <div className="px-4 py-3 bg-gray-900 border-b border-white flex justify-between">
         <h3 className="text-lg font-medium text-white">Chat</h3>
         <div>
 
@@ -214,10 +214,10 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
         
         (disableChat === false?
         
-          (<Button className='bg-red-900' onClick={setchat}>
+          (<Button className='bg-red-900 cursor-pointer' onClick={setchat}>
             disable
           </Button>):(
-            <Button className='bg-green-800' onClick={setchat}>
+            <Button className='bg-green-800 cursor-pointer' onClick={setchat}>
             enable
           </Button>
           )):(<div/>)
@@ -274,7 +274,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
 
       </div>
 
-      <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-700 bg-gray-800">
+      <form onSubmit={handleSendMessage} className="p-4 border-t border-white bg-gray-900">
         <div className="flex gap-2">
           <input
             type="text"

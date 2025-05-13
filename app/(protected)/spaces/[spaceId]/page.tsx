@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import LoadingScreen from "@/components/Loading";
 import Stream from "@/components/stream";
 import { HashLoader } from "react-spinners";
+import StreamV2 from "@/components/streamV2";
 
 
 const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
@@ -48,7 +49,7 @@ const Page = ({ params: { spaceId } }: { params: { spaceId: string } }) => {
     return (
         <div className="min-h-screen bg-black text-gray-100">
           <div className="container mx-auto px-4">
-            <Stream hostId={hostId as string} playVideo={true} spaceId={spaceId} />
+            <StreamV2 hostId={hostId as string} playVideo={true} spaceId={spaceId} />
           </div>
         </div>
       )
