@@ -10,6 +10,7 @@ export default function GoogleAuth() {
     <div className='w-full'>
         <form className="flex items-center w-full gap-x-2"
           action={async()=>{
+            
             await googleLogin()
 
           }}

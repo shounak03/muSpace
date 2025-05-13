@@ -1,10 +1,10 @@
-
+import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Link from 'next/link';
-
+import { FcGoogle } from "react-icons/fc"
 import { LoginForm } from '@/components/login-form';
-import GoogleAuth from '@/components/google-login';
+import { signIn } from "@/auth";
 
 
 const Page = () => {
@@ -18,7 +18,18 @@ const Page = () => {
 
       <CardFooter className="flex flex-col space-y-4">
         <Separator />
-        <GoogleAuth/>
+        
+        <form className="flex items-center w-full gap-x-2"
+          action={async()=>{
+            "use server"
+            await signIn("google",{callbackUrl:"/dashboard"});
+          }}
+        >
+
+            <Button size="lg" className="w-full hover:bg-white" variant={"outline"} type="submit">
+              <FcGoogle className="h-5 w-5" />
+            </Button>
+        </form>
         
         <div className="text-center  cursor-pointer text-lg">
         Don't have an account?{' '}
