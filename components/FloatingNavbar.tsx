@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { fetchUser } from "@/app/action";
 import Logout from "./Logout";
 import WalletIcon from "./wallet-icon";
+import Image from "next/image";
 
 interface User {
   id: string;
@@ -77,7 +78,7 @@ const FloatingNavbar = () => {
                 onClick={()=>{
                   toast.error('Please Login/Register to Connect Wallet')
                 }}>
-                <img src="/solana.png" alt="solana" className="w-8 h-8 mr-2" />
+                <Image src="/solana.png" alt="solana"  width={32} height={32} />
                 Connect Wallet
               </Button>
             </>

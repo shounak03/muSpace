@@ -11,8 +11,9 @@ import { ShootingStars } from "@/components/ui/shooting-stars";
 import { HeroHighlight, Highlight } from "@/components/ui/hero-highlight";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { Cover } from "@/components/ui/cover";
+import Image from "next/image";
 
-export const Features = [
+const Features = [
   {
     title: "Create Your Space",
     description: "Set up your personalized music room and customize it to match your vibe.",
@@ -31,7 +32,7 @@ export const Features = [
   {
     title: "Solana Bidding",
     description: "Use Solana to bid on songs and guarantee they play next in the queue.",
-    icon: <img src="/solana.png" width={50} height={50} className="text-light-purple" />
+    icon: <Image alt="" src="/solana.png" width={50} height={50} className="text-light-purple" />
   },
   {
     title: "Music Discovery",
@@ -60,7 +61,7 @@ const Index = () => {
           <div className="max-w-3xl mx-auto text-center">
             <div className="mb-4 inline-block">
               <div className="flex items-center px-4 py-1 rounded-full bg-solana/20 text-solana text-sm font-medium">
-                <img src="/solana.png" alt="Solana" className="w-8 h-8 mr-2" />
+                <Image src="/solana.png" alt="Solana" className="w-8 h-8 mr-2" />
                 <span className="text-purple-300">Powered by Solana</span>
               </div>
             </div>

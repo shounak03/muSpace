@@ -10,6 +10,7 @@ import { Spotlight } from "@/components/ui/spotlight-new";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { WavyBackground } from "@/components/ui/wavy-background";
 import { LoaderCircle } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { HashLoader } from 'react-spinners';
@@ -152,7 +153,7 @@ export default function Dashboard() {
 
                             <div className="mt-10">
                                 <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-10 bg-dark dark:bg-zinc-900">
-                                    <img
+                                    <Image
                                         src={`/music_space.webp`}
                                         alt="jordans"
                                         height="400"
