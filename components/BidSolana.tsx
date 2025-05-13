@@ -3,13 +3,15 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { Connection, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
+import { Loader2 } from 'lucide-react';
 
 
 export default function BidSolana({ songId, spaceId,refresh }: { songId: string, spaceId: string,refresh: () => Promise<void> }) {
 
 
   const { publicKey, wallet, sendTransaction } = useWallet()
+  const [isPending, startTransition] = useTransition();
 
   const DEVNET_URL = process.env.NEXT_PUBLIC_DEVNET_URL;
   const PUBLIC_KEY = process.env.NEXT_PUBLIC_PUBLIC_KEY;
@@ -32,6 +34,7 @@ export default function BidSolana({ songId, spaceId,refresh }: { songId: string,
 
 
   async function bidSol() {
+    
     if (!wallet || !publicKey) {
       return toast.error("Please connect your wallet");
     }
@@ -114,7 +117,13 @@ export default function BidSolana({ songId, spaceId,refresh }: { songId: string,
 
   return (
     <div className="flex gap-2 relative group cursor-pointer">
-      <Button className='w-full mx-2 my-2 bg-purple-950 hover:bg-purple-900' onClick={bidSol}> bid: {newAmount} sol</Button>
+      <Button className='w-full mx-2 my-2 bg-purple-950 hover:bg-purple-900' onClick={()=>{
+        startTransition(async() => {
+          await bidSol()
+        })
+      }}> 
+      {isPending ? <Loader2 className='w-4 h-4 animate-spin' /> : `bid: ${newAmount} sol`}
+      </Button>
 
       <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-all duration-200 text-sm text-white bg-gray-800 px-2 py-1 rounded shadow-lg z-50 whitespace-nowrap">
         bid: {newAmount} SOL

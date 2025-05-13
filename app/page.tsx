@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Music2, Users, UserPlus, Vote, HandCoins, ArrowUp, ArrowDown, Play, Wallet, AudioWaveform } from "lucide-react";
+import { Music2, Users, UserPlus, Vote, HandCoins, ArrowUp, ArrowDown, Play, Wallet } from "lucide-react";
 
 import FloatingNavbar from "@/components/FloatingNavbar";
 import FeatureCard from "@/components/ui/feature-card";
@@ -9,7 +9,41 @@ import Link from "next/link";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { HeroHighlight, Highlight } from "@/components/ui/hero-highlight";
+import { HoverEffect } from "@/components/ui/card-hover-effect";
+import { Cover } from "@/components/ui/cover";
 
+export const Features = [
+  {
+    title: "Create Your Space",
+    description: "Set up your personalized music room and customize it to match your vibe.",
+    icon: <Music2 size={24} className="text-light-purple" />
+  },
+  {
+    title: "Invite Friends",
+    description: "Bring your crew into your space and enjoy music together in real-time.",
+    icon: <UserPlus size={24} className="text-light-purple" />
+  },
+  {
+    title: "Vote on Songs",
+    description: "Democracy in action — vote for the tracks you want to hear next.",
+    icon: <Vote size={24} className="text-light-purple" />
+  },
+  {
+    title: "Solana Bidding",
+    description: "Use Solana to bid on songs and guarantee they play next in the queue.",
+    icon: <img src="/solana.png" width={50} height={50} className="text-light-purple" />
+  },
+  {
+    title: "Music Discovery",
+    description: "Discover new tracks from friends and expand your musical horizons.",
+    icon: <Play size={24} className="text-light-purple" />
+  },
+  {
+    title: "Community Powered",
+    description: "Build a community around your favorite music and musical tastes.",
+    icon: <Users size={24} className="bg-transparent" />
+  }
+];
 
 const Index = () => {
   return (
@@ -45,9 +79,12 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
               <Link href={'/dashboard'}>
 
-                <Button size="lg" className="bg-purple-950 hover:bg-purple-800 text-white px-8 py-6">
-                  Create Your Space
-                </Button>
+                <button className="relative inline-flex h-12 overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+                  <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
+                  <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl">
+                    Create muSpace
+                  </span>
+                </button>
               </Link>
             </div>
           </div>
@@ -63,48 +100,21 @@ const Index = () => {
       <section id="features" className="py-24 relative bg-dark-pruple">
         <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Features that <span className="text-light-purple">Drop the Beat</span></h2>
+            <span className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              <span className="mr-2">Features that</span>
+              <Cover className="text-4xl text-dark-purple"><span className="text-light-purple">Drop the Beat</span></Cover>
+            </span>
             <p className="text-gray-300 max-w-2xl mx-auto">A revolutionary platform where music meets community and blockchain technology.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <FeatureCard
-              title="Create Your Space"
-              description="Set up your personalized music room and customize it to match your vibe."
-              icon={<Music2 size={24} className="text-light-purple" />}
-            />
-            <FeatureCard
-              title="Invite Friends"
-              description="Bring your crew into your space and enjoy music together in real-time."
-              icon={<UserPlus size={24} className="text-light-purple" />}
-            />
-            <FeatureCard
-              title="Vote on Songs"
-              description="Democracy in action — vote for the tracks you want to hear next."
-              icon={<Vote size={24} className="text-light-purple" />}
-            />
-            <FeatureCard
-              title="Solana Bidding"
-              description="Use Solana to bid on songs and guarantee they play next in the queue."
-              icon={<img src="/solana.png" width={50} height={50} className="text-light-purple" />}
-            />
-            <FeatureCard
-              title="Music Discovery"
-              description="Discover new tracks from friends and expand your musical horizons."
-              icon={<Music2 size={24} className="text-light-purple" />}
-            />
-            <FeatureCard
-              title="Community Powered"
-              description="Build a community around your favorite music and musical tastes."
-              icon={<Users size={24} className="bg-transparent" />}
-            />
-          </div>
+
+          <HoverEffect items={Features} />
         </div>
         <ShootingStars />
         <StarsBackground />
       </section>
 
-   
+
       <section id="how-it-works" className="py-24 bg-black">
         <div className="container">
           <div className="text-center mb-16">

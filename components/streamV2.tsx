@@ -204,6 +204,7 @@ export default function StreamV2({
   };
 
   const handleUpvote = async (songId: string, isUpvote: boolean) => {
+    toast.success("Voted successfully")
     await fetch(`/api/streams/upvote`, {
       method: isUpvote ? "POST" : "DELETE",
       body: JSON.stringify({ songId })
@@ -233,7 +234,7 @@ export default function StreamV2({
         host: 'https://www.youtube-nocookie.com',
         playerVars: {
           autoplay: 1,
-          controls: 1,
+          controls: 0,
           disablekb: 0,
           enablejsapi: 0,
           fs: 0,
@@ -280,10 +281,10 @@ export default function StreamV2({
           {/* Left: Music Player */}
           <BackgroundGradient className="rounded p-2">
           <Card className="bg-black shadow-lg h-[calc(100vh-20rem)]">
-            <CardContent className="p-6 space-y-4 h-full flex flex-col">
+            <CardContent className="p-6 space-y-4 h-full flex flex-col pointer-events-none">
               <h2 className="text-2xl font-bold text-white">Now Playing</h2>
               {currentSong ? (
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col pointer-events-none">
                   {playVideo ? (
                     <div
                       ref={videoPlayer}
@@ -338,6 +339,7 @@ export default function StreamV2({
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                 />
+                
                 <Button 
                   disabled={loading} 
                   type="submit" 
@@ -372,18 +374,20 @@ export default function StreamV2({
                   {queue.map((song) => (
                     <div
                       key={song.id}
-                      className="bg-gray-900 rounded-lg shadow-lg border border-gray-700 hover:bg-gray-750 transition-colors duration-200 flex-shrink-0 w-64"
+                      className="bg-gray-900 rounded-lg shadow-lg border border-gray-700 hover:bg-gray-800 hover:scale-105 hover:shadow-xl transition-all duration-300 flex-shrink-0 w-64 group"
                     >
                       <div className="p-4 flex flex-col">
-                        <Image
-                          width={60}
-                          height={60}
-                          alt={`${song.title} thumbnail`}
-                          src={song.smallImg}
-                          className="w-full h-40 object-cover rounded-md mb-3"
-                        />
+                        <div className="relative overflow-hidden rounded-md mb-3">
+                          <Image
+                            width={60}
+                            height={60}
+                            alt={`${song.title} thumbnail`}
+                            src={song.smallImg}
+                            className="w-full h-40 object-cover rounded-md group-hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
                         <div className="mb-3">
-                          <p className="font-medium text-lg truncate">{song.title}</p>
+                          <p className="font-medium text-lg truncate group-hover:text-purple-400 transition-colors">{song.title}</p>
                           <p className="text-sm text-gray-400 truncate">{song.artist}</p>
                         </div>
 
