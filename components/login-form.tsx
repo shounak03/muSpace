@@ -23,12 +23,13 @@ export const LoginForm = ()=>{
             const validatedData = LoginSchema.parse({ email, password });
 
             const error = await loginHanlder(validatedData.email,validatedData.password);
-            console.log(error);
+
             
             if(!error){
 
                 setSuccess("Logged-In Successfully")
                 router.refresh()
+                window.location.reload()
             }
             else{
                 return setError("Invalid email or password ");
@@ -47,7 +48,7 @@ export const LoginForm = ()=>{
           />
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button type="submit" className="w-full cursor-pointer">Login</Button>
+          <Button type="submit" className="w-full cursor-pointer bg-purple-950 hover:bg-purple-900">Login</Button>
         </CardContent>
       </form>
     )

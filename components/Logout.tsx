@@ -8,8 +8,9 @@ function Logout() {
         <form action={async()=>{
             
             await logout()
+            window.location.reload()
           }}>
-            <Button variant="outline" className="border-light-purple text-light-purple hover:bg-light-purple/20"
+            <Button variant="outline" className="border-red-900 text-white hover:bg-light-purple/20"
             type='submit'>
                 Logout
             </Button>

@@ -61,7 +61,7 @@ const Index = () => {
           <div className="max-w-3xl mx-auto text-center">
             <div className="mb-4 inline-block">
               <div className="flex items-center px-4 py-1 rounded-full bg-solana/20 text-solana text-sm font-medium">
-                <Image src="/solana.png" alt="Solana" className="w-8 h-8 mr-2" />
+                <Image src="/solana.png" alt="Solana" width={32} height={32} className="w-8 h-8 mr-2" />
                 <span className="text-purple-300">Powered by Solana</span>
               </div>
             </div>
@@ -87,10 +87,10 @@ const Index = () => {
                   </span>
                 </button>
               </Link>
+              
             </div>
           </div>
 
-          {/* Animated music visualizer */}
           <div className="mt-16 mb-16">
             <MusicVisualizer />
           </div>

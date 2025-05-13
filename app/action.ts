@@ -1,6 +1,6 @@
 'use server'
 
-import { auth, signOut } from "@/auth";
+import { auth, signIn, signOut } from "@/auth";
 
 export const getMail = async () => {
     const session = await auth();
@@ -17,4 +17,8 @@ export async function fetchUser() {
 }
 export async function logout() {
     await signOut({redirect: true})
+}
+
+export async function googleLogin() {
+    await signIn("google",{callbackUrl:"/dashboard"});
 }

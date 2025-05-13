@@ -7,9 +7,9 @@ import { Separator } from "@/components/ui/separator";
 import Link from 'next/link';
 import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
-import { FcGoogle } from "react-icons/fc"
 import { RegisterSchema } from '@/schema';
-
+import { useRouter } from 'next/navigation';
+import GoogleAuth from '@/components/google-login';
 
 
 const RegisterForm = () => {
@@ -18,6 +18,7 @@ const RegisterForm = () => {
   const [name, setName] = useState('');
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  const router = useRouter();
 
   const handleSignIn = async (e: any) => {
     e.preventDefault();
@@ -40,18 +41,21 @@ const RegisterForm = () => {
       });
 
       const data = await response.json();
-      console.log(data);
       
-
       if (!response.ok) {
-        throw new Error(data || 'Registration failed');
+        throw new Error(data?.error || 'Registration failed');
       }
+      
+      console.log(data,typeof(data));
+
       if (data?.error) {
-        setError(data.error);
+        setError(data?.error);
         
       } else {
         setSuccess('Registered successfully!');
       }
+      router.push('/auth/login')
+      
 
 
     } catch (error) {
@@ -63,6 +67,8 @@ const RegisterForm = () => {
         setError('An unknown error occurred');
       }
       setSuccess(undefined);
+    }finally{
+      
     }
   };
 
@@ -90,18 +96,15 @@ const RegisterForm = () => {
           />
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button type="submit" className="w-full">Register</Button>
+          <Button type="submit" className="w-full bg-purple-950 hover:bg-purple-900">Register</Button>
         </CardContent>
       </form>
       <CardFooter className="flex flex-col space-y-4">
         <Separator />
         <div className="flex items-center w-full gap-x-2">
-          <Button size="lg" className="w-full" variant={"outline"}>
-            <FcGoogle className="h-5 w-5" />
-          </Button >
-          
+          <GoogleAuth/>
         </div>
-        <div className="text-center text-sm">
+        <div className="text-center text-lg">
           Already have an account?{' '}
           <Link href="/auth/login" className="text-blue-500 hover:underline">
             Login

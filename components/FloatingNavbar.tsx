@@ -7,7 +7,6 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { fetchUser } from "@/app/action";
 import Logout from "./Logout";
-import WalletIcon from "./wallet-icon";
 import Image from "next/image";
 
 interface User {
@@ -57,7 +56,7 @@ const FloatingNavbar = () => {
       <div className="container flex items-center justify-between px-4">
         <Link href={"/"}>
         <div className="flex items-center space-x-2">
-          <AudioWaveform className="h-6 w-6 text-purple-500" />
+          <AudioWaveform className="h-6 w-6 text-purple-700" />
           <span className="text-xl font-bold text-white">muSpace</span>
         </div>
         </Link>
@@ -84,9 +83,9 @@ const FloatingNavbar = () => {
             </>
           ) : (
             <div className="flex items-center space-x-3">
-              <WalletIcon />
+
               <Link href="/dashboard">
-                <Button variant="outline" className="border-light-purple text-light-purple hover:bg-light-purple/20">
+                <Button variant="outline" className="border-purple-900 text-white hover:bg-light-purple/20">
                   Spaces
                 </Button>
               </Link>
