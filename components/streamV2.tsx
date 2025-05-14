@@ -213,6 +213,19 @@ export default function StreamV2({
   };
 
   useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = ''; // Required for Chrome to show the confirmation dialog
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!currentSong && queue.length > 0 && !nextSong) {
       playNext();
     }

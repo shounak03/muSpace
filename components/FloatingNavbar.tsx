@@ -46,6 +46,10 @@ const FloatingNavbar = () => {
     };
     getSession();
   }, []);
+  
+  
+  if(pathname.startsWith("/spaces")) 
+    return null;
 
   return (
     <div 

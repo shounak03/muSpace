@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "sonner";
 import AppWalletProvider from "@/components/AppWalletProvider";
-import RouteAwareHeader from "@/components/Header";
+import FloatingNavbar from "@/components/FloatingNavbar";
 
 type ToasterProps = React.ComponentProps<typeof Toaster>;
 const toastOptions: ToasterProps = {
@@ -42,9 +42,8 @@ export default async function RootLayout({
       >
         <AppWalletProvider>
           <Toaster {...toastOptions} />
-          <RouteAwareHeader />
+          <FloatingNavbar />
           {children}
-          {/* <Footer /> */}
         </AppWalletProvider>
       </body>
     </html>

@@ -1,13 +1,14 @@
 // app/components/Chat.tsx
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useTransition } from 'react';
 import { chatService } from '@/lib/chat-service';
 import { Message } from '../types/index';
 import { getMail } from '@/app/action';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 interface ChatProps {
   spaceId: string;
@@ -20,6 +21,7 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
   const [email, setEmail] = useState('')
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
   const [disableChat, setDisableChat] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -212,16 +214,17 @@ export default function Chat({ spaceId, isCreator }: ChatProps) {
 
         {isCreator === true ?
         
-        (disableChat === false?
+        (!isPending && disableChat === false?
         
-          (<Button className='bg-red-900 cursor-pointer' onClick={setchat}>
-            disable
+          (<Button className='bg-red-900 hover:bg-red-800 cursor-pointer' onClick={() => startTransition(() => setchat())}>
+            {isPending ? <Loader2 className='animate-spin' /> : "disable"}
           </Button>):(
-            <Button className='bg-green-800 cursor-pointer' onClick={setchat}>
-            enable
+            <Button className='bg-green-800 hover:bg-green-700 cursor-pointer' onClick={() => startTransition(() => setchat())}>
+            {isPending ? <Loader2 className='animate-spin' /> : "enable"}
           </Button>
           )):(<div/>)
           }
+          
        
           </div>
       </div>
