@@ -217,27 +217,27 @@ export async function DELETE(req: NextRequest) {
 
   try {
     // Delete related votes first
-    await prisma.vote.deleteMany({
-      where: {
-        song: {
-          spaceId: spaceId
-        }
-      }
-    })
+    // await prisma.vote.deleteMany({
+    //   where: {
+    //     song: {
+    //       spaceId: spaceId
+    //     }
+    //   }
+    // })
 
-    // Delete current song reference
-    await prisma.currentSong.deleteMany({
-      where: {
-        spaceId: spaceId
-      }
-    })
+    // // Delete current song reference
+    // await prisma.currentSong.deleteMany({
+    //   where: {
+    //     spaceId: spaceId
+    //   }
+    // })
 
-    // Delete songs associated with the space
-    await prisma.song.deleteMany({
-      where: {
-        spaceId: spaceId
-      }
-    })
+    // // Delete songs associated with the space
+    // await prisma.song.deleteMany({
+    //   where: {
+    //     spaceId: spaceId
+    //   }
+    // })
 
     // Finally, delete the space
     await prisma.space.delete({
@@ -245,13 +245,14 @@ export async function DELETE(req: NextRequest) {
         id: spaceId
       }
     })
-    await prisma.song.update({
-      where: {
-        id: spaceId
-      }, data: {
-        spaceRunning: false
-      }
-    })
+
+    // await prisma.song.update({
+    //   where: {
+    //     id: spaceId
+    //   }, data: {
+    //     spaceRunning: false
+    //   }
+    // })
 
     return NextResponse.json({
       success: true,

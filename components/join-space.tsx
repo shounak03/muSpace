@@ -29,20 +29,23 @@ export const JoinSpace = () => {
         return <LoadingScreen/>
     return (
         <>
-            <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                    <CardTitle className="text-pink-400">Join an Existing Space</CardTitle>
-                    <CardDescription className="text-gray-400">Enter a space URL to join friends</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button 
-                        className="w-full bg-pink-600 text-white hover:bg-pink-700"
-                        onClick={() => setIsJoinDialogOpen(true)}
-                    >
-                        Join Space
-                    </Button>
-                </CardContent>
-            </Card>
+            <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+                <Card className="relative bg-gray-900 border-gray-700">
+                    <CardHeader>
+                        <CardTitle className="text-pink-600">Join an Existing Space</CardTitle>
+                        <CardDescription className="text-gray-400">Enter a space URL to join friends</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Button 
+                            className="w-full bg-pink-700 text-white hover:bg-pink-600"
+                            onClick={() => setIsJoinDialogOpen(true)}
+                        >
+                            Join Space
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
 
             <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
                 <DialogContent className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
@@ -58,7 +61,7 @@ export const JoinSpace = () => {
                                 onChange={(e) => setId(e.target.value)}
 
                             />
-                            <Button className="w-full bg-pink-600 text-white hover:bg-pink-700" onClick={joinSpace}>
+                            <Button className="w-full bg-pink-700 text-white hover:bg-pink-600" onClick={joinSpace}>
                                 Join
                             </Button>
                         </div>

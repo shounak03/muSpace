@@ -1,10 +1,8 @@
 'use client'
-import { CreateSpace } from "@/components/create-space-component";
-import { JoinSpace } from "@/components/join-space";
-import { BackgroundBeams } from "@/components/ui/background-beams";
+
+import { GiSpaceship } from "react-icons/gi";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { Spotlight } from "@/components/ui/spotlight-new";
 import { StarsBackground } from "@/components/ui/stars-background";
@@ -15,6 +13,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { HashLoader } from 'react-spinners';
 import { toast } from "sonner";
+import { Cover } from "@/components/ui/cover";
+import ColourfulText from "@/components/ui/colourful-text";
+import { CreateSpace } from "@/components/create-space-component";
+import { ExistingSpace } from "@/components/existing-space";
 
 interface SpaceData {
     space: {
@@ -31,7 +33,6 @@ interface SpaceId {
 
 export default function Dashboard() {
     const [spaceId, setSpaceId] = useState<SpaceId>();
-
     const [space, setSpace] = useState(false)
     const [spacedata, setSpacedata] = useState<SpaceData>()
     const [loading, setLoading] = useState(false)
@@ -111,6 +112,7 @@ export default function Dashboard() {
             fetchSpaceData()
         }
     }, [space, spaceId])
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -125,72 +127,54 @@ export default function Dashboard() {
         );
     }
     return (
-        <div className="flex flex-col min-h-screen bg-black text-gray-100 mt-24">
-            
-            <div className="flex-1 flex flex-col items-center p-4 md:p-6 relative">
-            {/* <Spotlight/> */}
-                {!space && !spacedata && 
+        <WavyBackground containerClassName="h-auto" className="max-w-4xl mx-auto pb-40">
+
+        <div className="flex flex-col min-h-screen text-gray-100 mt-24">
+
+            <div className="flex-1 flex flex-col items-center md:p-6 relative">
                 
-                <main className="w-full max-w-4xl space-y-6 flex flex-col items-center justify-center min-h-4">
-                    <h1 className="text-6xl font-bold capitalize text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                        Welcome to muSpace
+                <div className="w-full items-center justify-center">
+                    <h1 className="text-4xl font-bold  text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+
+                        Welcome to the {" "}
+                        <Cover className="text-4xl">
+                            <ColourfulText text="muSpace" />
+                        </Cover>
+                        <span className="ml-2"> Station </span>
+                        <Image src="/ufo.png" alt="spaceship" width={50} height={50} className="inline-block" />
+                        <br />
+
                     </h1>
-                    <section className="grid gap-4 lg:grid-cols-2 md:grid-cols-2 w-full mt-8 items-center justify-center">
+                </div>
+
+                
+
+                {!space && !spacedata &&
+
+                    <main className="w-full max-w-4xl space-y-6 flex flex-col items-center justify-center min-h-4">
+
+
                         <CreateSpace />
-                        <JoinSpace />
-                    </section>
-                    <ShootingStars />
-                    <StarsBackground />
-                </main>
+
+                        
+                    </main>
+
                 }
                 
                 {space && spacedata &&
-                    <WavyBackground className="max-w-4xl mx-auto pb-40">
-                       
-                            <h1 className="text-3xl font-bold text-white">
-                                You've an ongoing muSpace
-                            </h1>
+                    <h1 className="text-3xl font-bold text-pink-800 mt-4">
+                        Captain, you've an ongoing muSpace
+                    </h1>
+                }
 
-                            <div className="mt-10">
-                                <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-10 bg-dark dark:bg-zinc-900">
-                                    <Image
-                                        src={`/music_space.webp`}
-                                        alt="jordans"
-                                        height="400"
-                                        width="400"
-                                        className="object-contain"
-                                    />
-                                    <h2 className="text-4xl text-purple-400 mt-8 dark:text-neutral-200">
-                                        {spacedata?.space?.name}
-                                    </h2>
+                {space && spacedata &&
+                
+                       <ExistingSpace spacedata={spacedata} spaceId={spaceId as SpaceId}/>
 
-                                    <p className="text-2xl text-white dark:text-neutral-400">
-                                        {spacedata?.space?.description}
-                                    </p>
-                                    <div className="flex gap-4 mt-8">
-                                        {!isPending &&
-                                        <Button onClick={() => {
-                                            startTransition(() => {
-                                                router.push(`/spaces/${spaceId?.spaceId}`)
-                                            })
-                                        }} className="w-full bg-purple-600 text-white hover:bg-purple-700">
-                                            Join Space
-                                        </Button>}
-                                        {!isPending &&
-                                        <Button onClick={endSpace} className="w-full bg-red-700 text-white hover:bg-red-900">
-                                            End Space
-                                        </Button>
-                                        }
-                                        {isPending && <Button className="w-full bg-purple-800"><LoaderCircle color="white" className="animate-spin" /></Button>}
-                                    </div>
-                                </BackgroundGradient>
-                            </div>
-
-                    </WavyBackground>
                 }
             </div>
-            {/* <BackgroundBeams /> */}
         </div>
+        </WavyBackground>
     )
 }
 

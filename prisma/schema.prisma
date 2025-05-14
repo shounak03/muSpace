@@ -100,7 +100,7 @@ model Song {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   bigImg        String?
-  smallImg      String?
+  smallImg      String? 
   spaceRunning  Boolean      @default(true)
   bidAmount     Decimal?     @default(0) @db.Decimal(7, 5)
   currentStream CurrentSong?
