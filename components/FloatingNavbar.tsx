@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { fetchUser } from "@/app/action";
 import Logout from "./Logout";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 interface User {
   id: string;
@@ -19,6 +20,9 @@ interface User {
 const FloatingNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const pathname = usePathname();
+  console.log("pathname", pathname);
+  
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,9 +65,12 @@ const FloatingNavbar = () => {
         </div>
         </Link>
         <div className="hidden md:flex items-center justify-center gap-3 ml-20 space-x-6">
-          <a href="#features" className="text-gray-300 hover:text-white transition-colors">Features</a>
-          <a href="#how-it-works" className="text-gray-300 hover:text-white transition-colors">How it works</a>
-
+          {!user || pathname === "/" && (
+            <>
+              <a href="#features" className="text-gray-300 hover:text-white transition-colors">Features</a>
+              <a href="#how-it-works" className="text-gray-300 hover:text-white transition-colors">How it works</a>
+            </>
+          )}
         </div>
         <div className="flex items-center space-x-3">
           {!user ? (
@@ -77,7 +84,7 @@ const FloatingNavbar = () => {
                 onClick={()=>{
                   toast.error('Please Login/Register to Connect Wallet')
                 }}>
-                <Image src="/solana.png" alt="solana"  width={32} height={32} />
+                <Image src="/solana.png" alt="solana"  width={32} height={32}className="mr-2"/>
                 Connect Wallet
               </Button>
             </>
