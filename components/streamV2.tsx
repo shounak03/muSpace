@@ -50,7 +50,7 @@ interface Video {
   artist: string;
 }
 
-const REFRESH_INTERVAL_MS = 5 * 1000; // Reduced refresh interval for more responsive updates
+const REFRESH_INTERVAL_MS = 5 * 1000;
 
 export default function StreamV2({
   hostId,
@@ -319,11 +319,12 @@ export default function StreamV2({
         </BackgroundGradient>
 
           {/* Right: Chat */}
-          <Card className="h-[calc(103vh-20rem)]">
-            <CardContent className="p-4 h-full">
+
+
+          <div className="h-[calc(103vh-20rem)]">
               <Chat spaceId={spaceId} isCreator={data?.isCreator as boolean} />
-            </CardContent>
-          </Card>
+          </div>
+
         </div>
 
         {/* Queue Section */}
@@ -435,7 +436,7 @@ export default function StreamV2({
           </div>
         </div>
       </div>
-      <BackgroundBeams />
+      {/* <BackgroundBeams /> */}
     </div>
   )
 } 

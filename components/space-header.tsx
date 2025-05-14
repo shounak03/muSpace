@@ -22,9 +22,9 @@ export const SpaceHeader = ({ data }: { data?: SpaceData }) => {
   const router = useRouter();
 
   function shareVideo() {
-    const shareableLink = `${window.location.hostname}/spaces/${data?.spaceId}`;
+    const shareableLink = `${data?.spaceId}`;
     navigator.clipboard.writeText(shareableLink)
-      .then(() => toast.success('Link copied to clipboard!'))
+      .then(() => toast.success('Id copied to clipboard!'))
       .catch((err) => {
         console.error('Could not copy text: ', err);
         toast.error('Failed to copy link. Please try again.');
