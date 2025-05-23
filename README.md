@@ -29,6 +29,9 @@ muSpace is a collaborative music listening platform where users can create or jo
 
 ### 7. Responsive Design
 - The platform is fully responsive and works smoothly on devices of all sizes.
+  
+### 8. Solana powered betting system(test net for now)
+- Users can bet on their favourite songs in the queue. Betting starts at 0.01 sol. The song with the highest bet in the queue is played next. 
 
 ## Tech Stack
 
